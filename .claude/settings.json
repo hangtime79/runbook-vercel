@@ -1,0 +1,265 @@
+{
+  "permissions": {
+    "allow": [
+      "Write(.claude/agents/*.md)",
+      "Write(artifacts/**)",
+      "Edit(artifacts/**)",
+      "Write(archive/**)",
+      "Edit(archive/**)",
+      "Write(dashboard/**)",
+      "Edit(dashboard/**)",
+      "Edit(CLAUDE.md)",
+      "Bash(sudo umount *)",
+      "Read(*)",
+      "Write(*.py)",
+      "Write(pyproject.toml)",
+      "Write(scripts/**)",
+      "Edit(scripts/**)",
+      "Write(artifacts/**)",
+      "Write(NARRATIVE.md)",
+      "Edit(*.py)",
+      "Edit(pyproject.toml)",
+      "Glob(*)",
+      "Grep(*)",
+      "Bash(uv init)",
+      "Bash(uv init *)",
+      "Bash(uv lock)",
+      "Bash(uv lock *)",
+      "Bash(uv sync)",
+      "Bash(uv sync *)",
+      "Bash(uv run *)",
+      "Bash(rm dashboard/*.py)",
+      "Bash(rtk dashboard/*.py)",
+      "Bash(rm -rf artifacts/*)",
+      "Bash(rtk rm -rf artifacts/*)",
+      "Bash(rm -rf scripts/*)",
+      "Bash(rtk rm -rf scripts/*)",
+      "Bash(time uv run *)",
+      "Bash(rtk uv init)",
+      "Bash(rtk uv init *)",
+      "Bash(rtk uv lock)",
+      "Bash(rtk uv lock *)",
+      "Bash(rtk uv sync)",
+      "Bash(rtk uv sync *)",
+      "Bash(rtk uv run *)",
+      "Bash(rtk time uv run *)",
+      "Bash(uv add duckdb pandas openpyxl matplotlib plotly streamlit scikit-learn shap streamlit-shap)",
+      "Bash(uv add duckdb)",
+      "Bash(uv add pandas)",
+      "Bash(uv add openpyxl)",
+      "Bash(uv add matplotlib)",
+      "Bash(uv add plotly)",
+      "Bash(uv add streamlit)",
+      "Bash(uv add scikit-learn)",
+      "Bash(uv add shap)",
+      "Bash(uv add streamlit-shap)",
+      "Bash(uv add xgboost)",
+      "Bash(rtk uv add duckdb pandas openpyxl matplotlib plotly streamlit scikit-learn shap streamlit-shap)",
+      "Bash(rtk uv add duckdb)",
+      "Bash(rtk uv add pandas)",
+      "Bash(rtk uv add openpyxl)",
+      "Bash(rtk uv add matplotlib)",
+      "Bash(rtk uv add plotly)",
+      "Bash(rtk uv add streamlit)",
+      "Bash(rtk uv add scikit-learn)",
+      "Bash(rtk uv add shap)",
+      "Bash(rtk uv add streamlit-shap)",
+      "Bash(rtk uv add xgboost)",
+      "Bash(tail *)",
+      "Bash(head *)",
+      "Bash(wc *)",
+      "Bash(ls *)",
+      "Bash(mkdir *)",
+      "Bash(rtk tail *)",
+      "Bash(rtk head *)",
+      "Bash(rtk wc *)",
+      "Bash(rtk ls *)",
+      "Bash(rtk mkdir *)",
+      "Bash(curl http://localhost:*)",
+      "Bash(curl -s http://localhost:*)",
+      "Bash(curl -sf http://localhost:*)",
+      "Bash(curl http://127.0.0.1:*)",
+      "Bash(curl -s http://127.0.0.1:*)",
+      "Bash(curl -sf http://127.0.0.1:*)",
+      "Bash(rtk curl http://localhost:*)",
+      "Bash(rtk curl -s http://localhost:*)",
+      "Bash(rtk curl -sf http://localhost:*)",
+      "Bash(rtk curl http://127.0.0.1:*)",
+      "Bash(rtk curl -s http://127.0.0.1:*)",
+      "Bash(rtk curl -sf http://127.0.0.1:*)",
+      "Bash(git status*)",
+      "Bash(git diff*)",
+      "Bash(git log*)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(rtk git status*)",
+      "Bash(rtk git diff*)",
+      "Bash(rtk git log*)",
+      "Bash(rtk git add *)",
+      "Bash(rtk git commit *)",
+      "Bash(rm scripts/*)",
+      "Bash(rm scripts/*.py)",
+      "Bash(rm -rf scripts/__pycache__)",
+      "Bash(rm -rf scripts/__pycache__/*)",
+      "Bash(rm artifacts/*)",
+      "Bash(rm artifacts/*.md)",
+      "Bash(rm artifacts/*.parquet)",
+      "Bash(rm artifacts/*.pkl)",
+      "Bash(rm artifacts/*.npz)",
+      "Bash(rm NARRATIVE.md)",
+      "Bash(rtk rm scripts/*)",
+      "Bash(rtk rm scripts/*.py)",
+      "Bash(rtk rm -rf scripts/__pycache__)",
+      "Bash(rtk rm -rf scripts/__pycache__/*)",
+      "Bash(rtk rm artifacts/*)",
+      "Bash(rtk rm artifacts/*.md)",
+      "Bash(rtk rm artifacts/*.parquet)",
+      "Bash(rtk rm artifacts/*.pkl)",
+      "Bash(rtk rm artifacts/*.npz)",
+      "Bash(rtk rm NARRATIVE.md)"
+    ],
+    "ask": [
+      "Bash(uv add *)",
+      "Bash(rtk uv add *)"
+    ],
+    "deny": [
+      "Write(.claude/hooks/**)",
+      "Edit(.claude/hooks/**)",
+      "Write(.claude/observability/**)",
+      "Edit(.claude/observability/**)",
+      "Bash(rm .claude/hooks/observer.py)",
+      "Bash(rm -f .claude/hooks/observer.py)",
+      "Bash(rm -rf .claude/hooks/observer.py)",
+      "Bash(rm .claude/observability/events.jsonl)",
+      "Bash(rm -f .claude/observability/events.jsonl)",
+      "Bash(rm -rf .claude/observability/events.jsonl)",
+      "Bash(rm -rf .claude/hooks)",
+      "Bash(rm -rf .claude/observability)",
+      "Bash(rtk rm .claude/hooks/observer.py)",
+      "Bash(rtk rm -f .claude/hooks/observer.py)",
+      "Bash(rtk rm -rf .claude/hooks/observer.py)",
+      "Bash(rtk rm .claude/observability/events.jsonl)",
+      "Bash(rtk rm -f .claude/observability/events.jsonl)",
+      "Bash(rtk rm -rf .claude/observability/events.jsonl)",
+      "Bash(rtk rm -rf .claude/hooks)",
+      "Bash(rtk rm -rf .claude/observability)",
+      "Bash(rm dashboard/fraud_analysis_app.py)",
+      "Bash(rm -f dashboard/fraud_analysis_app.py)",
+      "Bash(rm -rf dashboard/fraud_analysis_app.py)",
+      "Bash(rtk rm dashboard/fraud_analysis_app.py)",
+      "Bash(rtk rm -f dashboard/fraud_analysis_app.py)",
+      "Bash(rtk rm -rf dashboard/fraud_analysis_app.py)",
+      "Bash(pip install *)",
+      "Bash(pip3 install *)",
+      "Bash(python -m pip *)",
+      "Bash(python3 -m pip *)",
+      "Bash(uv pip install *)",
+      "Bash(uv tool install *)",
+      "Bash(rtk pip install *)",
+      "Bash(rtk pip3 install *)",
+      "Bash(rtk python -m pip *)",
+      "Bash(rtk python3 -m pip *)",
+      "Bash(rtk uv pip install *)",
+      "Bash(rtk uv tool install *)",
+      "Bash(python -c*)",
+      "Bash(python3 -c*)",
+      "Bash(uv run python -c*)",
+      "Bash(uv run python3 -c*)",
+      "Bash(rtk python -c*)",
+      "Bash(rtk python3 -c*)",
+      "Bash(rtk uv run python -c*)",
+      "Bash(rtk uv run python3 -c*)",
+      "Bash(wget *)",
+      "Bash(rm *)",
+      "Bash(chmod *)",
+      "Bash(apt *)",
+      "Bash(npm *)",
+      "Bash(npx *)",
+      "Bash(rtk wget *)",
+      "Bash(rtk rm *)",
+      "Bash(rtk chmod *)",
+      "Bash(rtk sudo *)",
+      "Bash(rtk apt *)",
+      "Bash(rtk npm *)",
+      "Bash(rtk npx *)"
+    ]
+  },
+  "sandbox": {
+    "enabled": true,
+    "allowUnsandboxedCommands": false,
+    "network": {
+      "allowedDomains": [
+        "pypi.org",
+        "files.pythonhosted.org",
+        "localhost",
+        "127.0.0.1"
+      ]
+    },
+    "filesystem": {
+      "allowWrite": [
+        "~/.cache/uv",
+        "~/.local/share/uv",
+        "/tmp/claude"
+      ]
+    }
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash|Write|Edit|Read|Agent|TaskCreate|TaskUpdate",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 $CLAUDE_PROJECT_DIR/.claude/hooks/observer.py",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Bash|Write|Edit|Read|Agent|TaskCreate|TaskUpdate",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 $CLAUDE_PROJECT_DIR/.claude/hooks/observer.py",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 $CLAUDE_PROJECT_DIR/.claude/hooks/observer.py",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 $CLAUDE_PROJECT_DIR/.claude/hooks/observer.py",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 $CLAUDE_PROJECT_DIR/.claude/hooks/observer.py",
+            "timeout": 5
+          }
+        ]
+      }
+    ]
+  }
+}

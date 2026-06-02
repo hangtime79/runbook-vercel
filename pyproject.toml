@@ -1,0 +1,19 @@
+[project]
+name = "runbook"
+version = "0.1.0"
+description = "Codify a data-analysis methodology as a portable, executable runbook that AI agents run end-to-end. Worked example: card-transaction fraud detection."
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "anthropic>=0.96.0",
+    "duckdb>=1.5.2",
+    "matplotlib>=3.10.8",
+    "openpyxl>=3.1.5",
+    "pandas>=3.0.2",
+    "plotly>=6.7.0",
+    "scikit-learn>=1.8.0",
+    "shap>=0.51.0",
+    "streamlit>=1.56.0",
+    "streamlit-shap>=1.0.2",
+    "xgboost>=3.2.0",
+]
