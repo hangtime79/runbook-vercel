@@ -197,4 +197,25 @@ npm run dev                            # development, http://localhost:3000
 npm run build && npm run start         # production build, http://localhost:3000
 ```
 
-Routes: `/` (Narrative), `/findings`, `/patterns`, `/model`, `/explorer`, `/api/stats`.
+Routes: `/` (Narrative, with "Ask the data"), `/findings`, `/patterns`, `/model`, `/explorer`, `/api/stats`, `/api/ask`.
+
+### Ask the data (`/api/ask`)
+
+`app/api/ask/route.ts` streams an AI SDK (`ai` 7, `@ai-sdk/react` 4) response with one tool, `query(sql)`. The UI is `components/AskData.tsx`, on the Narrative page. Every answer shows the SQL it ran (SPEC invariant 4).
+
+- **Read-only guard (`lib/askdb.ts`), two independent layers.** (1) `data/fraud.duckdb` is opened `access_mode = READ_ONLY`, then `enable_external_access = false` and `lock_configuration = true`, so a query cannot write, read other files or change settings. (2) The SQL must parse as exactly one statement through DuckDB's `json_serialize_sql` (SELECT only, including `WITH`). Then it is wrapped as `SELECT * FROM (...) LIMIT 201`, capped at 200 rows, with a 10 s interrupt timeout. `json_serialize_sql` needs a constant string, so the text is embedded as an escaped literal; a bound parameter is rejected.
+- **`data/fraud.duckdb` is built by `pipeline/export_web_data.py`** (tables `golden_record`, `features`), alongside the parquet copies. The Python-written file opens under `@duckdb/node-api` without a version pin. `/api/ask` needs `fraud.duckdb`, the docs and `libduckdb.so` in `outputFileTracingIncludes`.
+- **Model:** env var `ASK_MODEL` (default `deepseek/deepseek-v4-pro-0813`), plain `provider/model` string through AI Gateway. `ASK_ALLOW_MODEL_OVERRIDE=1` lets the request body pick the model and drop the prompt's write rule; it exists for `pipeline/eval_ask.mjs` and must never be set on a deployment.
+- **System prompt (`lib/askPrompt.ts`)** is server-side only: table schemas, the fraud definition (`authorized_flag = 0` is fraud, `NULL` is unlabeled and excluded from rates) and the analysis docs from `data/docs/`.
+- **Gateway auth:** on Vercel the deployment's OIDC token (no stored key); locally `AI_GATEWAY_API_KEY` in the shell or `.env.local`, or the OIDC token from `vercel link`. Never print either value.
+- **Running the eval:** stop any running dev server first (`next dev` refuses a second one and a stale server keeps answering without the override). `eval_ask.mjs` aborts if the override is off.
+
+<!-- BEGIN:nextjs-agent-rules -->
+
+# This is NOT the Next.js you know
+
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+
+This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+
+<!-- END:nextjs-agent-rules -->

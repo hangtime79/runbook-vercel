@@ -103,7 +103,19 @@ npm run dev                                   # development server on http://loc
 npm run build && npm run start
 ```
 
-The dashboard needs no API keys. A later phase will add an "Ask the data" view through the Vercel AI SDK and AI Gateway; when that lands it will read `AI_GATEWAY_API_KEY` from `.env.local` (gitignored — never commit a key).
+The five dashboard views need no API keys.
+
+### Ask the data (local)
+
+The Narrative page (`/`) has an "Ask the data" box: type a question, and the app writes a read-only SQL query, runs it on the fraud data and shows the SQL it ran. Model calls go through the Vercel AI Gateway using the AI SDK, so it needs gateway credentials:
+
+```bash
+cp .env.example .env.local        # then set AI_GATEWAY_API_KEY (or run `vercel link` + `vercel env pull` for OIDC)
+uv run python3 pipeline/export_web_data.py   # builds data/fraud.duckdb, the read-only query database
+npm run dev                                   # ask on http://localhost:3000
+```
+
+The model is one setting: `ASK_MODEL` (default `deepseek/deepseek-v4-pro-0813`). To compare models against the five demo questions, start the server with `ASK_ALLOW_MODEL_OVERRIDE=1 npm run dev`, run `uv run python3 pipeline/ask_oracle.py`, then `node pipeline/eval_ask.mjs`. Results land in [`docs/ask-eval.md`](docs/ask-eval.md). Never set `ASK_ALLOW_MODEL_OVERRIDE` on a deployment.
 
 ### Deploy on Vercel
 

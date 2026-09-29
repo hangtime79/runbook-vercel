@@ -1,6 +1,6 @@
 # Runbook on Vercel — spec
 
-**Status:** P1 built from this spec; P2 and P3 not started. Historical note: the dashboard originally ran on Streamlit (a long-running Python server that cannot deploy to Vercel), which is why the app was rebuilt in Next.js.
+**Status:** P1 built from this spec; P2 built and verified locally (`docs/ask-eval.md`), preview deploy pending; P3 not started. Historical note: the dashboard originally ran on Streamlit (a long-running Python server that cannot deploy to Vercel), which is why the app was rebuilt in Next.js.
 **What it is:** the Runbook fraud dashboard, rebuilt on Vercel's stack as a showcase of building
 with Vercel: Next.js, the AI SDK, AI Gateway, and Vercel Connect. P1 and P2 are needed on a live
 URL within about a week; P3 within a few weeks.
