@@ -1,14 +1,14 @@
 # Upload only what the build needs.
-datasets/
-artifacts/
-archive/
-scripts/
-patterns/
-pipeline/
-.venv/
+/datasets/
+/artifacts/
+/archive/
+/scripts/
+/patterns/
+/pipeline/
+/.venv/
 node_modules
 .next
-.claude/
+/.claude/
 .git
 .env*
 .python-version
