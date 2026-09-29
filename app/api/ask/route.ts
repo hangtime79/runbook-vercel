@@ -1,15 +1,71 @@
-import { generateText } from "ai";
+import {
+  convertToModelMessages,
+  createUIMessageStreamResponse,
+  isStepCount,
+  streamText,
+  tool,
+  toUIMessageStream,
+  type UIMessage,
+} from "ai";
+import { z } from "zod";
+import { runReadOnlyQuery } from "@/lib/askdb";
+import { systemPrompt } from "@/lib/askPrompt";
 
-export const maxDuration = 60;
+export const maxDuration = 120;
 
 const DEFAULT_MODEL = "deepseek/deepseek-v4-pro-0813";
+const MAX_MESSAGES = 20;
+const MAX_QUESTION_CHARS = 1000;
+const MAX_STEPS = 6;
 
-// Step 1 smoke test: one fixed prompt to ASK_MODEL through AI Gateway. Replaced in Step 3.
-export async function GET() {
-  const model = process.env.ASK_MODEL || DEFAULT_MODEL;
-  const { text } = await generateText({
-    model,
-    prompt: "Reply with the single word: ready",
+function pickModel(requested: unknown): string {
+  // Local eval only. In the deployed app ASK_ALLOW_MODEL_OVERRIDE is unset, so the request body
+  // can never choose the model.
+  if (process.env.ASK_ALLOW_MODEL_OVERRIDE === "1" && typeof requested === "string" && requested) {
+    return requested;
+  }
+  return process.env.ASK_MODEL || DEFAULT_MODEL;
+}
+
+export async function POST(req: Request) {
+  let body: { messages?: UIMessage[]; model?: unknown };
+  try {
+    body = await req.json();
+  } catch {
+    return Response.json({ error: "Invalid JSON body." }, { status: 400 });
+  }
+  const messages = body.messages;
+  if (!Array.isArray(messages) || messages.length === 0 || messages.length > MAX_MESSAGES) {
+    return Response.json({ error: "Send between 1 and 20 messages." }, { status: 400 });
+  }
+  const tooLong = messages.some(
+    (m) =>
+      m.role === "user" &&
+      m.parts?.some((p) => p.type === "text" && p.text.length > MAX_QUESTION_CHARS)
+  );
+  if (tooLong) {
+    return Response.json({ error: "Question is too long." }, { status: 400 });
+  }
+
+  const result = streamText({
+    model: pickModel(body.model),
+    system: await systemPrompt(),
+    messages: await convertToModelMessages(messages),
+    stopWhen: isStepCount(MAX_STEPS),
+    tools: {
+      query: tool({
+        description:
+          "Run one read-only DuckDB SELECT (or WITH ... SELECT) against golden_record or features. " +
+          "Returns { sql, columns, rows, rowCount, truncated } or { sql, error }.",
+        inputSchema: z.object({
+          sql: z.string().describe("A single DuckDB SELECT statement."),
+        }),
+        execute: async ({ sql }) => runReadOnlyQuery(sql),
+      }),
+    },
   });
-  return Response.json({ model, text });
+
+  return createUIMessageStreamResponse({
+    stream: toUIMessageStream({ stream: result.stream }),
+  });
 }
