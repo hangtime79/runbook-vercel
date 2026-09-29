@@ -1,0 +1,130 @@
+[
+ {
+  "feature": "Merchant Historical Fraud Rate",
+  "mean_abs_shap": 1.0124754905700684
+ },
+ {
+  "feature": "Merchant Subsector Fraud Frequency",
+  "mean_abs_shap": 0.5927780270576477
+ },
+ {
+  "feature": "Signature Provided",
+  "mean_abs_shap": 0.2552226483821869
+ },
+ {
+  "feature": "Card-to-Merchant Distance (km)",
+  "mean_abs_shap": 0.1804579198360443
+ },
+ {
+  "feature": "Cardholder Age Bucket",
+  "mean_abs_shap": 0.17453286051750183
+ },
+ {
+  "feature": "Card Prior Transaction Count",
+  "mean_abs_shap": 0.1583898365497589
+ },
+ {
+  "feature": "MCC Fraud Frequency",
+  "mean_abs_shap": 0.15223480761051178
+ },
+ {
+  "feature": "Item Category B Flag",
+  "mean_abs_shap": 0.1183445155620575
+ },
+ {
+  "feature": "Item Category C Flag",
+  "mean_abs_shap": 0.11044072359800339
+ },
+ {
+  "feature": "Log Transaction Amount",
+  "mean_abs_shap": 0.10540681332349777
+ },
+ {
+  "feature": "Card Tenure (Days)",
+  "mean_abs_shap": 0.0817764401435852
+ },
+ {
+  "feature": "Amount vs Card Mean (Ratio)",
+  "mean_abs_shap": 0.07885883748531342
+ },
+ {
+  "feature": "Item Category D Flag",
+  "mean_abs_shap": 0.06371702998876572
+ },
+ {
+  "feature": "Seconds Since Last Transaction",
+  "mean_abs_shap": 0.0573456771671772
+ },
+ {
+  "feature": "Month of Year",
+  "mean_abs_shap": 0.0471155047416687
+ },
+ {
+  "feature": "Hour \u00d7 Day Interaction",
+  "mean_abs_shap": 0.045206718146800995
+ },
+ {
+  "feature": "Day of Week",
+  "mean_abs_shap": 0.02856006845831871
+ },
+ {
+  "feature": "Weekend Flag",
+  "mean_abs_shap": 0.027859503403306007
+ },
+ {
+  "feature": "Amount Coefficient of Variation",
+  "mean_abs_shap": 0.02746373601257801
+ },
+ {
+  "feature": "Hour of Day",
+  "mean_abs_shap": 0.022009221836924553
+ },
+ {
+  "feature": "Reward Program Tier",
+  "mean_abs_shap": 0.018484991043806076
+ },
+ {
+  "feature": "Transaction Under $5",
+  "mean_abs_shap": 0.013461586087942123
+ },
+ {
+  "feature": "Transactions in Last 7d",
+  "mean_abs_shap": 0.012805771082639694
+ },
+ {
+  "feature": "Impossible Travel Flag",
+  "mean_abs_shap": 0.009178843349218369
+ },
+ {
+  "feature": "Spend in Last 24h ($)",
+  "mean_abs_shap": 0.007657436188310385
+ },
+ {
+  "feature": "First Transaction Flag",
+  "mean_abs_shap": 0.005752482917159796
+ },
+ {
+  "feature": "Spend in Last Hour ($)",
+  "mean_abs_shap": 0.003644542070105672
+ },
+ {
+  "feature": "Amount Bucket (Ordinal)",
+  "mean_abs_shap": 0.0033740615472197533
+ },
+ {
+  "feature": "Night Hours (10PM\u20136AM)",
+  "mean_abs_shap": 0.0030071677174419165
+ },
+ {
+  "feature": "Transactions in Last Hour",
+  "mean_abs_shap": 0.0008005902636796236
+ },
+ {
+  "feature": "Transactions in Last 24h",
+  "mean_abs_shap": 0.0003982437774538994
+ },
+ {
+  "feature": "Velocity > 1 Txn/Hour",
+  "mean_abs_shap": 0.0
+ }
+]
