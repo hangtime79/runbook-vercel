@@ -56,7 +56,7 @@ URL within about a week; P3 within a few weeks.
 
 ## Verify before building — each of these is an assumption
 
-Resolved by the spike and the P1 build: native DuckDB runs in a Vercel Node function (with `libduckdb.so` added through `outputFileTracingIncludes`), and the data ships as a committed `data/` folder written by an export script. Still open: dataset licence, Connect, and AI Gateway specifics.
+Resolved by the spike and the P1 build: native DuckDB runs in a Vercel Node function (with `libduckdb.so` added through `outputFileTracingIncludes`), and the data ships as a committed `data/` folder written by an export script. Dataset licence resolved (public Kaggle set). Still open: Connect and AI Gateway specifics.
 
 - ⚠️ **DuckDB inside a Vercel Node function.** The native `@duckdb/node-api` binary has to fit and
   load in the function runtime. If it does not, fall back to DuckDB-WASM in the browser, or to
@@ -67,8 +67,7 @@ Resolved by the spike and the P1 build: native DuckDB runs in a Vercel Node func
   web app's inputs (parquet subset + JSON) into `data/` and commits those, a CLI deploy that uploads
   local files, or Vercel Blob. Decision: committed `data/`. Also check whether `vercel deploy` honours
   `.gitignore`.
-- ⚠️ **The dataset's licence.** The card and merchant IDs look like a public Kaggle set. Confirm it
-  may be served on a public URL.
+- ✅ **The dataset's licence.** Resolved: a public Kaggle dataset, fine to serve on a public URL.
 - ⚠️ **Vercel Connect's Snowflake connector** — read the docs cold before P3. Nothing about Connect
   should be written from memory; it launched after the model cutoff.
 - ⚠️ **AI Gateway model ids and the AI SDK version** — take them from the installed package docs,
