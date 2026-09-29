@@ -4,6 +4,12 @@ const DUCKDB_FILES = [
   "./data/**/*.parquet",
   "./node_modules/@duckdb/node-bindings-linux-x64/libduckdb.so",
 ];
+// /api/ask opens the read-only .duckdb file, not the parquet, and reads the docs for its prompt.
+const ASK_FILES = [
+  "./data/fraud.duckdb",
+  "./data/docs/**/*",
+  "./node_modules/@duckdb/node-bindings-linux-x64/libduckdb.so",
+];
 const DOC_FILES = ["./data/docs/**/*", "./data/shap_importance.json"];
 
 const nextConfig: NextConfig = {
@@ -14,6 +20,7 @@ const nextConfig: NextConfig = {
   // uses DuckDB needs an entry, or Vercel fails with "libduckdb.so: cannot open shared object file".
   outputFileTracingIncludes: {
     "/api/stats": DUCKDB_FILES,
+    "/api/ask": ASK_FILES,
     "/api/patterns": DUCKDB_FILES,
     "/patterns": DUCKDB_FILES,
     "/explorer": DUCKDB_FILES,
