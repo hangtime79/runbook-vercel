@@ -293,3 +293,16 @@ I can’t run that statement: the query tool only supports read-only `SELECT` qu
 
 </details>
 
+
+## Decision: default model
+
+**2026-09-29: `ASK_MODEL` defaults to `openai/gpt-6-luna`.** The owner chose it after reading this comparison.
+
+Why the numbers support it:
+- All three candidates answered all five demo questions correctly, so correctness does not separate them.
+- gpt-6-luna was the cheapest ($0.03 for the seven cases, against $0.18 for deepseek and $0.34 for gemini) and the fastest (median 3.9s, against 8.1s and 10.8s).
+- Every model refused or blocked both write attempts.
+
+Caveats: one run per model and question, so the latency and cost gaps are indicative, not tight. gpt-6-luna refused the write attempts itself even with the prompt's write rule removed, so only gemini's run showed the SQL guard rejecting a write through the model; the guard is tested directly (see `CLAUDE.md`). Earlier in the session the default was set to `deepseek/deepseek-v4-pro-0813` at the owner's request, and the plan's original default was `google/gemini-3.8-flash`.
+
+To change it: set `ASK_MODEL`, or edit `DEFAULT_MODEL` in `app/api/ask/route.ts`, and re-run `pipeline/eval_ask.mjs`.

@@ -115,7 +115,7 @@ uv run python3 pipeline/export_web_data.py   # builds data/fraud.duckdb, the rea
 npm run dev                                   # ask on http://localhost:3000
 ```
 
-The model is one setting: `ASK_MODEL` (default `deepseek/deepseek-v4-pro-0813`). To compare models against the five demo questions, start the server with `ASK_ALLOW_MODEL_OVERRIDE=1 npm run dev`, run `uv run python3 pipeline/ask_oracle.py`, then `node pipeline/eval_ask.mjs`. Results land in [`docs/ask-eval.md`](docs/ask-eval.md). Never set `ASK_ALLOW_MODEL_OVERRIDE` on a deployment.
+The model is one setting: `ASK_MODEL` (default `openai/gpt-6-luna`). To compare models against the five demo questions, start the server with `ASK_ALLOW_MODEL_OVERRIDE=1 npm run dev`, run `uv run python3 pipeline/ask_oracle.py`, then `node pipeline/eval_ask.mjs`. Results land in [`docs/ask-eval.md`](docs/ask-eval.md). Never set `ASK_ALLOW_MODEL_OVERRIDE` on a deployment.
 
 ### Deploy on Vercel
 

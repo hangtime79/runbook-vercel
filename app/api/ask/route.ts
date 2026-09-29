@@ -13,7 +13,7 @@ import { systemPrompt } from "@/lib/askPrompt";
 
 export const maxDuration = 120;
 
-const DEFAULT_MODEL = "deepseek/deepseek-v4-pro-0813";
+const DEFAULT_MODEL = "openai/gpt-6-luna";
 const MAX_MESSAGES = 20;
 const MAX_QUESTION_CHARS = 1000;
 const MAX_STEPS = 6;
