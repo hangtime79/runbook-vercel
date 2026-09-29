@@ -28,7 +28,7 @@ function pickModel(requested: unknown): string {
 }
 
 export async function POST(req: Request) {
-  let body: { messages?: UIMessage[]; model?: unknown };
+  let body: { messages?: UIMessage[]; model?: unknown; omitWriteRule?: unknown };
   try {
     body = await req.json();
   } catch {
@@ -47,9 +47,11 @@ export async function POST(req: Request) {
     return Response.json({ error: "Question is too long." }, { status: 400 });
   }
 
+  const evalMode = process.env.ASK_ALLOW_MODEL_OVERRIDE === "1";
   const result = streamText({
     model: pickModel(body.model),
-    system: await systemPrompt(),
+    // Eval only: lets pipeline/eval_ask.mjs prove the SQL guard holds without the prompt's help.
+    system: await systemPrompt(evalMode && body.omitWriteRule === true),
     messages: await convertToModelMessages(messages),
     stopWhen: isStepCount(MAX_STEPS),
     tools: {
@@ -66,6 +68,14 @@ export async function POST(req: Request) {
   });
 
   return createUIMessageStreamResponse({
-    stream: toUIMessageStream({ stream: result.stream }),
+    stream: toUIMessageStream({
+      stream: result.stream,
+      // The model's reasoning is not shown in the UI, so it never leaves the server.
+      sendReasoning: false,
+      // Token usage is sent only in local eval mode (pipeline/eval_ask.mjs prices it).
+      messageMetadata: evalMode
+        ? ({ part }) => (part.type === "finish" ? { usage: part.totalUsage } : undefined)
+        : undefined,
+    }),
   });
 }

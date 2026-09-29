@@ -142,6 +142,10 @@ export default function AskData() {
             )}
           </div>
         ))}
+        {status === "ready" && !error && messages.at(-1)?.role === "assistant" &&
+          !messages.at(-1)!.parts.some((p) => p.type === "text" && p.text.trim()) && (
+          <p className="muted">No answer came back. Try asking again.</p>
+        )}
         {error && (
           <p style={{ color: "var(--accent)" }}>
             Something went wrong answering that: {error.message}. Try again in a moment.
