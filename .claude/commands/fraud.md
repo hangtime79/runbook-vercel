@@ -33,7 +33,7 @@ Do **not** spawn `fraud-patterns` or `fraud-model` — those agents are deprecat
 4. **Iteration loop (§5.6):** if your Phase 5 analysis fires any trigger (`merchant_concentration`, `amount_spike`, `interaction_multiplier`, `temporal_pattern`, `velocity_step`), re-spawn `fraud-features` in incremental mode to add the specified feature, then **re-run Phase 5 inline** to verify the new signal. Max 2 loops total across all triggers.
 5. **Phase 6 (inline):** read `patterns/playbook/phase_06_model_building.md`, write `scripts/phase06_model_building.py`, execute it, interpret the §6.5 diagnostics (AUC, K-Fold std, confusion matrix), and write `artifacts/model.pkl` + `artifacts/metrics.md`.
 6. Spawn subagent for Phase 7: `fraud-shap` → `artifacts/shap_values.npz` + `shap.md`.
-7. Spawn subagent for Phase 8: `fraud-dashboard` → verifies artifacts and launches `dashboard/fraud_analysis_app.py` on port 8501.
+7. Spawn subagent for Phase 8: `fraud-dashboard` → verifies artifacts, runs `pipeline/export_web_data.py`, builds the Next.js app, starts it on port 3000 and checks every route.
 8. **Phase 9 (inline):** write `NARRATIVE.md` yourself.
 9. **Phase 10 (inline):** run the self-assessment checklist from `patterns/playbook/phase_10_self_assessment.md`.
 
@@ -57,4 +57,4 @@ Each subagent prompt must include:
 - State flows through `artifacts/`. The main thread holds: phase status, trigger list, diagnostic verdicts, loop count.
 - Report progress to the user between phases in one sentence each ("Phase 3 done — golden_record.parquet written, 327K rows").
 - Scripts for inline phases go in `scripts/` — same rule as subagent-written scripts. Never `python -c`. Write-then-run.
-- At the end: confirm dashboard is running, summarize key findings and model metrics in 3–5 bullets, and point to `NARRATIVE.md`.
+- At the end: confirm the dashboard is running on port 3000, summarize key findings and model metrics in 3–5 bullets, and point to `NARRATIVE.md`.

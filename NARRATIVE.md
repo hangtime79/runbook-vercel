@@ -5,7 +5,7 @@
 **Prepared for:** Fraud Operations and Risk Strategy
 **Analyst:** Data Science, Fraud Analytics
 **Window analyzed:** Jan 1 2017 – Dec 31 2017 (labeled corpus)
-**Dashboard:** `http://localhost:8501` · **Companion artifacts:** `artifacts/`
+**Dashboard:** `http://localhost:3000` · **Companion artifacts:** `artifacts/`
 
 ---
 
@@ -200,4 +200,4 @@ CV std of 0.003 (well below the 0.05 instability threshold) confirms the model g
 
 ---
 
-*Narrative prepared per Playbook v3.2 Phase 9. Companion artifacts live in `artifacts/`; dashboard at `http://localhost:8501`.*
+*Narrative prepared per Playbook v3.2 Phase 9. Companion artifacts live in `artifacts/`; dashboard at `http://localhost:3000`.*

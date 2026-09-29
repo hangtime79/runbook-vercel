@@ -33,14 +33,14 @@ This router tells the main thread how to run the fraud analysis. Mechanical phas
 | 5 | Pattern Discovery | **main thread (opus)** | — | `artifacts/findings.md` |
 | 6 | Model Building | **main thread (opus)** | — | `artifacts/model.pkl`, `artifacts/metrics.md` |
 | 7 | Interpretability | `fraud-shap` subagent | sonnet | `artifacts/shap_values.npz`, `artifacts/shap.md` |
-| 8 | Dashboard | `fraud-dashboard` subagent | haiku | launches `fraud_analysis_app.py` |
+| 8 | Dashboard | `fraud-dashboard` subagent | haiku | `data/` export + Next.js app on port 3000 |
 | 9 | Narrative | **main thread (opus)** | — | `NARRATIVE.md` |
 | 10 | Self-Assessment | **main thread (opus)** | — | (inline verdict) |
 
 **Why this tiering:**
 - **Main thread (opus) on 5, 6, 9, 10.** Pattern discovery requires judgment about what's surprising. Model diagnostics require interpreting AUC/SHAP signals against the temporal triage. Narrative synthesis is the actual deliverable. Self-assessment is a final check. The orchestrator is already opus — spawning another opus subagent for these would both double token cost and move the trigger list / diagnostic verdicts away from where they're held. Do them inline, from the main thread, reading each phase file directly and writing scripts/artifacts via `scripts/` just like a subagent would.
 - **Sonnet subagents on 1, 4, 7.** §1.4 temporal triage is the single highest-stakes judgment — a missed leak is invisible until production. Feature engineering has design choices. SHAP disagreement analysis needs to reason about interaction effects. Subagents here absorb script-iteration chatter while still having enough capability for the judgment calls within their scope.
-- **Haiku subagents on 2, 3, 8.** Quality checks are counting and thresholding. Joins are mechanical. Dashboard launches a prebuilt skeleton.
+- **Haiku subagents on 2, 3, 8.** Quality checks are counting and thresholding. Joins are mechanical. Dashboard phase exports data and launches the prebuilt Next.js app.
 
 **Deprecated subagents.** The `fraud-patterns` and `fraud-model` agents are **not shipped and not invoked** by this orchestration. Phases 5 and 6 are always main-thread.
 
@@ -64,7 +64,7 @@ START
  │   └─ IF AUC < 0.62 AND Phase 5.6 triggers were skipped: re-run Phase 5 inline, re-spawn fraud-features, then re-run Phase 6 inline
  ├─ Spawn fraud-shap                 → artifacts/shap.md + disagreement check
  │   └─ IF top-3 SHAP ≠ top-3 univariate dimensions from Phase 5: investigate before proceeding
- ├─ Spawn fraud-dashboard            → launches Streamlit
+ ├─ Spawn fraud-dashboard            → exports data/, builds and starts the Next.js app
  ├─ Main thread writes NARRATIVE.md (Phase 9)
  └─ Main thread runs self-assessment checklist (Phase 10)
 END
@@ -96,16 +96,16 @@ All state lives in `artifacts/` at repo root.
 |---|---|---|---|
 | `orientation.md` | fraud-orientation subagent | fraud-quality, fraud-golden-record, fraud-features, Phase 5 (main), Phase 6 (main), Phase 9 (main) | Markdown: grain, label states, triage table, class balance, time range |
 | `quality.md` | fraud-quality subagent | fraud-golden-record, Phase 9 (main) | Markdown: nulls, coords, cardinality, quality verdict |
-| `golden_record.parquet` | fraud-golden-record subagent | fraud-features, Phase 5 (main), dashboard | Parquet: one row per transaction, enriched, transaction-time cols only |
-| `features.parquet` | fraud-features subagent | Phase 5 (main), Phase 6 (main), fraud-shap, dashboard | Parquet: feature matrix + label column |
+| `golden_record.parquet` | fraud-golden-record subagent | fraud-features, Phase 5 (main), web export (`data/`) | Parquet: one row per transaction, enriched, transaction-time cols only |
+| `features.parquet` | fraud-features subagent | Phase 5 (main), Phase 6 (main), fraud-shap, web export (`data/`) | Parquet: feature matrix + label column |
 | `features_schema.md` | fraud-features subagent | Phase 5 (main), Phase 9 (main) | Markdown: feature list, descriptions, triage verification |
-| `findings.md` | **main thread (Phase 5)** | Phase 6 (main), fraud-dashboard, fraud-shap (as disagreement anchor), Phase 9 (main) | Markdown: 5+ findings in structured form, triggers list |
-| `model.pkl` | **main thread (Phase 6)** | fraud-shap, dashboard | Pickle: trained XGBClassifier |
-| `metrics.md` | **main thread (Phase 6)** | fraud-shap, Phase 9 (main) | Markdown: AUC (K-Fold mean±std, holdout), PR-AUC, confusion matrix, diagnostic verdict |
-| `shap_values.npz` | fraud-shap subagent | dashboard | NumPy: SHAP values + expected_value on 2K sample |
-| `shap.md` | fraud-shap subagent | Phase 9 (main) | Markdown: top features, directional summary, disagreement notes |
+| `findings.md` | **main thread (Phase 5)** | Phase 6 (main), web export (`data/docs/`), fraud-shap (as disagreement anchor), Phase 9 (main) | Markdown: 5+ findings in structured form, triggers list |
+| `model.pkl` | **main thread (Phase 6)** | fraud-shap | Pickle: trained XGBClassifier |
+| `metrics.md` | **main thread (Phase 6)** | fraud-shap, web export (`data/docs/`), Phase 9 (main) | Markdown: AUC (K-Fold mean±std, holdout), PR-AUC, confusion matrix, diagnostic verdict |
+| `shap_values.npz` | fraud-shap subagent | web export (`data/`) | NumPy: SHAP values + expected_value on 2K sample |
+| `shap.md` | fraud-shap subagent | web export (`data/docs/`), Phase 9 (main) | Markdown: top features, directional summary, disagreement notes |
 
-**Dashboard reads artifacts only.** `fraud_analysis_app.py` is a prebuilt skeleton. It does not call any phase logic.
+**The dashboard reads exported artifacts only.** The Next.js app reads `data/`, which `pipeline/export_web_data.py` copies from `artifacts/` and `NARRATIVE.md`. It does not call any phase logic.
 
 ---
 
@@ -159,8 +159,9 @@ shap
 # Visualization
 plotly
 matplotlib
-streamlit
-streamlit-shap
+
+# Web app (JavaScript, managed with npm; uv stays the sole Python manager)
+# next, react, @duckdb/node-api, recharts, react-markdown -- see package.json
 
 # Data
 duckdb
