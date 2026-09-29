@@ -48,8 +48,14 @@ export async function POST(req: Request) {
   }
 
   const evalMode = process.env.ASK_ALLOW_MODEL_OVERRIDE === "1";
+  const model = pickModel(body.model);
   const result = streamText({
-    model: pickModel(body.model),
+    model,
+    // Stop the model call when the browser disconnects instead of streaming to nobody.
+    abortSignal: req.signal,
+    // Streams that end early left no trace before these were added; log the cause server-side.
+    onError: ({ error }) => console.error(`[ask] stream error (${model}):`, error),
+    onAbort: () => console.warn(`[ask] aborted by client (${model})`),
     // Eval only: lets pipeline/eval_ask.mjs prove the SQL guard holds without the prompt's help.
     system: await systemPrompt(evalMode && body.omitWriteRule === true),
     messages: await convertToModelMessages(messages),
@@ -72,6 +78,11 @@ export async function POST(req: Request) {
       stream: result.stream,
       // The model's reasoning is not shown in the UI, so it never leaves the server.
       sendReasoning: false,
+      // The client gets a plain message; the detail stays in the server log.
+      onError: (error) => {
+        console.error(`[ask] UI stream error (${model}):`, error);
+        return "The answer stream failed partway. Try again.";
+      },
       // Token usage is sent only in local eval mode (pipeline/eval_ask.mjs prices it).
       messageMetadata: evalMode
         ? ({ part }) => (part.type === "finish" ? { usage: part.totalUsage } : undefined)
