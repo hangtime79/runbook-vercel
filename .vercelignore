@@ -1,0 +1,18 @@
+# Upload only what the build needs.
+datasets/
+artifacts/
+archive/
+scripts/
+patterns/
+pipeline/
+.venv/
+node_modules
+.next
+.claude/
+.git
+.env*
+.python-version
+pyproject.toml
+uv.lock
+*.md
+!data/docs/*.md
