@@ -6,6 +6,7 @@ import { useEffect, useRef, type ReactNode } from "react";
 import { MessageSquare } from "lucide-react";
 import { AskView } from "@/components/ask/AskView";
 import { useAsk } from "@/components/ask/AskProvider";
+import { DeploymentBadge } from "@/components/shell/DeploymentBadge";
 import { NAV, SIDEBAR } from "@/lib/copy";
 
 const isActive = (pathname: string, href: string) => (href === "/" ? pathname === "/" : pathname.startsWith(href));
@@ -62,7 +63,8 @@ function Sidebar({ pathname }: { pathname: string }) {
         <NavLinks pathname={pathname} layout="column" />
       </nav>
       <div className="mt-auto flex flex-col gap-1.5 border-t border-border px-5 pt-4 text-[11px] leading-[1.45] text-foreground/60">
-        <span className="text-[10px] uppercase tracking-[0.1em]">{SIDEBAR.footerKicker}</span>
+        <DeploymentBadge />
+        <span className="mt-1.5 text-[10px] uppercase tracking-[0.1em]">{SIDEBAR.footerKicker}</span>
         {SIDEBAR.footerLines.map((l) => (
           <span key={l}>{l}</span>
         ))}
