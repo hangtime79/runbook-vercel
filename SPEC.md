@@ -27,6 +27,8 @@ URL within about a week; P3 within a few weeks.
 
 **P1 + P2 first, on a live URL. P3 after.**
 
+**Where P3 plugs in.** `lib/source.ts` defines the `DataSource` interface (a guarded `query(sql)` plus the named page queries); today `lib/duckdbSource.ts` and `lib/askdb.ts` implement it. The Snowflake version is a second implementation (`lib/snowflakeSource.ts`) that gets its token from `getToken(...)` in `@vercel/connect` and is chosen by one env var. Pages and the Ask tool do not change. `pipeline/test_guard.mts` and `pipeline/check_parity.py` are the acceptance tests for the new implementation.
+
 ## Architecture
 
 | Layer | Original Streamlit build | On Vercel |

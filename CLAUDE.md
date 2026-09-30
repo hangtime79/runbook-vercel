@@ -203,7 +203,7 @@ npm run dev                            # development, http://localhost:3000
 npm run build && npm run start         # production build, http://localhost:3000
 ```
 
-Routes: `/` (Narrative, with "Ask the data"), `/findings`, `/patterns`, `/model`, `/explorer`, `/api/stats`, `/api/ask`.
+Routes: `/` (Narrative, with "Ask the data"), `/findings`, `/patterns`, `/model`, `/explorer`, `/governance`, `/api/stats`, `/api/ask`, `/api/deployment`.
 
 ### Ask the data (`/api/ask`)
 
@@ -211,7 +211,20 @@ Routes: `/` (Narrative, with "Ask the data"), `/findings`, `/patterns`, `/model`
 
 - **Read-only guard (`lib/askdb.ts`), two independent layers.** (1) `data/fraud.duckdb` is opened `access_mode = READ_ONLY`, then `enable_external_access = false` and `lock_configuration = true`, so a query cannot write, read other files or change settings. (2) The SQL must parse as exactly one statement through DuckDB's `json_serialize_sql` (SELECT only, including `WITH`). Then it is wrapped as `SELECT * FROM (...) LIMIT 201`, capped at 200 rows, with a 10 s interrupt timeout. `json_serialize_sql` needs a constant string, so the text is embedded as an escaped literal; a bound parameter is rejected.
 - **`data/fraud.duckdb` is built by `pipeline/export_web_data.py`** (tables `golden_record`, `features`), alongside the parquet copies. The Python-written file opens under `@duckdb/node-api` without a version pin. `/api/ask` needs `fraud.duckdb`, the docs and `libduckdb.so` in `outputFileTracingIncludes`.
-- **Model:** env var `ASK_MODEL` (default `openai/gpt-6-luna`, see the decision in `docs/ask-eval.md`), plain `provider/model` string through AI Gateway. `ASK_ALLOW_MODEL_OVERRIDE=1` lets the request body pick the model and drop the prompt's write rule; it exists for `pipeline/eval_ask.mjs` and must never be set on a deployment.
+- **Model:** the allowlist and default live in `lib/askModels.json` (default `openai/gpt-6-luna`, see `docs/ask-eval.md`); `lib/askConfig.ts` applies them. `ASK_MODEL` picks the default only if it is on the allowlist. `ASK_DEMO_MODEL_SWITCH=1` shows a model select in the Ask panel and lets the request body choose among the allowlisted models; any other id falls back to the default. `ASK_ALLOW_MODEL_OVERRIDE=1` lets the request body pick any model and drop the prompt's write rule; it exists for `pipeline/eval_ask.mjs` and must never be set on a deployment.
+- **Zero data retention:** every model call sets `providerOptions.gateway = { zeroDataRetention: true, disallowPromptTraining: true }`. A model with no ZDR-capable provider fails the request (HTTP 400), it is not routed around. ZDR needs a Pro or Enterprise team: on a Hobby key the gateway answers 403, so `ASK_ZDR=0` turns it off for local work on such a key; `/governance` shows the real state. Never set `ASK_ZDR=0` on a deployment. `pipeline/zdr_check.mjs` tests each model live.
+- **Per answer:** the stream's message metadata carries model, elapsed time, tokens and cost. Cost is the gateway's `providerMetadata.gateway.cost` summed over steps; if absent, tokens x list price from `data/model_prices.json` (exported from the gateway catalogue for the allowlist), labelled "list price". `pipeline/check_model_switch.mjs` asks one question on each allowlisted model and one off-list.
+
+### Deployment, region and governance
+
+- **Region:** `vercel.json` pins Functions to `syd1`. `VERCEL_REGION` (runtime) reports where a function ran; it is shown in the sidebar badge and on `/governance`.
+- **Badge (`lib/deployment.ts`, `/api/deployment`):** from `VERCEL`, `VERCEL_ENV`, `VERCEL_GIT_COMMIT_SHA`, `VERCEL_GIT_COMMIT_MESSAGE`, `VERCEL_GIT_PROVIDER`, `VERCEL_GIT_REPO_OWNER`, `VERCEL_GIT_REPO_SLUG`, `VERCEL_REGION`. The `VERCEL_GIT_*` ones exist only on git-triggered deployments, so a CLI deploy shows `preview` with no commit. Nothing else is exposed.
+- **`/governance`:** an inventory card for this one app. Live values (deployment, limits from `lib/askLimits.ts`, allowlist, ZDR state) are read at request time; the rest is static copy in `lib/governanceCopy.ts`, and every Vercel claim in it must come from `docs/demo/vercel-positioning.md` or `docs/demo/governance-research.md`. APRA quotes there are unverified until checked against the APRA PDFs.
+- **Data-source seam:** `lib/source.ts` is the one interface pages, API routes and the Ask tool read through; `lib/duckdbSource.ts` and `lib/askdb.ts` implement it. P3 (Snowflake) adds a second implementation, see SPEC.md.
+
+### Change control
+
+`.github/workflows/checks.yml` runs on pull requests and pushes to `main`, with no secrets and no gateway calls: **Build**, **Copy figures trace to data** (`check_story_figures.py`), **Numbers match source data** (`check_parity.py` against a started production server), **Read-only guard rejects writes** (`pipeline/test_guard.mts`), **Ask tool loop (mock model)** (`test_ask_headline.mts`). Action versions are pinned by commit SHA. Owner steps, not done by any agent: (1) `vercel git connect`; (2) GitHub branch protection on `main` requiring these five checks and one review; (3) Vercel Deployment Checks on production, requiring the same checks; (4) `ASK_DEMO_MODEL_SWITCH=1` on the Vercel project when the model switch is wanted.
 - **System prompt (`lib/askPrompt.ts`)** is server-side only: table schemas, the fraud definition (`authorized_flag = 0` is fraud, `NULL` is unlabeled and excluded from rates) and the analysis docs from `data/docs/`.
 - **Gateway auth:** on Vercel the deployment's OIDC token (no stored key); locally `AI_GATEWAY_API_KEY` in the shell or `.env.local`, or the OIDC token from `vercel link`. Never print either value.
 - **Running the eval:** stop any running dev server first (`next dev` refuses a second one and a stale server keeps answering without the override). `eval_ask.mjs` aborts if the override is off.

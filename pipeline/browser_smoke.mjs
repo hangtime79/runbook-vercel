@@ -68,12 +68,29 @@ try {
     const sql = (await evidence.locator("pre code").innerText()).trim();
     check(/^(SELECT|WITH)\b/i.test(sql), `evidence card shows the SQL (${sql.slice(0, 40).replace(/\s+/g, " ")}…)`);
     check((await evidence.locator("tbody tr").count()) > 0, "evidence card rendered a result table");
+    const footer = (await page.getByTestId("answer-meta").first().innerText()).trim();
+    check(/^\S+\/\S+ · \d+(\.\d+)? s · [\d,]+ in \/ [\d,]+ out · (\$\d|cost n\/a)/.test(footer), `evidence footer shows model, time, tokens and cost (${footer})`);
+    check((await page.getByTestId("deployment-badge").innerText()).trim().length > 0, "deployment badge is in the sidebar");
     check(!failedRequests.some((r) => r.includes("/api/")), `no failed API requests ${failedRequests.join(" ")}`);
     check(errors.length === 0, `no console errors ${errors.slice(0, 2).join(" | ")}`);
     await page.close();
   }
 
   // ---- 2. Explorer with the Ask panel open ---------------------------------------------------
+  {
+    const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+    const errors = [];
+    page.on("console", (m) => m.type() === "error" && errors.push(m.text()));
+    const res = await page.goto(BASE + "/governance", { waitUntil: "networkidle" });
+    check(res?.status() === 200, "/governance answers 200");
+    const text = (await page.locator("main").innerText()).toLowerCase();
+    for (const s of ["Deployment", "Function region", "Allowed models", "Data retention", "Change control", "APRA mapping", "Gaps, stated plainly"]) {
+      check(text.includes(s.toLowerCase()), `/governance shows: ${s}`);
+    }
+    check(errors.length === 0, `no console errors on /governance ${errors.slice(0, 2).join(" | ")}`);
+    await page.close();
+  }
+
   {
     const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
     await page.goto(BASE + "/explorer", { waitUntil: "networkidle" });
