@@ -1,48 +1,20 @@
-import { explorerRows } from "@/lib/queries";
+import { ExplorerTable } from "@/components/explorer/ExplorerTable";
+import { readModelSummary } from "@/lib/docs";
+import { explorerRows, headlineCounts } from "@/lib/queries";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-const usd = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" });
-
-function isRateCol(name: string) {
-  return name.toLowerCase().includes("rate") || name.startsWith("is_");
-}
+// "Hot merchant": a training-slice merchant fraud rate above 3x the baseline (the playbook's
+// merchant_concentration trigger).
+const HOT_MULTIPLE = 3;
 
 export default async function ExplorerPage() {
-  const rows = await explorerRows();
-  const cols = rows.length ? Object.keys(rows[0]) : [];
-
-  function format(col: string, v: string | number | boolean | null): string {
-    if (v === null) return "";
-    if (typeof v !== "number") return String(v);
-    if (col === "purchase_amount") return usd.format(v);
-    if (isRateCol(col)) return v.toFixed(3);
-    return Number.isInteger(v) ? String(v) : String(Math.round(v * 1e6) / 1e6);
-  }
-
+  const [rows, model, counts] = await Promise.all([explorerRows(), readModelSummary(), headlineCounts()]);
+  const baseline = counts.fraud / counts.labeled;
   return (
-    <>
-      <h1>Data Explorer</h1>
-      <p className="muted">First {rows.length} rows of the feature matrix.</p>
-      <div className="scroll">
-        <table className="table">
-          <thead>
-            <tr>{cols.map((c) => <th key={c}>{c}</th>)}</tr>
-          </thead>
-          <tbody>
-            {rows.map((r, i) => (
-              <tr key={i}>
-                {cols.map((c) => (
-                  <td key={c} className={typeof r[c] === "number" ? "num" : undefined}>
-                    {format(c, r[c])}
-                  </td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </>
+    <div className="flex flex-col px-4 pb-16 pt-10 sm:px-10">
+      <ExplorerTable rows={rows} threshold={model.operating_point.threshold} hotMerchantRate={HOT_MULTIPLE * baseline} />
+    </div>
   );
 }

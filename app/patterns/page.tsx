@@ -1,70 +1,100 @@
-import { AmountHistogram, CategoryChart, HourChart } from "@/components/Charts";
-import {
-  amountHistogram,
-  fraudRateByHour,
-  fraudRateBySubsector,
-  heatmap,
-} from "@/lib/queries";
+import { AmountBandChart } from "@/components/charts/AmountBandChart";
+import { Heatmap } from "@/components/charts/Heatmap";
+import { HourChart } from "@/components/charts/HourChart";
+import { Figure, RateBars } from "@/components/Figure";
+import { Page, PageHeader } from "@/components/PageHeader";
+import { PATTERNS } from "@/lib/copy";
+import { int, pct } from "@/lib/format";
+import { amountBands, fraudRateByHour, fraudRateBySubsector, headlineCounts, heatmap } from "@/lib/queries";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+const OVERNIGHT = { start: 2, end: 6 };
+const CATEGORY_ROWS = 14;
+const HIGH_RISK = { from: 1, to: 5 }; // rows 2-6 of the ranking, the "high-risk five"
+const SMALL_SAMPLE = 500;
 
-// Reds scale: interpolate from near-white to dark red.
-function reds(t: number): string {
-  const a = [255, 245, 240];
-  const b = [103, 0, 13];
-  return `rgb(${a.map((v, i) => Math.round(v + (b[i] - v) * t)).join(",")})`;
+function Lead({ lead, rest }: { lead: string; rest: string }) {
+  return (
+    <span className="text-[13px] text-signal-800">
+      <b>{lead}</b>
+      {rest}
+    </span>
+  );
 }
 
 export default async function PatternsPage() {
-  const [byHour, byCategory, hist, grid] = await Promise.all([
+  const [counts, byHour, byCategory, grid, bands] = await Promise.all([
+    headlineCounts(),
     fraudRateByHour(),
     fraudRateBySubsector(),
-    amountHistogram(),
     heatmap(),
+    amountBands(),
   ]);
-  const values = grid.flat().filter((v): v is number => v !== null);
-  const lo = Math.min(...values);
-  const hi = Math.max(...values);
+  const baseline = counts.fraud / counts.labeled;
+  const categories = byCategory.slice(0, CATEGORY_ROWS);
+  const catMax = categories[0].fraud_rate;
+
+  const bandTotal = bands.reduce((s, b) => s + b.n, 0);
+  const top = bands[bands.length - 1];
+  const underTopShare = (bandTotal - top.n) / bandTotal;
 
   return (
-    <>
-      <h1>Fraud Patterns</h1>
-      <h2>Fraud rate by hour</h2>
-      <HourChart data={byHour} />
-      <h2>Fraud rate by merchant category (top 25)</h2>
-      <CategoryChart data={byCategory} />
-      <h2>Amount distribution by outcome</h2>
-      <AmountHistogram data={hist.bins} />
-      <h2>Fraud rate heatmap: hour by day of week</h2>
-      <div className="heat">
-        <div />
-        {Array.from({ length: 24 }, (_, h) => (
-          <div key={h} className="hh">{h}</div>
-        ))}
-        {grid.map((row, d) => (
-          <div key={d} style={{ display: "contents" }}>
-            <div className="label">{DAYS[d]}</div>
-            {row.map((v, h) => (
-              <div
-                key={h}
-                className="cell"
-                title={`${DAYS[d]} ${h}:00, ${v === null ? "no data" : (v * 100).toFixed(2) + "%"}`}
-                style={{
-                  background: v === null ? "transparent" : reds(hi > lo ? (v - lo) / (hi - lo) : 0),
-                }}
-              />
-            ))}
-          </div>
-        ))}
+    <Page>
+      <PageHeader kicker={PATTERNS.kicker} title={PATTERNS.title} lede={PATTERNS.lede} />
+
+      <Figure className="gap-3 px-[22px] pb-4 pt-5">
+        <div className="flex flex-wrap items-baseline justify-between gap-4">
+          <h3 className="text-[24px] font-semibold">{PATTERNS.hour.title}</h3>
+          <Lead {...PATTERNS.hour} />
+        </div>
+        <HourChart data={byHour} baseline={baseline} windowStart={OVERNIGHT.start} windowEnd={OVERNIGHT.end} />
+      </Figure>
+
+      <Figure className="gap-3 px-[22px] pb-4 pt-5">
+        <div className="flex flex-wrap items-baseline justify-between gap-4">
+          <h3 className="text-[24px] font-semibold">{PATTERNS.heat.title}</h3>
+          <Lead {...PATTERNS.heat} />
+        </div>
+        <Heatmap grid={grid} />
+      </Figure>
+
+      <div className="grid grid-cols-[repeat(auto-fit,minmax(min(360px,100%),1fr))] gap-7">
+        <Figure className="gap-2.5 px-[22px] pb-4 pt-5">
+          <h3 className="text-[24px] font-semibold">{PATTERNS.category.title}</h3>
+          <Lead lead={PATTERNS.category.lead} rest={PATTERNS.category.rest} />
+          <RateBars
+            rows={categories.map((c, i) => ({
+              label: c.n < SMALL_SAMPLE ? `${c.category} · n=${int(c.n)}` : c.category,
+              value: c.fraud_rate,
+              highlight: i >= HIGH_RISK.from && i <= HIGH_RISK.to,
+            }))}
+            axisMax={catMax}
+            baseline={baseline}
+            rowClass="text-[12px]"
+            labelWidth={184}
+            barHeight={11}
+          />
+          <p className="text-[12px] text-foreground/65">{PATTERNS.category.caption}</p>
+        </Figure>
+
+        <Figure className="gap-2.5 px-[22px] pb-4 pt-5">
+          <h3 className="text-[24px] font-semibold">{PATTERNS.amount.title}</h3>
+          <Lead lead={PATTERNS.amount.lead} rest={PATTERNS.amount.rest} />
+          <AmountBandChart
+            baseline={baseline}
+            bands={bands.map((b) => ({
+              ...b,
+              highlight: b.label === "$2–$5" || b.label === "$1k+",
+              strong: b.label === "$2–$5",
+            }))}
+          />
+          <p className="text-[12px] text-foreground/65">
+            {pct(underTopShare, 0)} of transactions in these bands sit under $1k; the {top.label} arm holds {int(top.n)}.
+          </p>
+        </Figure>
       </div>
-      <div className="legend">
-        <span>{(lo * 100).toFixed(1)}%</span>
-        <span className="bar" />
-        <span>{(hi * 100).toFixed(1)}%</span>
-      </div>
-    </>
+    </Page>
   );
 }

@@ -3,6 +3,7 @@
   "auc": 0.764,
   "pr_auc": 0.3292,
   "best_round": 290,
+  "max_rounds": 300,
   "rows": 50845,
   "prevalence": 0.0947192447634969
  },
