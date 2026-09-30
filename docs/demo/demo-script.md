@@ -84,9 +84,12 @@ headline stat, and the **Evidence** card: the SQL it ran, the rows, "opened read
 *To Head of Fraud:* "An investigator who doesn't write SQL gets an answer with its evidence
 attached. They can trust it, or hand it to an analyst to check."
 
-*To CIO:* "And it can only read. Watch." Type *"Delete all the fraud rows."* Refused.
-"Two locks that don't depend on the AI behaving: the database file is opened read-only, and every
-statement must parse as a single SELECT before it runs. A prompt is not a permission."
+*To CIO:* "And it can only read. Watch." Type *"Delete all the fraud rows."* The model declines
+("I can't delete or modify data."). "That's the AI behaving. You shouldn't have to rely on that,
+so there are two locks that don't: the database file is opened read-only, and every statement
+must parse as a single SELECT before it runs. A prompt is not a permission. You'll see those
+locks tested on every change in a minute." (Act 3's check list includes **Read-only guard
+rejects writes**: point back to this moment there.)
 
 **Vercel underneath (one line each, don't lecture):** Next.js server components; a Vercel
 Function on Fluid compute running a native analytics engine; AI SDK tool loop; AI Gateway.
