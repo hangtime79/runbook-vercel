@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<script src="./fraud-data.js"></script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap">
+<style>*,*::before,*::after{box-sizing:border-box}html{color-scheme:dark}*{scrollbar-color:#2e2e2e transparent;scrollbar-width:thin}html,body{margin:0;height:100%;overflow:hidden;background:#0a0a0a;color:#ededed;font-family:Geist,system-ui,sans-serif;-webkit-font-smoothing:antialiased}h1,h2,h3{margin:0}p{margin:0}::selection{background:#e5484d55}:focus-visible{outline:2px solid #ededed;outline-offset:2px}a{color:#ff6b6f}a:hover{color:#ffd1d2}</style>
+</helmet>
+<div style="display:flex;height:100vh;background:#0a0a0a;color:#ededed;font-family:Geist,system-ui,sans-serif;font-size:15px;line-height:1.55;overflow:hidden">
+
+  <aside style="flex:0 0 212px;display:flex;flex-direction:column;border-right:1px solid #262626;padding:22px 0 18px">
+    <div style="padding:0 20px 22px;display:flex;flex-direction:column;gap:2px">
+      <span style="display:flex;align-items:center;gap:8px;font-size:12px;font-weight:500;color:#a1a1a1"><span style="width:8px;height:8px;border-radius:50%;background:#e5484d"></span>Runbook</span>
+      <span style="font-family:Geist,system-ui,sans-serif;font-weight:600;font-size:18px;line-height:1.2;letter-spacing:-0.02em">Card Fraud Analysis</span>
+      <span style="font-size:12px;color:color-mix(in srgb,#ededed 58%,transparent)">Jan – Dec 2017 · 254,224 labeled</span>
+    </div>
+    <nav style="display:flex;flex-direction:column">
+      <sc-for list="{{ nav }}" as="n" hint-placeholder-count="6">
+        <a href="#" onClick="{{ n.go }}" style="display:grid;grid-template-columns:28px 1fr;align-items:baseline;padding:9px 20px;text-decoration:none;color:#ededed;border-left:2px solid {{ n.bar }};background:{{ n.bg }}" style-hover="background:color-mix(in srgb,#e5484d 8%,transparent)">
+          <span style="font-family:'Geist Mono',ui-monospace,monospace;font-size:11px;color:color-mix(in srgb,#ededed 50%,transparent)">{{ n.num }}</span>
+          <span style="font-family:Geist,system-ui,sans-serif;font-weight:500;font-size:14px">{{ n.label }}</span>
+        </a>
+      </sc-for>
+    </nav>
+    <div style="margin-top:auto;padding:16px 20px 0;display:flex;flex-direction:column;gap:6px;font-size:11px;line-height:1.45;color:color-mix(in srgb,#ededed 55%,transparent);border-top:1px solid #262626">
+      <span style="letter-spacing:0.1em;text-transform:uppercase;font-size:10px">Produced by the method</span>
+      <span>Playbook v3.2 · 10 phases · 6 agents</span>
+      <span>artifacts/ → data/ · read via DuckDB</span>
+      <span>Next.js · AI SDK · AI Gateway on Vercel</span>
+    </div>
+  </aside>
+
+  <sc-if value="{{ showMain }}" hint-placeholder-val="{{ true }}">
+  <div ref="{{ scrollRef }}" onScroll="{{ onScroll }}" style="flex:1 1 0;min-width:0;overflow-y:auto;overflow-x:hidden;position:relative">
+
+    <sc-if value="{{ isStory }}" hint-placeholder-val="{{ true }}">
+    <div data-screen-label="01 Story">
+      <div style="position:sticky;top:0;z-index:5;background:color-mix(in srgb,#0a0a0a 92%,transparent);backdrop-filter:blur(6px);border-bottom:1px solid #262626;display:flex;align-items:center;gap:14px;padding:10px 40px">
+        <span style="font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:color-mix(in srgb,#ededed 55%,transparent);flex:none">Seven findings</span>
+        <div style="display:flex;gap:4px;flex:1;min-width:0">
+          <sc-for list="{{ rail }}" as="r" hint-placeholder-count="7">
+            <a href="#" onClick="{{ r.go }}" title="{{ r.title }}" style="flex:1;display:flex;flex-direction:column;gap:4px;text-decoration:none;color:#ededed;min-width:0">
+              <span style="height:3px;background:#e5484d;opacity:{{ r.op }}"></span>
+              <span style="font-family:'Geist Mono',ui-monospace,monospace;font-size:10px;opacity:{{ r.op }};white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ r.num }} {{ r.short }}</span>
+            </a>
+          </sc-for>
+        </div>
+      </div>
+
+      <section style="padding:44px 40px 36px;max-width:1080px">
+        <span style="font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:#ff6b6f">Analytical brief · Fraud Ops &amp; Risk Strategy</span>
+        <h1 style="font-family:Geist,system-ui,sans-serif;font-weight:600;font-size:44px;line-height:1.08;letter-spacing:-0.035em;margin:10px 0 18px;max-width:880px;text-wrap:pretty">One-third of all fraud sits in three places — and one control halves the risk.</h1>
+        <p style="font-size:17px;max-width:720px;margin:0 0 32px;text-wrap:pretty;color:color-mix(in srgb,#ededed 80%,transparent)">46 merchants, the $2–$5 micro-transaction band, and cards with a prior authorization in the last hour. Signed transactions run at 4.5% fraud versus 10.6% unsigned.</p>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:20px">
+          <div style="border:1px solid #262626;border-radius:12px;background:#0f0f0f;padding:16px 18px;display:flex;flex-direction:column;gap:4px">
+            <span style="font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:color-mix(in srgb,#ededed 58%,transparent)">Fraud rate</span>
+            <span style="font-family:Geist,system-ui,sans-serif;font-weight:600;font-size:38px;line-height:1;letter-spacing:-0.035em;color:#ff8a8d">9.47%</span>
+            <span style="font-size:12px;color:color-mix(in srgb,#ededed 60%,transparent)">of labeled transactions</span>
+          </div>
+          <div style="border:1px solid #262626;border-radius:12px;background:#0f0f0f;padding:16px 18px;display:flex;flex-direction:column;gap:4px">
+            <span style="font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:color-mix(in srgb,#ededed 58%,transparent)">Confirmed fraud</span>
+            <span style="font-family:Geist,system-ui,sans-serif;font-weight:600;font-size:38px;line-height:1;letter-spacing:-0.035em">24,080</span>
+            <span style="font-size:12px;color:color-mix(in srgb,#ededed 60%,transparent)">of 254,224 labeled · 72,781 pending</span>
+          </div>
+          <div style="border:1px solid #262626;border-radius:12px;background:#0f0f0f;padding:16px 18px;display:flex;flex-direction:column;gap:4px">
+            <span style="font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:color-mix(in srgb,#ededed 58%,transparent)">Holdout AUC</span>
+            <span style="font-family:Geist,system-ui,sans-serif;font-weight:600;font-size:38px;line-height:1;letter-spacing:-0.035em">0.764</span>
+            <span style="font-size:12px;color:color-mix(in srgb,#ededed 60%,transparent)">XGBoost · 5-fold 0.759 ± 0.003</span>
+          </div>
+          <div style="border:1px solid #262626;border-radius:12px;background:#0f0f0f;padding:16px 18px;display:flex;flex-direction:column;gap:4px">
+            <span style="font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:color-mix(in srgb,#ededed 58%,transparent)">Signature effect</span>
+            <span style="font-family:Geist,system-ui,sans-serif;font-weight:600;font-size:38px;line-height:1;letter-spacing:-0.035em">2.3×</span>
+            <span style="font-size:12px;color:color-mix(in srgb,#ededed 60%,transparent)">protection when signed</span>
+          </div>
+        </div>
+      </section>
+
+      <sc-for list="{{ chapters }}" as="c" hint-placeholder-count="2">
+        <section data-chapter="{{ c.idx }}" style="padding:44px 40px;border-top:1px solid #262626;display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:36px;max-width:1160px">
+          <div style="display:flex;flex-direction:column;gap:12px;min-width:0">
+            <div style="display:flex;align-items:baseline;gap:10px">
+              <span style="font-family:'Geist Mono',ui-monospace,monospace;font-size:12px;color:#ff6b6f">Finding {{ c.num }}</span>
+              <span style="display:inline-flex;align-items:center;font-size:11px;font-weight:500;padding:2px 8px;border-radius:999px;background:#2b1214;color:#ff9b9d;">{{ c.owner }}</span>
+            </div>
+            <h2 style="font-family:Geist,system-ui,sans-serif;font-weight:600;font-size:28px;line-height:1.15;letter-spacing:-0.03em;margin:0;text-wrap:pretty">{{ c.title }}</h2>
+            <div style="display:flex;align-items:baseline;gap:12px;margin:4px 0">
+              <span style="font-family:Geist,system-ui,sans-serif;font-weight:600;font-size:56px;line-height:1;letter-spacing:-0.04em;color:#ff8a8d">{{ c.stat }}</span>
+              <span style="font-size:14px;max-width:220px;color:color-mix(in srgb,#ededed 70%,transparent)">{{ c.statLabel }}</span>
+            </div>
+            <div style="display:grid;grid-template-columns:92px 1fr;gap:6px 14px;font-size:14px;line-height:1.5">
+              <span style="font-size:10px;letter-spacing:0.12em;text-transform:uppercase;padding-top:3px;color:color-mix(in srgb,#ededed 55%,transparent)">Why</span>
+              <span style="text-wrap:pretty">{{ c.why }}</span>
+              <span style="font-size:10px;letter-spacing:0.12em;text-transform:uppercase;padding-top:3px;color:color-mix(in srgb,#ededed 55%,transparent)">Do this</span>
+              <span style="text-wrap:pretty;font-weight:500">{{ c.action }}</span>
+            </div>
+            <div style="display:flex;gap:8px;margin-top:6px">
+              <button style="font:inherit;font-size:13px;font-weight:500;padding:8px 14px;border-radius:8px;border:1px solid #2e2e2e;background:#0a0a0a;color:#ededed;cursor:pointer;text-align:left" onClick="{{ c.ask }}">Ask: “{{ c.q }}”</button>
+            </div>
+          </div>
+          <figure style="border:1px solid #262626;border-radius:12px;background:#0f0f0f;margin:0;padding:18px 20px 14px;display:flex;flex-direction:column;gap:10px;min-width:0">
+            <div style="display:flex;justify-content:space-between;gap:12px;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:color-mix(in srgb,#ededed 58%,transparent)"><span>{{ c.chartTitle }}</span><span>fraud rate</span></div>
+            <div style="display:flex;flex-direction:column;gap:5px;position:relative">
+              <sc-for list="{{ c.bars }}" as="b" hint-placeholder-count="5">
+                <div style="display:grid;grid-template-columns:minmax(0,132px) 1fr 56px;align-items:center;gap:10px;font-size:13px">
+                  <span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-family:{{ b.font }};font-size:{{ b.fs }}">{{ b.label }}</span>
+                  <div style="height:16px;position:relative;background:color-mix(in srgb,#ededed 5%,transparent)">
+                    <div style="position:absolute;inset:0 auto 0 0;width:{{ b.w }};background:#e5484d;opacity:{{ b.op }}"></div>
+                    <div style="position:absolute;top:-3px;bottom:-3px;left:{{ c.base }};border-left:1px dashed #ededed"></div>
+                  </div>
+                  <span style="text-align:right;font-variant-numeric:tabular-nums;font-weight:{{ b.fw }}">{{ b.value }}</span>
+                </div>
+              </sc-for>
+            </div>
+            <figcaption style="font-size:12px;margin:2px 0 0;display:flex;gap:8px;color:color-mix(in srgb,#ededed 65%,transparent)"><span style="flex:none;width:14px;border-top:1px dashed #ededed;margin-top:8px"></span><span style="text-wrap:pretty">{{ c.note }}</span></figcaption>
+          </figure>
+        </section>
+      </sc-for>
+
+      <section style="padding:40px 40px 64px;border-top:1px solid #262626;max-width:1080px">
+        <span style="font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:#ff6b6f">What the model adds</span>
+        <h2 style="font-family:Geist,system-ui,sans-serif;font-weight:600;font-size:34px;margin:8px 0 10px">A usable risk score, capped by missing signals.</h2>
+        <p style="max-width:680px;margin:0 0 16px;color:color-mix(in srgb,#ededed 78%,transparent)">Transaction-only XGBoost reaches AUC 0.764. The gap to production-grade (0.85–0.90) is device fingerprint, IP and 3DS outcome — not in this dataset.</p>
+        <div style="display:flex;gap:10px;flex-wrap:wrap"><button style="font:inherit;font-size:14px;font-weight:600;padding:9px 16px;border-radius:8px;border:0;background:#ededed;color:#0a0a0a;cursor:pointer" onClick="{{ goModel }}">Open the model</button><button style="font:inherit;font-size:13px;font-weight:500;padding:8px 14px;border-radius:8px;border:1px solid #2e2e2e;background:#0a0a0a;color:#ededed;cursor:pointer;text-align:left" onClick="{{ goFindings }}">All recommendations</button></div>
+      </section>
+    </div>
+    </sc-if>
+
+    <sc-if value="{{ isFindings }}" hint-placeholder-val="{{ false }}">
+    <div data-screen-label="02 Key Findings" style="padding:40px 40px 64px;max-width:1160px;display:flex;flex-direction:column;gap:40px">
+      <header style="display:flex;flex-direction:column;gap:6px">
+        <span style="font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:#ff6b6f">Phase 5 · Pattern discovery · Pass 1 + Loop 1</span>
+        <h1 style="font-family:Geist,system-ui,sans-serif;font-weight:600;font-size:36px;line-height:1.1;letter-spacing:-0.03em;margin:0">Where the signal is — and what to do about it</h1>
+        <p style="margin:0;max-width:680px;color:color-mix(in srgb,#ededed 75%,transparent)">Top five dimensions carry the signal. Everything below rank 7 is noise; the run stopped investing there.</p>
+      </header>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:28px">
+        <figure style="border:1px solid #262626;border-radius:12px;background:#0f0f0f;margin:0;padding:18px 20px;display:flex;flex-direction:column;gap:8px">
+          <div style="display:flex;justify-content:space-between;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:color-mix(in srgb,#ededed 58%,transparent)"><span>Variance ranking</span><span>fraud-rate range, pp</span></div>
+          <sc-for list="{{ variance }}" as="v" hint-placeholder-count="10">
+            <div style="display:grid;grid-template-columns:20px minmax(0,170px) 1fr 44px;gap:10px;align-items:center;font-size:13px;opacity:{{ v.op }}">
+              <span style="font-family:'Geist Mono',ui-monospace,monospace;font-size:11px;color:color-mix(in srgb,#ededed 50%,transparent)">{{ v.rank }}</span>
+              <span style="font-family:'Geist Mono',ui-monospace,monospace;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="{{ v.note }}">{{ v.dim }}</span>
+              <div style="height:12px;background:color-mix(in srgb,#ededed 5%,transparent)"><div style="height:100%;width:{{ v.w }};background:#e5484d"></div></div>
+              <span style="text-align:right;font-variant-numeric:tabular-nums">{{ v.range }}</span>
+            </div>
+          </sc-for>
+          <figcaption style="font-size:12px;margin:4px 0 0">Velocity's 90.9 pp range is a step function: one prior authorization in the hour is the break.</figcaption>
+        </figure>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <span style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:color-mix(in srgb,#ededed 58%,transparent)">Typology inventory</span>
+          <sc-for list="{{ typologies }}" as="t" hint-placeholder-count="5">
+            <div style="display:grid;grid-template-columns:150px 76px 1fr;gap:12px;align-items:baseline;padding:10px 0;border-bottom:1px solid #262626;font-size:13px">
+              <span style="font-family:Geist,system-ui,sans-serif;font-weight:600;font-size:17px">{{ t.name }}</span>
+              <span style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;font-weight:{{ t.fw }};color:{{ t.color }}">{{ t.present }}</span>
+              <span style="color:color-mix(in srgb,#ededed 75%,transparent);text-wrap:pretty">{{ t.evidence }}</span>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;gap:16px;flex-wrap:wrap">
+          <h2 style="font-family:Geist,system-ui,sans-serif;font-weight:600;font-size:30px;margin:0">Recommendations, ranked by expected impact</h2>
+          <span style="font-size:12px;color:color-mix(in srgb,#ededed 58%,transparent)">From the Phase 9 brief</span>
+        </div>
+        <sc-for list="{{ recs }}" as="r" hint-placeholder-count="7">
+          <div style="display:grid;grid-template-columns:40px minmax(0,1fr) minmax(0,260px) 150px;gap:18px;align-items:baseline;padding:14px 0;border-top:1px solid #262626">
+            <span style="font-family:Geist,system-ui,sans-serif;font-weight:600;font-size:28px;line-height:1;color:#ff6b6f">{{ r.n }}</span>
+            <span style="font-size:15px;font-weight:500;text-wrap:pretty">{{ r.action }}</span>
+            <span style="font-size:13px;color:color-mix(in srgb,#ededed 70%,transparent);text-wrap:pretty">{{ r.evidence }}</span>
+            <span><span style="display:inline-flex;align-items:center;font-size:11px;font-weight:500;padding:2px 8px;border-radius:999px;border:1px solid #2e2e2e;color:#a1a1a1">{{ r.owner }}</span></span>
+          </div>
+        </sc-for>
+      </div>
+      <div style="border:1px solid #262626;border-radius:12px;background:#0f0f0f;padding:18px 20px;display:flex;flex-direction:column;gap:10px">
+        <span style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:color-mix(in srgb,#ededed 58%,transparent)">Triggers fired → features added in Loop 1 (1 of 2 used)</span>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px">
+          <div style="display:flex;flex-direction:column;gap:2px"><span style="font-family:'Geist Mono',ui-monospace,monospace;font-size:12px">merchant_fraud_rate</span><span style="font-family:Geist,system-ui,sans-serif;font-weight:600;font-size:26px">55× spread</span><span style="font-size:12px;color:color-mix(in srgb,#ededed 65%,transparent)">Training-only, recomputed per CV fold</span></div>
+          <div style="display:flex;flex-direction:column;gap:2px"><span style="font-family:'Geist Mono',ui-monospace,monospace;font-size:12px">is_micro_transaction</span><span style="font-family:Geist,system-ui,sans-serif;font-weight:600;font-size:26px">5.17×</span><span style="font-size:12px;color:color-mix(in srgb,#ededed 65%,transparent)">47.87% vs 9.25% unflagged</span></div>
+          <div style="display:flex;flex-direction:column;gap:2px"><span style="font-family:'Geist Mono',ui-monospace,monospace;font-size:12px">velocity_above_1_per_hour</span><span style="font-family:Geist,system-ui,sans-serif;font-weight:600;font-size:26px">2.65×</span><span style="font-size:12px;color:color-mix(in srgb,#ededed 65%,transparent)">24.17% vs 9.12% unflagged</span></div>
+          <div style="display:flex;flex-direction:column;gap:2px"><span style="font-family:'Geist Mono',ui-monospace,monospace;font-size:12px">micro × velocity</span><span style="font-family:Geist,system-ui,sans-serif;font-weight:600;font-size:26px;color:#ff8a8d">77.95%</span><span style="font-size:12px;color:color-mix(in srgb,#ededed 65%,transparent)">127 rows — cleanest card-testing fingerprint</span></div>
+        </div>
+      </div>
+    </div>
+    </sc-if>
+
+    <sc-if value="{{ isPatterns }}" hint-placeholder-val="{{ false }}">
+    <div data-screen-label="03 Fraud Patterns" style="padding:40px 40px 64px;max-width:1160px;display:flex;flex-direction:column;gap:32px">
+      <header style="display:flex;flex-direction:column;gap:6px">
+        <span style="font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:#ff6b6f">Live from data/golden_record.parquet</span>
+        <h1 style="font-family:Geist,system-ui,sans-serif;font-weight:600;font-size:36px;line-height:1.1;letter-spacing:-0.03em;margin:0">Fraud patterns</h1>
+        <p style="margin:0;max-width:680px;color:color-mix(in srgb,#ededed 75%,transparent)">Dashed line on every chart is the 9.47% baseline. Highlighted marks are what to notice.</p>
+      </header>
+
+      <figure style="border:1px solid #262626;border-radius:12px;background:#0f0f0f;margin:0;padding:20px 22px 16px;display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;gap:16px;flex-wrap:wrap">
+          <h3 style="font-family:Geist,system-ui,sans-serif;font-weight:600;font-size:24px;margin:0">Fraud rate by hour</h3>
+          <span style="font-size:13px;color:#ff8a8d"><b>2–6 AM runs 12.5–18.6%</b> — about 2× baseline. Midnight itself is low (7.9%).</span>
+        </div>
+        <div style="display:grid;grid-template-columns:40px 1fr;gap:6px">
+          <div style="display:flex;flex-direction:column;justify-content:space-between;font-size:11px;text-align:right;height:200px;margin-top:20px;color:color-mix(in srgb,#ededed 55%,transparent)"><span>20%</span><span>15%</span><span>10%</span><span>5%</span><span>0</span></div>
+          <div style="display:flex;flex-direction:column;gap:4px">
+            <div style="height:200px;margin-top:20px;display:flex;align-items:flex-end;gap:3px;position:relative;border-bottom:1px solid #262626">
+              <div style="position:absolute;left:0;right:0;bottom:47.35%;border-top:1px dashed #ededed;z-index:1"><span style="position:absolute;right:0;top:-18px;font-size:11px;background:#0a0a0a;padding:0 4px">baseline 9.47%</span></div>
+              <div style="position:absolute;left:8.33%;width:20.83%;top:0;bottom:0;background:color-mix(in srgb,#e5484d 9%,transparent)"><span style="position:absolute;left:0;top:-18px;white-space:nowrap;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:#ff8a8d">Overnight window</span></div>
+              <sc-for list="{{ hourBars }}" as="b" hint-placeholder-count="24"><div title="{{ b.tip }}" style="flex:1;height:{{ b.h }};background:#e5484d;opacity:{{ b.op }};position:relative"></div></sc-for>
+            </div>
+            <div style="display:flex;gap:3px;font-size:11px;font-family:'Geist Mono',ui-monospace,monospace;color:color-mix(in srgb,#ededed 55%,transparent)"><sc-for list="{{ hourBars }}" as="b" hint-placeholder-count="24"><span style="flex:1;text-align:center">{{ b.label }}</span></sc-for></div>
+          </div>
+        </div>
+      </figure>
+
+      <figure style="border:1px solid #262626;border-radius:12px;background:#0f0f0f;margin:0;padding:20px 22px 16px;display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;gap:16px;flex-wrap:wrap">
+          <h3 style="font-family:Geist,system-ui,sans-serif;font-weight:600;font-size:24px;margin:0">Hour × day of week</h3>
+          <span style="font-size:13px;color:#ff8a8d"><b>Monday 4 AM peaks at 35.1%.</b> The hot band is 3–4 AM every weekday.</span>
+        </div>
+        <div style="display:grid;grid-template-columns:36px repeat(24,minmax(0,1fr));gap:2px;font-size:10px">
+          <span></span>
+          <sc-for list="{{ hours }}" as="h" hint-placeholder-count="24"><span style="text-align:center;font-family:'Geist Mono',ui-monospace,monospace;color:color-mix(in srgb,#ededed 55%,transparent)">{{ h }}</span></sc-for>
+          <sc-for list="{{ heatRows }}" as="row" hint-placeholder-count="7">
+            <div style="display:contents">
+              <span style="display:flex;align-items:center;font-size:11px;color:color-mix(in srgb,#ededed 60%,transparent)">{{ row.day }}</span>
+              <sc-for list="{{ row.cells }}" as="c" hint-placeholder-count="24"><div title="{{ c.tip }}" style="height:24px;background:{{ c.bg }};outline:{{ c.ring }};outline-offset:-1px"></div></sc-for>
+            </div>
+          </sc-for>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;font-size:11px;color:color-mix(in srgb,#ededed 60%,transparent)"><span>7.4%</span><div style="display:flex;width:180px;height:8px"><sc-for list="{{ ramp }}" as="rc" hint-placeholder-count="9"><span style="flex:1;background:{{ rc }}"></span></sc-for></div><span>35.1%</span></div>
+      </figure>
+
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(360px,1fr));gap:28px">
+        <figure style="border:1px solid #262626;border-radius:12px;background:#0f0f0f;margin:0;padding:20px 22px 16px;display:flex;flex-direction:column;gap:10px">
+          <h3 style="font-family:Geist,system-ui,sans-serif;font-weight:600;font-size:24px;margin:0">Merchant category · top 25</h3>
+          <span style="font-size:13px;color:#ff8a8d"><b>A high-risk five</b> (luxury → gas, all n &gt; 35K) then a cliff to under 4%.</span>
+          <div style="display:flex;flex-direction:column;gap:3px">
+            <sc-for list="{{ catBars }}" as="b" hint-placeholder-count="12">
+              <div style="display:grid;grid-template-columns:minmax(0,150px) 1fr 48px;gap:8px;align-items:center;font-size:12px">
+                <span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:right">{{ b.label }}</span>
+                <div style="height:11px;position:relative"><div style="height:100%;width:{{ b.w }};background:#e5484d;opacity:{{ b.op }}"></div><div style="position:absolute;top:-2px;bottom:-2px;left:50.4%;border-left:1px dashed #ededed"></div></div>
+                <span style="text-align:right;font-variant-numeric:tabular-nums">{{ b.value }}</span>
+              </div>
+            </sc-for>
+          </div>
+          <figcaption style="font-size:12px;margin:0">Health care technology tops the list at 18.8% but on only 101 transactions — treat as noise.</figcaption>
+        </figure>
+        <figure style="border:1px solid #262626;border-radius:12px;background:#0f0f0f;margin:0;padding:20px 22px 16px;display:flex;flex-direction:column;gap:10px">
+          <h3 style="font-family:Geist,system-ui,sans-serif;font-weight:600;font-size:24px;margin:0">Amount band</h3>
+          <span style="font-size:13px;color:#ff8a8d"><b>A U-shape with a spike:</b> $2–$5 is 47.9% fraud — card testing. $1k+ is the extraction arm.</span>
+          <div style="height:240px;display:flex;align-items:flex-end;gap:6px;position:relative;border-bottom:1px solid #262626;margin-top:8px">
+            <div style="position:absolute;left:0;right:0;bottom:19.7%;border-top:1px dashed #ededed"></div>
+            <sc-for list="{{ amtBars }}" as="b" hint-placeholder-count="9">
+              <div style="flex:1;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:4px">
+                <span style="font-size:11px;font-variant-numeric:tabular-nums;font-weight:{{ b.fw }}">{{ b.value }}</span>
+                <div style="width:100%;height:{{ b.h }};background:#e5484d;opacity:{{ b.op }}"></div>
+              </div>
+            </sc-for>
+          </div>
+          <div style="display:flex;gap:6px;font-size:10px;font-family:'Geist Mono',ui-monospace,monospace;color:color-mix(in srgb,#ededed 60%,transparent)"><sc-for list="{{ amtBars }}" as="b" hint-placeholder-count="9"><span style="flex:1;text-align:center">{{ b.label }}</span></sc-for></div>
+          <figcaption style="font-size:12px;margin:0">97% of volume sits under $1.6K; the raw histogram is shown in Explorer.</figcaption>
+        </figure>
+      </div>
+    </div>
+    </sc-if>
+
+    <sc-if value="{{ isModel }}" hint-placeholder-val="{{ false }}">
+    <div data-screen-label="04 Detection Model" style="padding:40px 40px 64px;max-width:1160px;display:flex;flex-direction:column;gap:32px">
+      <header style="display:flex;flex-direction:column;gap:6px">
+        <span style="font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:#ff6b6f">Phase 6–7 · XGBoost · 32 features · diagnostics PASS</span>
+        <h1 style="font-family:Geist,system-ui,sans-serif;font-weight:600;font-size:36px;line-height:1.1;letter-spacing:-0.03em;margin:0">Detection model</h1>
+        <p style="margin:0;max-width:680px;color:color-mix(in srgb,#ededed 75%,transparent)">At the operating threshold, one in two flags is real fraud and the model catches 17% of it — before any device, IP or 3DS signal.</p>
+      </header>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:20px">
+        <div style="border:1px solid #262626;border-radius:12px;background:#0f0f0f;padding:14px 16px;display:flex;flex-direction:column;gap:3px"><span style="font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:color-mix(in srgb,#ededed 58%,transparent)">Holdout AUC</span><span style="font-family:Geist,system-ui,sans-serif;font-weight:600;font-size:34px;line-height:1;letter-spacing:-0.035em;color:#ff8a8d">0.764</span><span style="font-size:12px;color:color-mix(in srgb,#ededed 60%,transparent)">expected band 0.62–0.85</span></div>
+        <div style="border:1px solid #262626;border-radius:12px;background:#0f0f0f;padding:14px 16px;display:flex;flex-direction:column;gap:3px"><span style="font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:color-mix(in srgb,#ededed 58%,transparent)">5-fold CV AUC</span><span style="font-family:Geist,system-ui,sans-serif;font-weight:600;font-size:34px;line-height:1;letter-spacing:-0.035em">0.759</span><span style="font-size:12px;color:color-mix(in srgb,#ededed 60%,transparent)">± 0.0032 — stable</span></div>
+        <div style="border:1px solid #262626;border-radius:12px;background:#0f0f0f;padding:14px 16px;display:flex;flex-direction:column;gap:3px"><span style="font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:color-mix(in srgb,#ededed 58%,transparent)">PR-AUC</span><span style="font-family:Geist,system-ui,sans-serif;font-weight:600;font-size:34px;line-height:1;letter-spacing:-0.035em">0.329</span><span style="font-size:12px;color:color-mix(in srgb,#ededed 60%,transparent)">vs 0.095 random</span></div>
+        <div style="border:1px solid #262626;border-radius:12px;background:#0f0f0f;padding:14px 16px;display:flex;flex-direction:column;gap:3px"><span style="font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:color-mix(in srgb,#ededed 58%,transparent)">Operating point</span><span style="font-family:Geist,system-ui,sans-serif;font-weight:600;font-size:34px;line-height:1;letter-spacing:-0.035em">50 / 17</span><span style="font-size:12px;color:color-mix(in srgb,#ededed 60%,transparent)">% precision / recall @ 0.8588</span></div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(360px,1fr));gap:28px">
+        <figure style="border:1px solid #262626;border-radius:12px;background:#0f0f0f;margin:0;padding:20px 22px 16px;display:flex;flex-direction:column;gap:8px">
+          <h3 style="font-family:Geist,system-ui,sans-serif;font-weight:600;font-size:24px;margin:0">What drives a score · mean |SHAP|</h3>
+          <span style="font-size:13px;color:#ff8a8d"><b>Merchant history dominates</b> — nearly 2× the next feature.</span>
+          <sc-for list="{{ shapBars }}" as="s" hint-placeholder-count="15">
+            <div style="display:grid;grid-template-columns:minmax(0,210px) 1fr 44px;gap:10px;align-items:center;font-size:12px">
+              <span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:right" title="{{ s.dir }}">{{ s.feature }}</span>
+              <div style="height:12px"><div style="height:100%;width:{{ s.w }};background:#e5484d;opacity:{{ s.op }}"></div></div>
+              <span style="text-align:right;font-variant-numeric:tabular-nums;font-family:'Geist Mono',ui-monospace,monospace;font-size:11px">{{ s.v }}</span>
+            </div>
+          </sc-for>
+          <figcaption style="font-size:12px;margin:4px 0 0">Rare flags (micro, velocity) rank low globally because they fire on under 3% of rows — but drive the most confident predictions.</figcaption>
+        </figure>
+        <div style="display:flex;flex-direction:column;gap:28px">
+          <figure style="border:1px solid #262626;border-radius:12px;background:#0f0f0f;margin:0;padding:20px 22px 16px;display:flex;flex-direction:column;gap:10px">
+            <h3 style="font-family:Geist,system-ui,sans-serif;font-weight:600;font-size:24px;margin:0">Holdout confusion @ 0.8588</h3>
+            <div style="display:grid;grid-template-columns:90px 1fr 1fr;gap:4px;font-size:12px">
+              <span></span><span style="text-align:center;color:color-mix(in srgb,#ededed 60%,transparent)">pred legit</span><span style="text-align:center;color:color-mix(in srgb,#ededed 60%,transparent)">pred fraud</span>
+              <span style="display:flex;align-items:center;color:color-mix(in srgb,#ededed 60%,transparent)">actual legit</span>
+              <div style="padding:14px;border:1px solid #262626;display:flex;flex-direction:column"><span style="font-family:Geist,system-ui,sans-serif;font-weight:600;font-size:26px">45,200</span><span>true negative</span></div>
+              <div style="padding:14px;border:1px solid #262626;display:flex;flex-direction:column"><span style="font-family:Geist,system-ui,sans-serif;font-weight:600;font-size:26px">829</span><span>false alarm</span></div>
+              <span style="display:flex;align-items:center;color:color-mix(in srgb,#ededed 60%,transparent)">actual fraud</span>
+              <div style="padding:14px;border:1px solid #262626;display:flex;flex-direction:column"><span style="font-family:Geist,system-ui,sans-serif;font-weight:600;font-size:26px">3,987</span><span>missed</span></div>
+              <div style="padding:14px;background:#2b1214;border:1px solid #e5484d;display:flex;flex-direction:column;color:#ffd1d2"><span style="font-family:Geist,system-ui,sans-serif;font-weight:600;font-size:26px">829</span><span>caught</span></div>
+            </div>
+          </figure>
+          <div style="display:flex;flex-direction:column">
+            <span style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:color-mix(in srgb,#ededed 58%,transparent);padding-bottom:6px">§6.5 diagnostics</span>
+            <sc-for list="{{ checks }}" as="k" hint-placeholder-count="4">
+              <div style="display:grid;grid-template-columns:54px 1fr;gap:10px;padding:9px 0;border-top:1px solid #262626;font-size:13px"><span style="display:inline-flex;align-items:center;font-size:11px;font-weight:500;padding:2px 8px;border-radius:999px;background:#2b1214;color:#ff9b9d;justify-content:center">PASS</span><span><b style="font-weight:500">{{ k.name }}</b> — {{ k.detail }}</span></div>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+    </div>
+    </sc-if>
+
+    <sc-if value="{{ isExplorer }}" hint-placeholder-val="{{ false }}">
+    <div data-screen-label="05 Data Explorer" style="padding:40px 40px 64px;display:flex;flex-direction:column;gap:18px">
+      <header style="display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap">
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <span style="font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:#ff6b6f">features.parquet · first 500 rows</span>
+          <h1 style="font-family:Geist,system-ui,sans-serif;font-weight:600;font-size:36px;line-height:1.1;letter-spacing:-0.03em;margin:0">Data explorer</h1>
+        </div>
+        <input placeholder="Search transaction or category" value="{{ query }}" onChange="{{ onQuery }}" style="font:inherit;font-size:14px;min-height:38px;padding:7px 12px;border-radius:8px;border:1px solid #2e2e2e;background:#0a0a0a;color:#ededed;outline:none;width:100%;max-width:280px">
+      </header>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+        <sc-for list="{{ filters }}" as="f" hint-placeholder-count="5">
+          <button onClick="{{ f.go }}" style="font:inherit;font-size:13px;padding:6px 12px;cursor:pointer;display:inline-flex;gap:6px;align-items:baseline;white-space:nowrap;border:1px solid {{ f.border }};background:{{ f.bg }};color:{{ f.color }}">{{ f.label }} <span style="font-family:'Geist Mono',ui-monospace,monospace;font-size:11px;opacity:0.7">{{ f.count }}</span></button>
+        </sc-for>
+        <span style="margin-left:auto;font-size:12px;color:color-mix(in srgb,#ededed 58%,transparent)">Sorted by model score · threshold 0.8588 marked</span>
+      </div>
+      <div style="border:1px solid #262626;overflow:auto;max-height:calc(100vh - 250px)">
+        <table style="width:100%;border-collapse:collapse;font-size:13px">
+          <thead><tr>
+            <sc-for list="{{ exCols }}" as="c" hint-placeholder-count="9"><th style="position:sticky;top:0;background:#0a0a0a;text-align:{{ c.align }};font-size:10px;letter-spacing:0.1em;text-transform:uppercase;font-weight:500;padding:10px 12px;border-bottom:1px solid #262626;white-space:nowrap;color:color-mix(in srgb,#ededed 60%,transparent)">{{ c.label }}</th></sc-for>
+          </tr></thead>
+          <tbody>
+            <sc-for list="{{ exRows }}" as="r" hint-placeholder-count="14">
+              <tr style="border-bottom:1px solid color-mix(in srgb,#ededed 7%,transparent);background:{{ r.rowBg }}" style-hover="background:color-mix(in srgb,#e5484d 7%,transparent)">
+                <td style="padding:8px 12px;white-space:nowrap"><span style="display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:{{ r.fw }}"><span style="width:8px;height:8px;background:{{ r.dot }}"></span>{{ r.outcome }}</span></td>
+                <td style="padding:8px 12px;font-family:'Geist Mono',ui-monospace,monospace;font-size:12px;white-space:nowrap">{{ r.id }}</td>
+                <td style="padding:8px 12px;text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap">{{ r.amount }}</td>
+                <td style="padding:8px 12px;white-space:nowrap">{{ r.subsector }}</td>
+                <td style="padding:8px 12px;text-align:right;font-variant-numeric:tabular-nums">{{ r.hour }}</td>
+                <td style="padding:8px 12px;text-align:center">{{ r.sig }}</td>
+                <td style="padding:8px 12px;min-width:120px"><div style="display:flex;align-items:center;gap:8px"><div style="flex:1;height:6px;background:color-mix(in srgb,#ededed 7%,transparent)"><div style="height:100%;width:{{ r.mfrW }};background:#c93a3f"></div></div><span style="font-variant-numeric:tabular-nums;font-size:12px;width:38px;text-align:right">{{ r.mfr }}</span></div></td>
+                <td style="padding:8px 12px"><div style="display:flex;gap:4px;flex-wrap:nowrap"><sc-for list="{{ r.flags }}" as="fl" hint-placeholder-count="1"><span style="display:inline-flex;align-items:center;font-size:11px;font-weight:500;padding:2px 8px;border-radius:999px;background:#2b1214;color:#ff9b9d;font-size:10px;padding:1px 6px;white-space:nowrap">{{ fl }}</span></sc-for></div></td>
+                <td style="padding:8px 12px;min-width:130px"><div style="display:flex;align-items:center;gap:8px"><div style="flex:1;height:10px;position:relative;background:color-mix(in srgb,#ededed 7%,transparent)"><div style="height:100%;width:{{ r.scoreW }};background:{{ r.scoreC }}"></div><div style="position:absolute;top:-2px;bottom:-2px;left:85.88%;border-left:1px solid #ededed"></div></div><span style="font-variant-numeric:tabular-nums;font-family:'Geist Mono',ui-monospace,monospace;font-size:12px;font-weight:{{ r.fw }}">{{ r.score }}</span></div></td>
+              </tr>
+            </sc-for>
+          </tbody>
+        </table>
+        <sc-if value="{{ exEmpty }}" hint-placeholder-val="{{ false }}"><p style="padding:24px;margin:0;color:color-mix(in srgb,#ededed 60%,transparent)">No rows match. Clear the search or pick another filter.</p></sc-if>
+      </div>
+    </div>
+    </sc-if>
+  </div>
+  </sc-if>
+
+  <aside style="flex:{{ panelFlex }};min-width:0;display:flex;flex-direction:column;border-left:1px solid #262626;background:#0f0f0f">
+    <sc-if value="{{ panelCollapsed }}" hint-placeholder-val="{{ false }}">
+      <button onClick="{{ togglePanel }}" style="all:unset;cursor:pointer;flex:1;display:flex;align-items:flex-start;justify-content:center;padding-top:20px"><span style="writing-mode:vertical-rl;font-family:Geist,system-ui,sans-serif;font-weight:600;font-size:16px;letter-spacing:0.04em;color:#ff6b6f">Ask the data ←</span></button>
+    </sc-if>
+    <sc-if value="{{ panelOpen }}" hint-placeholder-val="{{ true }}">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 20px 12px;border-bottom:1px solid #262626">
+        <div style="display:flex;flex-direction:column">
+          <span style="font-family:Geist,system-ui,sans-serif;font-weight:600;font-size:20px;line-height:1.1">Ask the data</span>
+          <span style="font-size:12px;color:color-mix(in srgb,#ededed 60%,transparent)">Plain question → read-only SQL → answer with evidence</span>
+        </div>
+        <sc-if value="{{ canCollapse }}" hint-placeholder-val="{{ true }}"><button style="font:inherit;font-size:16px;padding:4px 10px;border-radius:6px;border:0;background:transparent;color:#a1a1a1;cursor:pointer" onClick="{{ togglePanel }}" title="Collapse">→</button></sc-if>
+      </div>
+      <div ref="{{ chatRef }}" style="flex:1;overflow-y:auto;padding:18px 20px">
+        <div style="max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:22px">
+          <sc-if value="{{ chatEmpty }}" hint-placeholder-val="{{ true }}">
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <span style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:color-mix(in srgb,#ededed 58%,transparent)">Try one</span>
+              <sc-for list="{{ examples }}" as="ex" hint-placeholder-count="3">
+                <button onClick="{{ ex.go }}" style="all:unset;cursor:pointer;padding:10px 12px;border:1px solid #262626;font-size:14px;line-height:1.35" style-hover="border-color:#e5484d;background:color-mix(in srgb,#e5484d 6%,transparent)">{{ ex.q }}</button>
+              </sc-for>
+            </div>
+          </sc-if>
+          <sc-for list="{{ messages }}" as="m" hint-placeholder-count="0">
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <div style="display:flex;gap:10px;align-items:baseline"><span style="font-family:'Geist Mono',ui-monospace,monospace;font-size:11px;color:#ff6b6f;flex:none">Q{{ m.n }}</span><span style="font-family:Geist,system-ui,sans-serif;font-weight:600;font-size:19px;line-height:1.2">{{ m.q }}</span></div>
+              <sc-if value="{{ m.pending }}" hint-placeholder-val="{{ false }}">
+                <div style="display:flex;flex-direction:column;gap:6px;padding-left:28px">
+                  <sc-for list="{{ m.steps }}" as="st" hint-placeholder-count="3"><span style="font-size:13px;display:flex;gap:8px;align-items:center;opacity:{{ st.op }}"><span style="font-family:'Geist Mono',ui-monospace,monospace;font-size:11px;width:14px">{{ st.mark }}</span>{{ st.label }}</span></sc-for>
+                </div>
+              </sc-if>
+              <sc-if value="{{ m.done }}" hint-placeholder-val="{{ false }}">
+                <div style="display:flex;flex-direction:column;gap:12px;padding-left:28px">
+                  <sc-if value="{{ m.hasStat }}" hint-placeholder-val="{{ true }}"><div style="display:flex;align-items:baseline;gap:10px"><span style="font-family:Geist,system-ui,sans-serif;font-weight:600;font-size:38px;line-height:1;color:#ff8a8d">{{ m.stat }}</span><span style="font-size:13px;color:color-mix(in srgb,#ededed 65%,transparent)">{{ m.statLabel }}</span></div></sc-if>
+                  <p style="margin:0;font-size:14px;line-height:1.55;text-wrap:pretty">{{ m.answer }}</p>
+                  <sc-if value="{{ m.hasEvidence }}" hint-placeholder-val="{{ true }}">
+                  <div style="border:1px solid #262626;border-radius:12px;background:#0f0f0f;display:flex;flex-direction:column;background:#0a0a0a">
+                    <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 12px;border-bottom:1px solid #262626;flex-wrap:wrap">
+                      <span style="font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:#ff6b6f;font-weight:500">Evidence</span>
+                      <span style="font-size:11px;white-space:nowrap;font-family:'Geist Mono',ui-monospace,monospace;color:color-mix(in srgb,#ededed 62%,transparent)">SELECT only · {{ m.rowCount }} rows · {{ m.ms }} ms</span>
+                    </div>
+                    <sc-if value="{{ m.showSql }}" hint-placeholder-val="{{ true }}">
+                      <pre style="margin:0;padding:10px 12px;font-family:'Geist Mono',ui-monospace,monospace;font-size:11.5px;line-height:1.6;white-space:pre-wrap;word-break:break-word;border-bottom:1px solid #262626"><sc-for list="{{ m.tokens }}" as="tk" hint-placeholder-count="0"><span style="color:{{ tk.c }};font-weight:{{ tk.w }}">{{ tk.t }}</span></sc-for></pre>
+                    </sc-if>
+                    <div style="overflow-x:auto">
+                      <table style="width:100%;border-collapse:collapse;font-size:12px">
+                        <thead><tr><sc-for list="{{ m.cols }}" as="c" hint-placeholder-count="3"><th style="text-align:left;font-weight:500;font-size:10px;letter-spacing:0.08em;text-transform:uppercase;padding:6px 12px;color:color-mix(in srgb,#ededed 58%,transparent);font-family:'Geist Mono',ui-monospace,monospace">{{ c }}</th></sc-for></tr></thead>
+                        <tbody><sc-for list="{{ m.rows }}" as="r" hint-placeholder-count="3"><tr style="border-top:1px solid color-mix(in srgb,#ededed 7%,transparent)"><sc-for list="{{ r.cells }}" as="v" hint-placeholder-count="3"><td style="padding:5px 12px;font-variant-numeric:tabular-nums;white-space:nowrap">{{ v }}</td></sc-for><td style="padding:5px 12px;width:30%"><div style="height:6px;width:{{ r.w }};background:#e5484d"></div></td></tr></sc-for></tbody>
+                      </table>
+                    </div>
+                    <div style="display:flex;justify-content:space-between;gap:8px;padding:6px 12px;border-top:1px solid #262626;font-size:11px;color:color-mix(in srgb,#ededed 60%,transparent);flex-wrap:wrap">
+                      <span>fraud.duckdb · opened read-only</span>
+                      <button onClick="{{ m.toggleSql }}" style="all:unset;cursor:pointer;color:#ff6b6f">{{ m.sqlLabel }}</button>
+                    </div>
+                  </div>
+                  </sc-if>
+                </div>
+              </sc-if>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+      <form onSubmit="{{ onSubmit }}" style="padding:12px 20px 16px;border-top:1px solid #262626;display:flex;flex-direction:column;gap:8px">
+        <div style="max-width:760px;width:100%;margin:0 auto;display:flex;gap:8px">
+          <input value="{{ input }}" onChange="{{ onInput }}" placeholder="Ask about hours, merchants, amounts…" style="font:inherit;font-size:14px;min-height:38px;padding:7px 12px;border-radius:8px;border:1px solid #2e2e2e;background:#0a0a0a;color:#ededed;outline:none;flex:1;min-width:0">
+          <button type="submit" style="font:inherit;font-size:13px;font-weight:600;padding:0 16px;border-radius:8px;border:0;background:#ededed;color:#0a0a0a;cursor:pointer" disabled="{{ sendDisabled }}">{{ sendLabel }}</button>
+        </div>
+        <span style="max-width:760px;width:100%;margin:0 auto;font-size:11px;color:color-mix(in srgb,#ededed 55%,transparent)">Every answer shows the SQL it ran. Writes are refused.</span>
+      </form>
+    </sc-if>
+  </aside>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const C = {
+  kw: "#8f8f8f", txt: "#ededed", num: "#ff8a8d",
+  ramp: ["#2b1214","#3b1719","#5c1f22","#8c2a2e","#c93a3f","#e5484d","#ff6b6f","#ff8a8d","#ffd1d2"],
+  hot: "#e5484d", cool: "#454545", fraudDot: "#ff6b6f", legitDot: "#2e2e2e",
+  hotRow: "color-mix(in srgb,#e5484d 5%,transparent)", line: "#262626", on: "#e5484d", onText: "#0a0a0a",
+  mono: "'Geist Mono',ui-monospace,monospace", body: "inherit", muted: "color-mix(in srgb,#ededed 55%,transparent)",
+};
+const pct = (v, d = 1) => (v * 100).toFixed(d) + "%";
+const GR = "read_parquet('golden_record.parquet')";
+const CANNED = [
+  { k: /categor|subsector|sector/i, q: "Which merchant categories have the highest fraud rate?", stat: "14.0%", statLabel: "luxury goods, the highest category with real volume",
+    answer: "Luxury goods leads at 14.0%, then consumer electronics (12.2%), internet (12.0%), insurance (11.2%) and gas (10.7%). I kept categories with at least 500 transactions — health care technology is higher at 18.8% but on only 101 rows.",
+    sql: `SELECT subsector_description AS category,\n       round(avg(CASE WHEN authorized_flag = 0 THEN 1.0 ELSE 0.0 END) * 100, 2) AS fraud_rate_pct,\n       count(*) AS n\nFROM ${GR}\nWHERE authorized_flag IS NOT NULL\nGROUP BY 1 HAVING count(*) >= 500\nORDER BY fraud_rate_pct DESC\nLIMIT 5`,
+    cols: ["category","fraud_rate_pct","n"], rows: [["luxury goods",14.03,35946],["consumer electronics",12.19,39851],["internet",11.95,39198],["insurance",11.16,37594],["gas",10.73,41388]], bar: 1, max: 14.03, rowCount: 5, ms: 38 },
+  { k: /night|hour|day|time/i, q: "Is fraud more common at night than during the day?", stat: "14.9%", statLabel: "fraud rate from 2 to 6 AM vs 9.3% the rest of the day",
+    answer: "Yes, but only in the small hours. Between 2 and 6 AM, 14.9% of transactions are fraud versus 9.3% the rest of the day. Midnight itself is below baseline at 7.9%, so this isn't simply 'dark hours'.",
+    sql: `SELECT CASE WHEN hour(purchase_date) BETWEEN 2 AND 6 THEN 'overnight 2–6 AM' ELSE 'rest of day' END AS window,\n       round(avg(CASE WHEN authorized_flag = 0 THEN 1.0 ELSE 0.0 END) * 100, 2) AS fraud_rate_pct,\n       count(*) AS n\nFROM ${GR}\nWHERE authorized_flag IS NOT NULL\nGROUP BY 1 ORDER BY 2 DESC`,
+    cols: ["window","fraud_rate_pct","n"], rows: [["overnight 2–6 AM",14.85,6424],["rest of day",9.33,247800]], bar: 1, max: 14.85, rowCount: 2, ms: 41 },
+  { k: /signat/i, q: "How does fraud differ between transactions with and without a signature?", stat: "2.3×", statLabel: "higher fraud rate when no signature is captured",
+    answer: "Unsigned transactions run at 10.6% fraud; signed ones at 4.5%. Only 19% of transactions carry a signature, so the unsigned majority is where most fraud sits.",
+    sql: `SELECT signature_provided,\n       count(*) AS n,\n       sum(CASE WHEN authorized_flag = 0 THEN 1 ELSE 0 END) AS fraud,\n       round(avg(CASE WHEN authorized_flag = 0 THEN 1.0 ELSE 0.0 END) * 100, 2) AS fraud_rate_pct\nFROM ${GR}\nWHERE authorized_flag IS NOT NULL\nGROUP BY 1 ORDER BY 1`,
+    cols: ["signature_provided","n","fraud","fraud_rate_pct"], rows: [[0,206229,21902,10.62],[1,47995,2178,4.54]], bar: 3, max: 10.62, rowCount: 2, ms: 33 },
+  { k: /merchant/i, q: "Which merchants have the highest fraud rate?", stat: "81.9%", statLabel: "fraud at M_ID_d8ccfbe91b across 83 transactions",
+    answer: "Ten merchants with at least 50 transactions run at 36–82% fraud. M_ID_fc7d7969c3 carries the most volume: 765 fraud cases out of 2,114.",
+    sql: `SELECT merchant_id, count(*) AS n,\n       sum(CASE WHEN authorized_flag = 0 THEN 1 ELSE 0 END) AS fraud,\n       round(avg(CASE WHEN authorized_flag = 0 THEN 1.0 ELSE 0.0 END) * 100, 2) AS fraud_rate_pct\nFROM ${GR}\nWHERE authorized_flag IS NOT NULL\nGROUP BY 1 HAVING count(*) >= 50\nORDER BY fraud_rate_pct DESC\nLIMIT 10`,
+    cols: ["merchant_id","n","fraud","fraud_rate_pct"], rowsFrom: "merchants", bar: 3, max: 81.93, rowCount: 10, ms: 57 },
+  { k: /micro|\$|small|amount|band/i, q: "How risky are $2–$5 transactions?", stat: "47.9%", statLabel: "fraud in the $2–$5 band, ~4× its neighbours",
+    answer: "The $2–$5 band is 47.9% fraud across 1,477 transactions, while $5–$10 is 12.1% and $10–$50 under 8.1%. That isolated spike is a card-testing signature.",
+    sql: `SELECT CASE WHEN purchase_amount < 2 THEN '<$2' WHEN purchase_amount < 5 THEN '$2–$5'\n            WHEN purchase_amount < 10 THEN '$5–$10' ELSE '$10–$20' END AS band,\n       count(*) AS n,\n       round(avg(CASE WHEN authorized_flag = 0 THEN 1.0 ELSE 0.0 END) * 100, 2) AS fraud_rate_pct\nFROM ${GR}\nWHERE authorized_flag IS NOT NULL AND purchase_amount BETWEEN 2 AND 20\nGROUP BY 1 ORDER BY min(purchase_amount)`,
+    cols: ["band","n","fraud_rate_pct"], rows: [["$2–$5",1477,47.9],["$5–$10",6284,12.1],["$10–$20",23492,8.1]], bar: 2, max: 47.9, rowCount: 3, ms: 44 },
+  { k: /veloc|prior|recent|last hour/i, q: "Does a recent prior transaction raise fraud risk?", stat: "2.5×", statLabel: "fraud rate with one prior authorization in the hour",
+    answer: "One prior authorization in the past hour lifts fraud from 9.1% to 22.9%. The rate keeps climbing — 45% at two, 86% at four or more — but those groups are small.",
+    sql: `SELECT least(velocity_1h_count, 4) AS prior_txns_1h,\n       count(*) AS n,\n       round(avg(CASE WHEN authorized_flag = 0 THEN 1.0 ELSE 0.0 END) * 100, 2) AS fraud_rate_pct\nFROM read_parquet('features.parquet')\nGROUP BY 1 ORDER BY 1`,
+    cols: ["prior_txns_1h","n","fraud_rate_pct"], rowsFrom: "velocity", bar: 2, max: 86.4, rowCount: 5, ms: 49 },
+  { k: /age|old|young/i, q: "Which age groups see the most fraud?", stat: "5.8%", statLabel: "fraud rate for 65+, vs 9.5% baseline",
+    answer: "Under-25s run hottest at 10.9%; every group through 64 sits near 10%. 65+ drops sharply to 5.8% — likely a spending-mix effect, not resistance.",
+    sql: `SELECT age_bucket, count(*) AS n,\n       round(avg(CASE WHEN authorized_flag = 0 THEN 1.0 ELSE 0.0 END) * 100, 2) AS fraud_rate_pct\nFROM read_parquet('features.parquet')\nGROUP BY 1 ORDER BY 1`,
+    cols: ["age_bucket","n","fraud_rate_pct"], rowsFrom: "age", bar: 2, max: 10.9, rowCount: 5, ms: 36 },
+  { k: /travel|impossible|distance/i, q: "Is the impossible-travel flag predictive?", stat: "7.7%", statLabel: "fraud when flagged — below the 9.5% baseline",
+    answer: "No. Flagged rows run at 7.7% fraud, below baseline. Card and merchant coordinates are static registry fields, so the flag fires on ordinary online purchases.",
+    sql: `SELECT impossible_travel_flag, count(*) AS n,\n       round(avg(CASE WHEN authorized_flag = 0 THEN 1.0 ELSE 0.0 END) * 100, 2) AS fraud_rate_pct\nFROM read_parquet('features.parquet')\nGROUP BY 1 ORDER BY 1`,
+    cols: ["impossible_travel_flag","n","fraud_rate_pct"], rows: [[0,249918,9.5],[1,4306,7.66]], bar: 2, max: 9.5, rowCount: 2, ms: 31 },
+];
+const KW = /\b(SELECT|FROM|WHERE|GROUP|BY|ORDER|LIMIT|HAVING|AS|CASE|WHEN|THEN|ELSE|END|AND|IS|NOT|NULL|BETWEEN|DESC|ASC)\b/;
+function tokenize(sql) {
+  return sql.split(/(\b[A-Za-z_]+\b|\d+(?:\.\d+)?|'[^']*')/).filter(Boolean).map(t =>
+    KW.test(t) && /^[A-Z]+$/.test(t) ? { t, c: C.kw, w: 600 } : /^\d/.test(t) ? { t, c: C.num, w: 400 } : /^'/.test(t) ? { t, c: C.kw, w: 400 } : { t, c: C.txt, w: 400 });
+}
+const CHAPTERS = [
+  { short: "Merchants", owner: "Investigations", title: "46 merchants hold 11% of all fraud", stat: "81.9%", statLabel: "fraud at the worst merchant, across 83 transactions",
+    why: "Sustained fraud above ~25% over hundreds of transactions isn't organic — it signals a compromised terminal, a cloned POS, or a complicit operator.",
+    action: "Hand the top-10 merchant IDs to Investigations this week; route their traffic to secondary review.", q: "Which merchants have the highest fraud rate?", chartTitle: "Top 10 merchants, n ≥ 50", note: "Dashed line = 9.47% baseline. All ten run 4–9× over it.", src: "merchants" },
+  { short: "Micro $2–$5", owner: "Rules Engine", title: "The $2–$5 band is a card-testing signature", stat: "47.9%", statLabel: "fraud in the $2–$5 band — ~4× both neighbours",
+    why: "Card testers use amounts small enough to dodge threshold rules. Combined with velocity ≥ 1/h the rate hits 77.9%.",
+    action: "Deploy amount < $5 AND velocity_1h ≥ 1 → step-up auth. ~130 flags/year at 78% precision.", q: "How risky are $2–$5 transactions?", chartTitle: "Fraud rate by amount band", note: "The U-shape: a spike at $2–$5, a second arm at $1k+ where tested cards are cashed out.", src: "amount" },
+  { short: "Velocity", owner: "Rules Engine", title: "One prior authorization in the hour more than doubles risk", stat: "2.5×", statLabel: "9.1% → 22.9% with a single prior txn in the last hour",
+    why: "The operational break is at the first repeat, not at 5 or 10. Waiting for v1h ≥ 5 misses 95% of the opportunity.",
+    action: "Soft-flag ≥ 1 prior-hour transactions into elevated scoring — escalate when paired with any other signal.", q: "Does a recent prior transaction raise fraud risk?", chartTitle: "Prior transactions in last hour", note: "Rate climbs monotonically; tail groups (3, 4+) are under 30 rows each.", src: "velocity" },
+  { short: "Subsectors", owner: "Fraud Ops", title: "A high-risk five, then a low-risk tail", stat: "14.0%", statLabel: "luxury goods vs 1.0% for restaurants",
+    why: "Fungible, online-deliverable goods are where a stolen card yields the most per test. Low-risk sectors are B2B or identity-locked.",
+    action: "Route luxury goods and consumer electronics to elevated scoring; de-prioritise flights, restaurants, beauty in review queues.", q: "Which merchant categories have the highest fraud rate?", chartTitle: "Top 5 vs bottom 5 subsectors", note: "The spread is 13.4 points across 38 subsectors.", src: "subsector" },
+  { short: "Signature", owner: "Channels / POS", title: "Signature capture is the highest-leverage control", stat: "2.3×", statLabel: "unsigned 10.6% vs signed 4.5%",
+    why: "81% of transactions carry no signature. SHAP ranks it #3 — the model leans on it across interactions.",
+    action: "Audit the unsigned baseline; find signable-but-unsigned channels and fix capture with POS engineering.", q: "How does fraud differ between transactions with and without a signature?", chartTitle: "Signature provided", note: "206,229 unsigned vs 47,995 signed transactions.", src: "signature" },
+  { short: "Age 65+", owner: "Risk Strategy", title: "The 65+ segment is protected", stat: "5.8%", statLabel: "fraud for 65+ vs 9.5% baseline",
+    why: "Likely spending mix — fewer online, high-risk-sector purchases — not intrinsic resistance.",
+    action: "No direct action. Calibrate age-conditioned thresholds: a 12% flag on a 65+ customer is a stronger signal.", q: "Which age groups see the most fraud?", chartTitle: "Fraud rate by age bucket", note: "Near-flat until a sharp drop at 65+.", src: "age" },
+  { short: "Travel flag", owner: "Rules Engine", title: "Impossible-travel flagging is spurious here", stat: "7.7%", statLabel: "fraud when flagged — below baseline",
+    why: "Card and merchant coordinates are static registry fields; online purchases trigger '1,500 km in 3 minutes'.",
+    action: "Deprecate as a rule; reframe as 'registration distance'. Real detection needs device/IP geolocation.", q: "Is the impossible-travel flag predictive?", chartTitle: "impossible_travel_flag", note: "An inverse signal — the flag marks slightly safer traffic.", src: "travel" },
+];
+class Component extends DCLogic {
+  state = { page: "story", ch: 0, panel: true, input: "", messages: [], filter: "all", query: "" };
+  scrollRef = React.createRef(); chatRef = React.createRef();
+  componentDidMount() { if (window.innerWidth < 1240) this.setState({ panel: false }); this.t = setInterval(() => { if (window.FRAUD_DATA) { clearInterval(this.t); this.forceUpdate(); } }, 50); }
+  componentWillUnmount() { clearInterval(this.t); (this.timers || []).forEach(clearTimeout); }
+  go(page) { this.setState({ page, ch: 0 }); if (this.scrollRef.current) this.scrollRef.current.scrollTop = 0; }
+  scrollToCh(i) { const el = this.scrollRef.current; const t = el && el.querySelector(`[data-chapter="${i}"]`); if (t) el.scrollTo({ top: t.offsetTop - 50, behavior: "smooth" }); }
+  onScroll = () => { const el = this.scrollRef.current; if (!el) return; let ch = 0; el.querySelectorAll("[data-chapter]").forEach(s => { if (s.offsetTop - el.scrollTop < el.clientHeight * 0.45) ch = +s.dataset.chapter; }); if (ch !== this.state.ch) this.setState({ ch }); };
+  ask(text) {
+    const q = (text || "").trim(); if (!q) return;
+    const hit = CANNED.find(c => c.q === q) || CANNED.find(c => c.k.test(q));
+    const id = Date.now();
+    this.setState(s => ({ input: "", panel: true, messages: [...s.messages, { id, q, hit, step: 0, showSql: true }] }));
+    this.timers = this.timers || [];
+    [1, 2, 3].forEach((st, i) => this.timers.push(setTimeout(() => {
+      this.setState(s => ({ messages: s.messages.map(m => m.id === id ? { ...m, step: st } : m) }));
+      const c = this.chatRef.current; if (c) c.scrollTop = c.scrollHeight;
+    }, 550 * (i + 1))));
+  }
+  bars(src, D) {
+    const b = (label, v, max, hi, font) => ({ label, value: pct(v), w: (v / max * 100) + "%", op: hi ? 1 : 0.32, fw: hi ? 600 : 400, font: font ? C.mono : C.body, fs: font ? "11px" : "13px" });
+    if (src === "merchants") return { base: (0.0947 / 0.85 * 100) + "%", bars: D.merchants.map((m, i) => b(m[0].replace("M_ID_", ""), m[3], 0.85, i === 0, true)) };
+    if (src === "amount") return { base: (0.0947 / 0.5 * 100) + "%", bars: D.amountBuckets.map(a => b(a[0], a[2], 0.5, a[0] === "$2–$5" || a[0] === "$1k+")) };
+    if (src === "velocity") return { base: (0.0947 / 0.9 * 100) + "%", bars: D.velocity.map(v => b(v[0] + " prior · n=" + v[1].toLocaleString(), v[2], 0.9, v[0] === "1")) };
+    if (src === "subsector") return { base: (0.0947 / 0.15 * 100) + "%", bars: [["luxury goods",0.1403],["consumer electronics",0.1219],["internet",0.1195],["insurance",0.1116],["gas",0.1073],["restaurant/dining",0.0101],["beauty & personal care",0.0091],["semiconductors",0.0091],["flights",0.0076],["advertising services",0.0062]].map((s, i) => b(s[0], s[1], 0.15, i < 5)) };
+    if (src === "signature") return { base: (0.0947 / 0.12 * 100) + "%", bars: [b("Unsigned · 81%", 0.1062, 0.12, true), b("Signed · 19%", 0.0454, 0.12, false)] };
+    if (src === "age") return { base: (0.0947 / 0.12 * 100) + "%", bars: D.age.map(a => b(a[0], a[2], 0.12, a[0] === "65+")) };
+    return { base: (0.0947 / 0.12 * 100) + "%", bars: [b("Not flagged", 0.095, 0.12, false), b("Flagged · 4,306", 0.0766, 0.12, true)] };
+  }
+  renderVals() {
+    const D = window.FRAUD_DATA; const s = this.state; const p = s.page;
+    const NAV = [["story","Story"],["findings","Key findings"],["patterns","Patterns"],["model","Model"],["explorer","Explorer"],["ask","Ask the data"]];
+    const nav = NAV.map(([k, label], i) => ({ label, num: "0" + (i + 1), go: (e) => { e.preventDefault(); this.go(k); }, bar: p === k ? C.on : "transparent", bg: p === k ? C.hotRow : "transparent" }));
+    const isAsk = p === "ask"; const panelOpen = isAsk || s.panel;
+    const msgs = s.messages.map((m, i) => {
+      const h = m.hit; const done = m.step >= 3;
+      const steps = [["Writing SQL"],["Running on fraud.duckdb (read-only)"],["Summarising the result"]].map(([label], j) => ({ label, mark: m.step > j ? "✓" : m.step === j ? "…" : "·", op: m.step >= j ? 1 : 0.4 }));
+      if (!h) return { n: i + 1, q: m.q, pending: !done, done, steps, hasStat: false, hasEvidence: false, answer: "This demo only runs its prepared questions live. Try asking about merchants, categories, hours, amounts, velocity, signature, age or the travel flag." };
+      const rows = h.rows || (h.rowsFrom === "merchants" ? D.merchants.map(m => [m[0], m[1], m[2], +(m[3] * 100).toFixed(2)]) : h.rowsFrom === "velocity" ? D.velocity.map(v => [v[0], v[1], +(v[2] * 100).toFixed(2)]) : D.age.map((a, j) => [j + " (" + a[0] + ")", a[1], +(a[2] * 100).toFixed(2)]));
+      const last = h.cols.length - 1; const rateIdx = h.cols.indexOf("fraud_rate_pct");
+      return { n: i + 1, q: m.q, pending: !done, done, steps, hasStat: true, hasEvidence: true, stat: h.stat, statLabel: h.statLabel, answer: h.answer,
+        tokens: tokenize(h.sql), showSql: m.showSql, sqlLabel: m.showSql ? "Hide SQL" : "Show SQL", rowCount: h.rowCount, ms: h.ms, cols: [...h.cols, ""],
+        rows: rows.map(r => ({ cells: r.map(v => typeof v === "number" ? v.toLocaleString("en-US") : v), w: ((r[rateIdx >= 0 ? rateIdx : last] / h.max) * 100) + "%" })),
+        toggleSql: () => this.setState(st => ({ messages: st.messages.map(x => x.id === m.id ? { ...x, showSql: !x.showSql } : x) })) };
+    });
+    const base = { nav, showMain: !isAsk, isStory: p === "story", isFindings: p === "findings", isPatterns: p === "patterns", isModel: p === "model", isExplorer: p === "explorer",
+      panelFlex: isAsk ? "1 1 0" : s.panel ? "0 0 380px" : "0 0 44px", panelOpen, panelCollapsed: !panelOpen, canCollapse: !isAsk,
+      togglePanel: () => this.setState(st => ({ panel: !st.panel })), scrollRef: this.scrollRef, chatRef: this.chatRef, onScroll: this.onScroll,
+      goModel: () => this.go("model"), goFindings: () => this.go("findings"),
+      rail: CHAPTERS.map((c, i) => ({ num: "0" + (i + 1), short: c.short, title: c.title, op: i <= s.ch ? 1 : 0.28, go: (e) => { e.preventDefault(); this.scrollToCh(i); } })),
+      examples: CANNED.slice(0, 3).map(c => ({ q: c.q, go: () => this.ask(c.q) })), chatEmpty: s.messages.length === 0, messages: msgs,
+      input: s.input, onInput: (e) => this.setState({ input: e.target.value }), onSubmit: (e) => { e.preventDefault(); this.ask(s.input); },
+      sendDisabled: !s.input.trim(), sendLabel: "Ask", hours: Array.from({ length: 24 }, (_, i) => i), ramp: C.ramp,
+      query: s.query, onQuery: (e) => this.setState({ query: e.target.value }) };
+    if (!D) return base;
+    const DAYS = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"]; const flat = D.heat.flat(); const lo = Math.min(...flat), hi = Math.max(...flat);
+    const TH = 0.8588;
+    const allRows = D.sampleRows.map(r => ({ ...r, flags: [r.is_micro_transaction ? "MICRO" : null, r.velocity_1h_count ? "VELOCITY" : null, r.merchant_fraud_rate > 0.284 ? "HOT MERCHANT" : null, !r.signature_provided ? null : null].filter(Boolean) }));
+    const F = { all: () => true, fraud: r => r.is_fraud, flagged: r => r.score >= TH, micro: r => r.is_micro_transaction, hot: r => r.merchant_fraud_rate > 0.284 };
+    const FL = [["all","All"],["flagged","Above threshold"],["fraud","Confirmed fraud"],["micro","Micro < $5"],["hot","Hot merchant"]];
+    const qx = s.query.toLowerCase();
+    const shown = allRows.filter(F[s.filter]).filter(r => !qx || r.transaction_id.toLowerCase().includes(qx) || r.subsector.includes(qx)).sort((a, b) => b.score - a.score);
+    const usd = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" });
+    const dirs = ["Higher → fraud; saturates past 30%","Low-frequency subsector → fraud","Signed → legit","Very high distance → legit (registry artifact)","Older → legit"];
+    return { ...base,
+      chapters: CHAPTERS.map((c, i) => ({ ...c, idx: i, num: "0" + (i + 1), ...this.bars(c.src, D), ask: () => this.ask(c.q) })),
+      hourBars: D.hour.map((v, i) => ({ h: (v / 0.2 * 100) + "%", label: i, op: i >= 2 && i <= 6 ? 1 : 0.32, tip: `${i}:00 — ${pct(v)}` })),
+      heatRows: D.heat.map((row, d) => ({ day: DAYS[d], cells: row.map((v, h) => { const t = (v - lo) / (hi - lo); return { bg: C.ramp[Math.min(8, Math.round(Math.sqrt(t) * 8))], ring: v === hi ? "2px solid " + C.txt : "none", tip: `${DAYS[d]} ${h}:00 — ${pct(v, 2)}` }; }) })),
+      catBars: D.subsector.slice(0, 14).map((c, i) => ({ label: c.category + (c.n < 500 ? " · n=" + c.n : ""), value: pct(c.fraud_rate), w: (c.fraud_rate / 0.188 * 100) + "%", op: i >= 1 && i <= 5 ? 1 : 0.32 })),
+      amtBars: D.amountBuckets.map(a => ({ label: a[0], value: pct(a[2]), h: (a[2] / 0.5 * 100) + "%", op: a[0] === "$2–$5" || a[0] === "$1k+" ? 1 : 0.32, fw: a[0] === "$2–$5" ? 700 : 400 })),
+      shapBars: D.shap.map((x, i) => ({ feature: x.feature, v: x.mean_abs_shap.toFixed(3), w: (x.mean_abs_shap / 1.0125 * 100) + "%", op: i < 3 ? 1 : 0.35, dir: dirs[i] || "" })),
+      checks: [{ name: "Leakage", detail: "AUC 0.764 under the 0.85 ceiling" }, { name: "Underfit", detail: "above the 0.62 floor" }, { name: "Stability", detail: "CV std 0.0032, well under 0.05" }, { name: "Overfit", detail: "early stop at round 290 of 300" }],
+      variance: D.variance.map((v, i) => ({ rank: i + 1, dim: v[0], range: v[1], note: v[2], w: (v[1] / 90.9 * 100) + "%", op: i < 5 ? 1 : 0.5 })),
+      typologies: [["Card testing","Yes","$2–$5 at 47.9%; velocity ≥ 3 & < $10 → 60%"],["Merchant compromise","Yes","40 merchants ≥ 30% fraud (n ≥ 20); 6,283 txns"],["Account takeover","Weak","33% on 6 rows — signal exists, sample thin"],["Impossible travel","No","Fires on 4,306 rows at 7.7% — a data-join artifact"],["Bust-out","No","10.5% on 237 rows — at baseline"]].map(([name, present, evidence]) => ({ name, present, evidence, fw: present === "Yes" ? 700 : 400, color: present === "Yes" ? C.kw : C.muted })),
+      recs: [["Investigate the 46 merchants above 3× baseline, starting with M_ID_d8ccfbe91b.","11% of all fraud sits in 0.07% of merchants","Investigations"],["Deploy the $2–$5 × velocity ≥ 1 decline rule.","77.9% fraud on the combination; ~130 flags/yr","Rules Engine"],["Elevate luxury goods & electronics; de-prioritise flights, restaurants.","14.0% vs 1.0% subsector spread","Fraud Ops"],["Audit the 81% unsigned baseline and fix capture gaps.","2.3× protection factor when signed","Channels / POS"],["Deprecate impossible_travel_flag as a rule.","Fires below baseline","Rules Engine"],["Procure device, IP and 3DS signals; rebuild.","Transaction-only AUC ceiling ≈ 0.78","Data Platform"],["Monthly rolling 90-day merchant-rate review.","Merchant compromise is the most persistent vector","Fraud Analytics"]].map((r, i) => ({ n: i + 1, action: r[0], evidence: r[1], owner: r[2] })),
+      filters: FL.map(([k, label]) => ({ label, count: allRows.filter(F[k]).length, go: () => this.setState({ filter: k }), bg: s.filter === k ? C.on : "transparent", color: s.filter === k ? C.onText : C.txt, border: s.filter === k ? C.on : C.line })),
+      exCols: [["Outcome","left"],["Transaction","left"],["Amount","right"],["Subsector","left"],["Hour","right"],["Signed","center"],["Merchant rate","left"],["Flags","left"],["Model score","left"]].map(([label, align]) => ({ label, align })),
+      exRows: shown.map(r => ({ id: r.transaction_id, outcome: r.is_fraud ? "Fraud" : "Legit", dot: r.is_fraud ? C.fraudDot : C.legitDot, fw: r.is_fraud ? 600 : 400, amount: usd.format(r.purchase_amount), subsector: r.subsector, hour: String(r.hour_of_day).padStart(2, "0") + ":00", sig: r.signature_provided ? "✓" : "—",
+        mfr: r.merchant_fraud_rate.toFixed(3), mfrW: Math.min(100, r.merchant_fraud_rate * 100 / 0.82) + "%", flags: r.flags, score: r.score.toFixed(3), scoreW: (r.score * 100) + "%", scoreC: r.score >= TH ? C.hot : C.cool, rowBg: r.score >= TH ? C.hotRow : "transparent" })),
+      exEmpty: shown.length === 0,
+    };
+  }
+}
+</script>
+</body>
+</html>

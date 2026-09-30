@@ -1,0 +1,32 @@
+// Data lifted verbatim from hangtime79/runbook-vercel: pipeline/parity_reference.json, data/shap_importance.json, data/docs/*.md
+(function () {
+  const hour = [0.07904776438272547,0.1232876712328767,0.12764883955600403,0.18635607321131448,0.18444444444444444,0.14691943127962084,0.125,0.11278648974668275,0.10326906957250628,0.100121426205983,0.09858582574772431,0.098846680132925,0.09537299338999056,0.09201816291919689,0.09370801612180922,0.09344719986861554,0.09754331235028689,0.0918949449308105,0.08983697537287548,0.08573708113415981,0.08927359131025119,0.0867125128448344,0.09210662794315942,0.09748114415824677];
+  const subsector = [["health care technology",0.1881,101],["luxury goods",0.1403,35946],["consumer electronics",0.1219,39851],["internet",0.1195,39198],["insurance",0.1116,37594],["gas",0.1073,41388],["gym",0.0384,1147],["education services",0.0303,99],["tobacco",0.0266,826],["dental",0.0263,38],["biotechnology",0.024,1711],["news & journalism",0.0198,505],["carpentry",0.0197,5176],["pharmaceuticals",0.0185,540],["hotel",0.0176,1588],["groceries",0.0173,11070],["adult industry",0.0161,62],["liquor",0.0134,1272],["professional photography",0.0132,76],["misc entertainment",0.0126,398],["entertainment",0.012,9984],["real estate investments",0.0116,1125],["health care services",0.0108,1388],["retail apparel",0.0107,3634],["office supplies",0.0101,99]].map(([category,fraud_rate,n])=>({category,fraud_rate,n}));
+  const heat = [
+[0.0834,0.1246,0.123,0.2843,0.3506,0.1786,0.1688,0.1287,0.1201,0.0923,0.114,0.1054,0.0925,0.1049,0.106,0.1031,0.1051,0.1,0.0905,0.0749,0.0992,0.097,0.1069,0.1043],
+[0.0757,0.1453,0.1477,0.3182,0.2034,0.1277,0.1106,0.1032,0.1053,0.1136,0.1143,0.114,0.1067,0.0939,0.0925,0.0996,0.0986,0.0948,0.0938,0.0821,0.0956,0.0891,0.0903,0.0912],
+[0.0839,0.1563,0.0885,0.2,0.2069,0.1923,0.1076,0.1122,0.1034,0.1077,0.103,0.1074,0.1081,0.0914,0.0969,0.093,0.0951,0.0857,0.0978,0.0895,0.075,0.0797,0.0884,0.1025],
+[0.0738,0.12,0.1214,0.175,0.1776,0.0962,0.1674,0.1184,0.114,0.0993,0.1018,0.1134,0.0936,0.0911,0.1027,0.0924,0.0971,0.0969,0.093,0.0951,0.0969,0.0878,0.0963,0.1039],
+[0.0867,0.1071,0.129,0.1931,0.1858,0.1441,0.1354,0.1154,0.1,0.0889,0.0891,0.0949,0.0961,0.1,0.0912,0.0959,0.1083,0.0939,0.0954,0.0914,0.0818,0.0811,0.0848,0.0924],
+[0.0756,0.1171,0.1403,0.1632,0.1711,0.1625,0.0704,0.0855,0.0981,0.1057,0.087,0.0857,0.0832,0.0778,0.0872,0.0864,0.0911,0.0855,0.0747,0.0848,0.0944,0.09,0.086,0.0924],
+[0.0751,0.1172,0.1311,0.1333,0.131,0.1333,0.1006,0.1349,0.0759,0.0875,0.0863,0.0784,0.0907,0.0901,0.0803,0.0832,0.082,0.0845,0.0794,0.0773,0.0821,0.0837,0.0995,0.0994]];
+  const fraudCounts=[14338,7848,1276,200,116,92,65,35,23,24,14,5,6,5,3,2,4,0,2,0,3,2,1,0,1,2,0,0,1,0,1,1,0,0,0,0,2,2,0,0,0,0,0,1,0,1,0,0,0,0,0,1,0,0,0,0,1,0,0,2];
+  const legitCounts=[152768,68015,7741,732,334,167,124,59,54,27,31,20,13,1,7,4,8,2,3,4,8,4,3,0,0,1,2,1,0,1,2,0,0,0,0,0,1,0,0,0,1,0,0,0,1,0,1,0,0,1,0,0,0,1,0,0,0,0,1,1];
+  const lo=-641.29, hi=48390, w=(hi-lo)/60;
+  const hist = fraudCounts.map((f,i)=>({start:lo+i*w,end:lo+(i+1)*w,fraud:f,legit:legitCounts[i]}));
+  const shap = [["Merchant Historical Fraud Rate",1.0125],["Merchant Subsector Fraud Frequency",0.5928],["Signature Provided",0.2552],["Card-to-Merchant Distance (km)",0.1805],["Cardholder Age Bucket",0.1745],["Card Prior Transaction Count",0.1584],["MCC Fraud Frequency",0.1522],["Item Category B Flag",0.1183],["Item Category C Flag",0.1104],["Log Transaction Amount",0.1054],["Card Tenure (Days)",0.0818],["Amount vs Card Mean (Ratio)",0.0789],["Item Category D Flag",0.0637],["Seconds Since Last Transaction",0.0573],["Month of Year",0.0471]].map(([feature,mean_abs_shap])=>({feature,mean_abs_shap}));
+  const velocity = [["0",248340,0.0912,"1.0×"],["1",5596,0.2287,"2.5×"],["2",243,0.4527,"5.0×"],["3",28,0.6786,"7.4×"],["4+",22,0.864,"9.5×"]];
+  const amountBuckets = [["$2–$5",1477,0.479],["$5–$10",6284,0.121],["$10–$20",23492,0.081],["$20–$50",54214,0.076],["$50–$100",49593,0.081],["$100–$250",52029,0.09],["$250–$500",33401,0.103],["$500–$1k",22404,0.112],["$1k+",11060,0.169]];
+  const merchants = [["M_ID_d8ccfbe91b",83,68,0.8193],["M_ID_318c1d6957",51,25,0.4902],["M_ID_e93df2c7cc",79,38,0.481],["M_ID_629e6f07c9",50,24,0.48],["M_ID_9e84cda3b1",393,161,0.4097],["M_ID_3111c6df35",626,254,0.4058],["M_ID_445742726b",790,306,0.3873],["M_ID_52d3026407",55,21,0.3818],["M_ID_6f274b9340",824,301,0.3653],["M_ID_fc7d7969c3",2114,765,0.3619]];
+  const age = [["<25",37499,0.109],["25–34",55387,0.104],["35–49",67298,0.1025],["50–64",44598,0.0998],["65+",49442,0.0582]];
+  const variance = [["velocity_1h_count",90.9,"Step function"],["subsector_description",13.4,"38 subsectors"],["amount_bucket",10.9,"U-shape, micro spike"],["hour_of_day",10.7,"3–5 AM ≈2× baseline"],["distance_bucket",9.9,"Mild gradient"],["signature_provided",6.1,"2.3× protection"],["age_bucket",5.1,"65+ 40% below"],["item_category",5.0,"B/C vs A/D"],["is_first_transaction",2.7,"Weak alone"],["impossible_travel_flag",1.8,"Inverse signal"]];
+  const cv = [[1,0.7585,0.3164],[2,0.7582,0.3151],[3,0.7568,0.3229],[4,0.7655,0.3311],[5,0.7576,0.3215]];
+  // Illustrative explorer rows (real rows come from features.parquet at runtime)
+  let seed = 7; const r = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  const subs = ["luxury goods","gas","internet","groceries","consumer electronics","insurance","restaurant/dining","entertainment"];
+  const sampleRows = Array.from({length:40},(_,i)=>{ const amt = Math.round((r()<0.06? 2+r()*3 : Math.exp(2+r()*5))*100)/100; const v1 = r()<0.05?1:0; const mfr = r()<0.08? 0.3+r()*0.5 : 0.02+r()*0.12; const fraud = (amt<5 && r()<0.5) || r() < mfr*0.8 ? 1 : 0;
+    return { transaction_id:"T_"+(0x2a31f00+i*977).toString(16), purchase_amount:amt, subsector:subs[Math.floor(r()*subs.length)], hour_of_day:Math.floor(r()*24), signature_provided:r()<0.19?1:0, velocity_1h_count:v1, haversine_dist_km:Math.round(r()*2400*10)/10, merchant_fraud_rate:Math.round(mfr*1000)/1000, is_micro_transaction:amt<5?1:0, age_bucket:Math.floor(r()*5), is_fraud:fraud, score: Math.min(0.99, Math.round((mfr*1.2 + (amt<5?0.45:0) + v1*0.2 + r()*0.2)*1000)/1000) }; });
+  window.FRAUD_DATA = { sampleRows, headline:{rows:327005,labeled:254224,fraud:24080,pending:72781,baseline:0.0947,auc:0.764,cvAuc:"0.7593 ± 0.0032",prAuc:0.3292,threshold:0.8588,precision:0.5,recall:0.1721},
+    hour, subsector, heat, hist, shap, velocity, amountBuckets, merchants, age, variance, cv,
+    confusion:{tn:45200,fp:829,fn:3987,tp:829} };
+})();
