@@ -253,6 +253,9 @@ export const ASK = {
     "How does fraud differ between transactions with and without a signature?",
   ],
   steps: ["Writing SQL", "Running on fraud.duckdb (read-only)", "Summarising the result"],
+  // Fixed texts: the scope prompt, the scope gate and the output check all use these, word for word.
+  refusal: "I can only answer questions about this fraud dataset and its analysis.",
+  gateUnavailable: "The scope check is unavailable; try again.",
 } as const;
 
 // /intro figures that are quoted from the analysis (the live ones, fraud count and rate, are read from data).
