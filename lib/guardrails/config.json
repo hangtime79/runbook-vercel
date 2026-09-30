@@ -1,0 +1,8 @@
+{
+  "guardrails": ["scopeGate", "outputCheck"],
+  "model": "typesafe-ai/jev",
+  "timeoutMs": 8000,
+  "usdPerMillionTokens": 0.04,
+  "scopeGate": { "threshold": 0.5, "requireDatasetCategory": true },
+  "outputCheck": { "threshold": 0.5 }
+}
