@@ -22,6 +22,7 @@ export interface DataSource {
   headlineCounts: typeof duck.headlineCounts;
   fraudRateByHour: typeof duck.fraudRateByHour;
   fraudRateBySubsector: typeof duck.fraudRateBySubsector;
+  overnightWindow: typeof duck.overnightWindow;
   amountHistogram: typeof duck.amountHistogram;
   heatmap: typeof duck.heatmap;
   explorerRows: typeof duck.explorerRows;
@@ -34,6 +35,7 @@ export const source: DataSource = {
   headlineCounts: duck.headlineCounts,
   fraudRateByHour: duck.fraudRateByHour,
   fraudRateBySubsector: duck.fraudRateBySubsector,
+  overnightWindow: duck.overnightWindow,
   amountHistogram: duck.amountHistogram,
   heatmap: duck.heatmap,
   explorerRows: duck.explorerRows,

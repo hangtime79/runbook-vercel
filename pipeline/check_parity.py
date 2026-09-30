@@ -76,6 +76,11 @@ got, exp = patterns["amountBands"], ref["amount_bands"]
 same = [(g["label"], int(g["n"]), int(g["fraud"])) for g in got] == [(e["label"], e["n"], e["fraud"]) for e in exp]
 record("amount bands (9, counts exact)", max(abs(g["fraud_rate"] - e["fraud_rate"]) for g, e in zip(got, exp)), same)
 
+# Overnight window (hours 2-6): counts exact, combined rate within tol
+og, oe = patterns["overnight"], ref["overnight_window"]
+record("overnight window 2-6 (counts exact)", abs(og["fraud_rate"] - oe["fraud_rate"]),
+       (int(og["n"]), int(og["fraud"]), og["start"], og["end"]) == (oe["n"], oe["fraud"], oe["start"], oe["end"]))
+
 # Story chapter aggregates and Findings triggers
 story, sref = get("/api/story"), ref["story"]
 

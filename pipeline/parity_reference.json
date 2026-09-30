@@ -588,6 +588,13 @@
    "fraud_rate": 0.1694394213381555
   }
  ],
+ "overnight_window": {
+  "start": 2,
+  "end": 6,
+  "n": 6424,
+  "fraud": 954,
+  "fraud_rate": 0.14850560398505605
+ },
  "story": {
   "merchants_top10": [
    {

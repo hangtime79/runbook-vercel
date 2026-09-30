@@ -25,12 +25,13 @@ function Lead({ lead, rest }: { lead: string; rest: string }) {
 }
 
 export default async function PatternsPage() {
-  const [counts, byHour, byCategory, grid, bands] = await Promise.all([
+  const [counts, byHour, byCategory, grid, bands, overnight] = await Promise.all([
     source.headlineCounts(),
     source.fraudRateByHour(),
     source.fraudRateBySubsector(),
     source.heatmap(),
     source.amountBands(),
+    source.overnightWindow(OVERNIGHT.start, OVERNIGHT.end),
   ]);
   const baseline = counts.fraud / counts.labeled;
   const categories = byCategory.slice(0, CATEGORY_ROWS);
@@ -49,7 +50,13 @@ export default async function PatternsPage() {
           <h3 className="text-[24px] font-semibold">{PATTERNS.hour.title}</h3>
           <Lead {...PATTERNS.hour} />
         </div>
-        <HourChart data={byHour} baseline={baseline} windowStart={OVERNIGHT.start} windowEnd={OVERNIGHT.end} />
+        <HourChart
+          data={byHour}
+          baseline={baseline}
+          windowStart={OVERNIGHT.start}
+          windowEnd={OVERNIGHT.end}
+          windowLabel={`${PATTERNS.hour.overnightLabel} · ${pct(overnight.fraud_rate)} ${PATTERNS.hour.overnightCaption}`}
+        />
       </Figure>
 
       <Figure className="gap-3 px-[22px] pb-4 pt-5">

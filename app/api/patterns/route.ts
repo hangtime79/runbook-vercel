@@ -5,12 +5,13 @@ export const dynamic = "force-dynamic";
 
 // The exact chart inputs behind /patterns, for the parity check.
 export async function GET() {
-  const [hour, subsector, histogram, grid, bands] = await Promise.all([
+  const [hour, subsector, histogram, grid, bands, overnight] = await Promise.all([
     source.fraudRateByHour(),
     source.fraudRateBySubsector(),
     source.amountHistogram(),
     source.heatmap(),
     source.amountBands(),
+    source.overnightWindow(2, 6),
   ]);
-  return Response.json({ hour, subsector, histogram, heatmap: grid, amountBands: bands });
+  return Response.json({ hour, subsector, histogram, heatmap: grid, amountBands: bands, overnight });
 }
