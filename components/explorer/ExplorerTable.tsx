@@ -13,12 +13,18 @@ import type { ExplorerRow } from "@/lib/queries";
 
 type FilterKey = "all" | "flagged" | "fraud" | "micro" | "hot";
 
-const COLUMNS: { label: string; align: "left" | "right" | "center" }[] = [
+// Below these wrapper widths (container queries, not viewport, so the open Ask panel counts) the
+// lowest-value columns drop out, Subsector first and then Hour. Outcome, Transaction, Amount,
+// Flags and Model score never hide.
+const SHOW_HOUR = "hidden @[720px]:table-cell";
+const SHOW_SUBSECTOR = "hidden @[900px]:table-cell";
+
+const COLUMNS: { label: string; align: "left" | "right" | "center"; show?: string }[] = [
   { label: "Outcome", align: "left" },
   { label: "Transaction", align: "left" },
   { label: "Amount", align: "right" },
-  { label: "Subsector", align: "left" },
-  { label: "Hour", align: "right" },
+  { label: "Subsector", align: "left", show: SHOW_SUBSECTOR },
+  { label: "Hour", align: "right", show: SHOW_HOUR },
   { label: "Signed", align: "center" },
   { label: "Merchant rate", align: "left" },
   { label: "Flags", align: "left" },
@@ -109,6 +115,7 @@ export function ExplorerTable({ rows, threshold, hotMerchantRate }: {
         </span>
       </div>
 
+      <div className="@container">
       <div className="max-h-[calc(100dvh-270px)] min-h-[320px] overflow-auto rounded-lg border border-border">
         <Table className="text-[13px]">
           <TableHeader>
@@ -116,7 +123,7 @@ export function ExplorerTable({ rows, threshold, hotMerchantRate }: {
               {COLUMNS.map((c) => (
                 <TableHead
                   key={c.label}
-                  className={`sticky top-0 z-[1] h-auto whitespace-nowrap border-b border-border bg-background px-2.5 py-2.5 text-[10px] font-medium uppercase tracking-[0.1em] text-foreground/60 ${ALIGN[c.align]}`}
+                  className={`sticky top-0 z-[1] h-auto whitespace-nowrap border-b border-border bg-background px-2.5 py-2.5 text-[10px] font-medium uppercase tracking-[0.1em] text-foreground/60 ${ALIGN[c.align]} ${c.show ?? ""}`}
                 >
                   {c.label}
                 </TableHead>
@@ -145,8 +152,8 @@ export function ExplorerTable({ rows, threshold, hotMerchantRate }: {
                   </TableCell>
                   <TableCell className="whitespace-nowrap px-2.5 py-2 font-mono text-[12px]">{r.transaction_id}</TableCell>
                   <TableCell className="tnum whitespace-nowrap px-2.5 py-2 text-right">{usd(r.purchase_amount)}</TableCell>
-                  <TableCell className="max-w-[130px] truncate px-2.5 py-2" title={r.subsector_description}>{r.subsector_description}</TableCell>
-                  <TableCell className="tnum px-2.5 py-2 text-right">{String(r.hour).padStart(2, "0")}:00</TableCell>
+                  <TableCell className={`max-w-[130px] truncate px-2.5 py-2 ${SHOW_SUBSECTOR}`} title={r.subsector_description}>{r.subsector_description}</TableCell>
+                  <TableCell className={`tnum px-2.5 py-2 text-right ${SHOW_HOUR}`}>{String(r.hour).padStart(2, "0")}:00</TableCell>
                   <TableCell className="px-2.5 py-2 text-center">
                     {r.signature_provided ? <span aria-label="signed">✓</span> : <span aria-label="not signed">—</span>}
                   </TableCell>
@@ -195,6 +202,7 @@ export function ExplorerTable({ rows, threshold, hotMerchantRate }: {
           </TableBody>
         </Table>
         {shown.length === 0 && <p className="m-0 p-6 text-foreground/60">{EXPLORER.empty}</p>}
+      </div>
       </div>
     </div>
   );
