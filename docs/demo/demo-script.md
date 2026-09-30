@@ -90,6 +90,9 @@ so there are two locks that don't: the database file is opened read-only, and ev
 must parse as a single SELECT before it runs. A prompt is not a permission. You'll see those
 locks tested on every change in a minute." (Act 3's check list includes **Read-only guard
 rejects writes**: point back to this moment there.)
+*Once the scope gate is built:* the refusal comes from the checker instead (SCOPE CHECK card,
+*write_request*). Say: "Blocked before the AI even saw it. I'll show you how in a few minutes,"
+and pay it off in Act 4.
 
 **Vercel underneath (one line each, don't lecture):** Next.js server components; a Vercel
 Function on Fluid compute running a native analytics engine; AI SDK tool loop; AI Gateway.
@@ -158,9 +161,78 @@ team, or from an agent, inherits them. You stop inheriting apps; you host them f
 
 ---
 
-## Act 4 — AI in usage, with humans in the loop (2 min)
+## Act 4 — AI in usage: it does one job, and a second model makes sure (4 min)
 
-Back to Ask. Switch the model in the panel (app change, allowlisted three), ask the same question.
+**Depends on** `docs/plans/ask-scope-gate.md` being built and promoted. Until then, tell beat 4.1
+as a story and skip the live blocked question.
+
+**Beat 4.1 · "I tried to break it." (the story, 60 s).** Tell it straight, it happened:
+"When I first put this in production I red-teamed it myself. I asked it about a named person. It
+said the data has no names, which is right. I told it to go to the internet; it said it couldn't.
+Then I asked if it could write Python for that. It offered to, and offered to show me *how to query
+public sources* about that person. Then I asked for a geometry script and it wrote forty lines of
+Python. Nothing unsafe touched your data; the database lock held. But your fraud tool had just
+offered to help research a private individual. That's the failure mode nobody writes a test for:
+**not the AI doing something wrong with your data, the AI quietly becoming a different tool.**"
+
+**Beat 4.2 · Show the fix live (60 s).** In the Ask panel, type the same kind of request:
+*"Write me Python to look up a person online."* The **SCOPE CHECK** card appears: *out of scope ·
+person_lookup · typesafe-ai/jev*. The answering model never ran. Then ask a real question
+(*"Which hour has the highest fraud rate?"*): it answers, and the evidence footer reads
+*scope check passed*.
+
+"Three locks now, and none of them is the prompt:
+1. **A second, independent model checks every question before the answering model sees it.** It
+   has one job: *is this a question about this fraud data?* It doesn't see the tools or the data,
+   and it isn't trying to be helpful, so you can't talk it round.
+2. **The same checker reads the answer before it's shown.** If the answer strays, it's withheld.
+3. **The database is read-only**, whatever gets through."
+And if the checker is unavailable, the tool refuses. It fails closed.
+
+**Beat 4.3 · Why each of you should care (60 s).** This is the point of the act; land it.
+
+*To Head of Fraud:* "Your investigators can hand this to anyone on the team. It won't wander into
+researching people, which is where an investigation tool creates real privacy and legal exposure
+for the bank, and every answer still comes with its evidence. A bounded tool is one you're allowed
+to keep."
+
+*To CIO:* "Three things you get that you don't get from a chatbot:
+- **The purpose is enforced, not hoped for.** 'This app answers questions about fraud data' is now
+  a control you can test, not a sentence in a prompt. That's what makes an AI inventory mean
+  anything.
+- **Every refusal is evidence.** Each blocked question is logged with *why*
+  (person lookup, code request, instruction override) and how sure the checker was. That's the
+  record APRA says is missing: *'few have operationalised governance in practice.'*
+- **It's a package, not a patch.** The checks are a guardrail stack every app imports and
+  configures, not code buried in this one app. The next app the fraud team builds, or an agent
+  builds, inherits the same guardrails on day one. That's the difference between governing apps one
+  at a time and governing the platform."
+
+*To both:* "And the red-team questions I used are now tests. They run on every change, next to the
+read-only check you saw in Act 3. If a future change lets the tool drift, the pull request goes red
+before anyone ships it."
+
+**Vercel underneath.**
+- **AI Gateway** is why a second model costs nothing to add: same gateway, same OIDC identity, no
+  new key, no new vendor contract. The checker is TypeSafe AI's **Jev**, an evaluation model on the
+  gateway built for exactly this ("evaluates shared state against typed questions and returns
+  choices, scores, and boolean probabilities").
+- **AI SDK middleware** is how the checks stack: each guardrail is one piece, the list lives in
+  config, and the route just wraps the model.
+- **Cost of the checker, per question** (using the plan's estimate of ~500 tokens per check;
+  replace with the measured figure from the build report):
+  - `tokens_per_check`: tokens the checker reads and writes for one check = 500
+  - `price_per_million`: Jev's price per 1M tokens = $0.04
+  - `checks_per_question`: one on the question, one on the answer = 2
+  - `tokens_per_check × price_per_million ÷ 1,000,000 × checks_per_question`
+    == `500 × 0.04 ÷ 1,000,000 × 2` == `0.00002 × 2` == **$0.00004 per question**
+- **Honest edge (say it if asked about gateway-level guardrails):** Vercel's API lists an
+  `aiGatewayGuardrails` permission but there are no docs for it yet. Today the checks live in the
+  app's guardrail package; if the gateway takes that on, every app gets them without importing
+  anything. Good question to ask Vercel directly.
+
+**Beat 4.4 · One integration, any model (60 s).** Switch the model in the panel (allowlisted
+three) and ask the same question.
 "Three providers, one integration, same answer. That's the substitution APRA asks about:
 *the credibility and feasibility of substitution, portability or exit arrangements.* We tested it."
 
@@ -190,7 +262,7 @@ lives in your environment variables." Connect is GA (2026-08-25); Snowflake is a
 *To Head of Fraud:* "Your investigators keep building. They get previews, evidence and a
 real product, instead of a script on a laptop."
 *To CIO:* "You own one platform: identity, regions, approved models, change control, logs,
-rollback. Every app lands there by default."
+rollback, and the guardrails every AI app inherits. Every app lands there by default."
 *To both:* "Everything you saw today ran on Vercel's free tier. That's the proof it works. Pro makes it a pilot; Enterprise is how you
 run it as a bank: your identity provider in front of every app, audit logs in your SIEM, the SLA
 and the contract terms CPS 230 needs. And when APRA asks how you govern AI in development and in
@@ -204,7 +276,8 @@ use, you show them this."
 |---|---|---|
 | AI letter, 30 Apr 2026 · change control | Change/release controls strained by AI-generated code; security testing of AI code | PR → protected preview → required checks → human review → Deployment Checks → rollback |
 | AI letter · identity | IAM not adjusted to non-human actors | OIDC gateway auth (no stored key); Connect short-lived tokens (next) |
-| AI letter · inventory, oversight | Inventory of AI tooling and use cases; human involvement for high-risk decisions | Gateway logs per project/model; `/governance` page; AI only reads and shows evidence |
+| AI letter · inventory, oversight | Inventory of AI tooling and use cases; human involvement for high-risk decisions | Gateway logs per project/model; `/governance` page; AI only reads and shows evidence; **the app's purpose enforced by a separate checker model, with every refusal logged by category** |
+| AI letter · operationalised governance | "few have operationalised governance in practice" | Guardrail stack every app imports; red-team questions run as CI tests on every change |
 | AI letter · vendors | Concentration; substitution, portability, exit | Provider allowlist; three providers tested on the same questions |
 | CPS 234 | Controls commensurate with criticality; third-party assurance; 72-hour incident notification | Deployment Protection, roles, audit logs (Ent.), SOC 2 Type 2 / ISO 27001:2022 / PCI DSS via the Trust Center |
 | CPS 230 | Material service providers; tolerances; BCP; contract access rights | 99.99% SLA (Ent.); rollback in seconds; function failover regions (Ent.). **Contract terms (APRA access, offshoring) are an Enterprise sales conversation** |
@@ -237,5 +310,6 @@ approval (GitHub branch protection does).
 | 0:00–0:30 | `/intro` | Sections 1, 3 and 6 only: the ring, the thesis, Start |
 | 0:30–1:45 | Act 1 | One Ask with evidence; the delete refusal |
 | 1:45–3:00 | Act 2 | Login wall; `/governance` (Sydney, approved models, no training, no key); gateway logs |
-| 3:00–4:30 | Act 3 | APRA change-control quote; the PR's checks and protected preview |
-| 4:30–5:00 | Close | "CIO owns the rails, fraud owns the apps"; Connect as next |
+| 3:00–3:50 | Act 3 | APRA change-control quote; the PR's checks and protected preview |
+| 3:50–4:35 | Act 4 | One line of the red-team story; one blocked question (SCOPE CHECK card); "a second model checks every question, and every app inherits it" |
+| 4:35–5:00 | Close | "CIO owns the rails, fraud owns the apps"; Connect as next |
