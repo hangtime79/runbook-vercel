@@ -18,9 +18,17 @@ export type GuardCall = {
 };
 
 export type ScopeVerdict = GuardCall & {
+  /** True only for "allowed": the answering model runs. */
   allowed: boolean;
-  /** What Jev says the question is asking for (dataset_question, code_request, ...), or "unavailable". */
+  /**
+   * allowed: answered. blocked: out of scope. unclear: on topic but too vague to tell, asked to rephrase.
+   * unavailable: the check failed and the question was refused (fails closed).
+   */
+  outcome: "allowed" | "blocked" | "unclear" | "unavailable";
+  /** What Jev says the question is asking for (dataset_question, code_request, ...), or "unavailable". A blocked follow-up carries its parent's category. */
   category: string;
+  /** Set when a blocked follow-up inherited the block of an earlier turn: that turn's category. */
+  followUpOf?: string;
   /** P(the question can be answered from this dataset). Null when the check failed. */
   probability: number | null;
 };

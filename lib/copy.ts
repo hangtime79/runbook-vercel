@@ -256,6 +256,10 @@ export const ASK = {
   // Fixed texts: the scope prompt, the scope gate and the output check all use these, word for word.
   refusal: "I can only answer questions about this fraud dataset and its analysis.",
   gateUnavailable: "The scope check is unavailable; try again.",
+  unclear:
+    "I'm not sure that's a question about the fraud data. Try asking it with what you want to measure, " +
+    "for example 'What's the fraud rate by hour?'",
+  noQuery: "No query was run. This answer comes from the analysis documents, not a live query.",
 } as const;
 
 // /intro figures that are quoted from the analysis (the live ones, fraud count and rate, are read from data).

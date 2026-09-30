@@ -3,6 +3,16 @@
   "model": "typesafe-ai/jev",
   "timeoutMs": 8000,
   "usdPerMillionTokens": 0.04,
-  "scopeGate": { "threshold": 0.5, "requireDatasetCategory": true },
+  "scopeGate": {
+    "threshold": 0.5,
+    "requireDatasetCategory": true,
+    "contextTurns": 4,
+    "summaryChars": 200,
+    "followUp": {
+      "earlier_blocked": "inherit",
+      "earlier_allowed": "judge",
+      "none": "judge"
+    }
+  },
   "outputCheck": { "threshold": 0.5 }
 }
