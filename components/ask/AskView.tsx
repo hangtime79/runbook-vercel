@@ -39,7 +39,7 @@ function Steps({ step }: { step: number }) {
         <li
           key={label}
           className="flex items-center gap-2 text-[13px]"
-          style={{ opacity: step >= j ? 1 : 0.4 }}
+          style={{ opacity: step >= j ? 1 : 0.6 }}
           aria-current={step === j ? "step" : undefined}
         >
           <span className="w-3.5 font-mono text-[11px]" aria-hidden>

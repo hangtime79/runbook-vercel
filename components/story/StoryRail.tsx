@@ -62,10 +62,9 @@ export function StoryRail({ items }: { items: RailItem[] }) {
               go(i);
             }}
             className="flex min-w-0 flex-1 flex-col gap-1 text-foreground no-underline hover:text-foreground"
-            style={{ opacity: i <= active ? 1 : 0.4 }}
           >
-            <span className="h-[3px] bg-signal-600" />
-            <span className="truncate font-mono text-[10px]">
+            <span className="h-[3px] bg-signal-600" style={{ opacity: i <= active ? 1 : 0.28 }} />
+            <span className="truncate font-mono text-[10px]" style={{ opacity: i <= active ? 1 : 0.6 }}>
               {r.num}
               <span className="hidden sm:inline"> {r.short}</span>
             </span>

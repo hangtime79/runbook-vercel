@@ -198,6 +198,7 @@ summary = {
         "auc": doc_auc,
         "pr_auc": doc_pr,
         "best_round": best_round,
+        "max_rounds": int(params["n_estimators"]),
         "rows": int(len(y_hold)),
         "prevalence": float(y_hold.mean()),
     },

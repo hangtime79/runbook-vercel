@@ -55,12 +55,11 @@ export default async function FindingsPage() {
             <div
               key={v.rank}
               className="grid grid-cols-[20px_minmax(0,170px)_1fr_44px] items-center gap-2.5 text-[13px]"
-              style={{ opacity: v.rank <= 5 ? 1 : 0.5 }}
             >
               <span className="font-mono text-[11px] text-foreground/55">{v.rank}</span>
               <span className="truncate font-mono text-[12px]" title={v.note}>{v.dimension}</span>
               <div className="h-3 bg-foreground/5">
-                <div className="h-full bg-signal-600" style={{ width: `${(v.range / maxRange) * 100}%` }} />
+                <div className="h-full bg-signal-600" style={{ width: `${(v.range / maxRange) * 100}%`, opacity: v.rank <= 5 ? 1 : 0.5 }} />
               </div>
               <span className="tnum text-right">{v.range}</span>
             </div>
