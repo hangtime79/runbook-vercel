@@ -22,6 +22,7 @@ export const NAV = [
   { href: "/model", label: "Model" },
   { href: "/explorer", label: "Explorer" },
   { href: "/ask", label: "Ask the data" },
+  { href: "/governance", label: "Governance" },
 ] as const;
 
 export const STORY = {

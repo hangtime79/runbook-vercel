@@ -1,5 +1,6 @@
 import { DuckDBInstance, type DuckDBConnection } from "@duckdb/node-api";
 import { dataPath } from "./duckdb";
+import { ROW_LIMIT, TIMEOUT_MS } from "./askLimits";
 
 /**
  * Read-only query path for "Ask the data" (SPEC invariant 2). Two independent layers:
@@ -10,8 +11,6 @@ import { dataPath } from "./duckdb";
  * A prompt is not a permission; neither layer depends on what the model was told.
  */
 
-const ROW_LIMIT = 200;
-const TIMEOUT_MS = 10_000;
 
 export type AskResult =
   | { sql: string; columns: string[]; rows: unknown[][]; rowCount: number; truncated: boolean }
