@@ -29,9 +29,17 @@ function tokenize(sql: string): { t: string; kind: "kw" | "num" | "str" | "txt" 
     });
 }
 
-function fmt(v: unknown): string {
+/** Columns whose name says they hold a 0–1 fraction (fraud_rate, share, ratio) render as percent. */
+const FRACTION_COL = /(^|_)(rate|share|ratio|proportion)(_|$)/i;
+const PERCENT_COL = /(^|_)(pct|percent)(_|$)/i;
+
+function fmt(v: unknown, column = ""): string {
   if (v === null || v === undefined) return "null";
-  if (typeof v === "number") return Number.isInteger(v) ? v.toLocaleString("en-US") : String(Number(v.toPrecision(6)));
+  if (typeof v === "number") {
+    if (PERCENT_COL.test(column)) return `${v.toFixed(2)}%`;
+    if (FRACTION_COL.test(column) && v >= 0 && v <= 1) return `${(v * 100).toFixed(2)}%`;
+    return Number.isInteger(v) ? v.toLocaleString("en-US") : String(Number(v.toPrecision(6)));
+  }
   return String(v);
 }
 
@@ -118,7 +126,7 @@ export function Evidence({ sql, output, errorText, pending, answerMeta }: {
               {shown.map((r, i) => (
                 <TableRow key={i} className="border-t border-foreground/[0.07] hover:bg-transparent">
                   {r.map((v, j) => (
-                    <TableCell key={j} className="tnum whitespace-nowrap px-2.5 py-1.5">{fmt(v)}</TableCell>
+                    <TableCell key={j} className="tnum whitespace-nowrap px-2.5 py-1.5">{fmt(v, ok.columns[j])}</TableCell>
                   ))}
                   {barCol >= 0 && (
                     <TableCell className="px-2.5 py-1.5">

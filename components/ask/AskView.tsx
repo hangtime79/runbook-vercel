@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, type FormEvent } from "react";
 import type { UIMessage } from "ai";
 import { PanelRightClose } from "lucide-react";
 import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import type { AnswerMeta } from "@/lib/askConfig";
@@ -102,9 +103,14 @@ function Turn({ n, question, answer, live, streamError }: {
           </div>
         )}
         {done && text && (
-          <div className="text-[14px] leading-[1.55] text-pretty [&_li]:my-0.5 [&_p]:my-0 [&_p+p]:mt-2 [&_strong]:font-semibold [&_ul]:my-1 [&_ul]:list-disc [&_ul]:pl-5">
-            {/* The model bolds figures with **; allow only inline emphasis and lists, no raw HTML. */}
-            <ReactMarkdown allowedElements={["p", "strong", "em", "code", "ul", "ol", "li", "br"]} unwrapDisallowed>
+          <div className="text-[14px] leading-[1.55] text-pretty [&_li]:my-0.5 [&_p]:my-0 [&_p+p]:mt-2 [&_strong]:font-semibold [&_ul]:my-1 [&_ul]:list-disc [&_ul]:pl-5 [&_table]:my-2 [&_table]:border-collapse [&_table]:text-[13px] [&_th]:border-b [&_th]:border-foreground/15 [&_th]:px-2.5 [&_th]:py-1 [&_th]:text-left [&_th]:font-mono [&_th]:text-[10px] [&_th]:font-medium [&_th]:uppercase [&_th]:tracking-[0.08em] [&_th]:text-foreground/60 [&_td]:border-b [&_td]:border-foreground/[0.07] [&_td]:px-2.5 [&_td]:py-1 [&_td]:tabular-nums">
+            {/* The model bolds figures with ** and often answers with a small table (GFM). Allow inline
+                emphasis, lists and tables; no raw HTML. */}
+            <ReactMarkdown
+              remarkPlugins={[remarkGfm]}
+              allowedElements={["p", "strong", "em", "code", "ul", "ol", "li", "br", "table", "thead", "tbody", "tr", "th", "td"]}
+              unwrapDisallowed
+            >
               {text}
             </ReactMarkdown>
           </div>
