@@ -1,5 +1,6 @@
 import { Figure, FigureLabel } from "@/components/Figure";
 import { Page, PageHeader } from "@/components/PageHeader";
+import { TierTable } from "@/components/TierTable";
 import { ALLOWED_MODELS, DEFAULT_MODEL, pickModel, zdrEnabled } from "@/lib/askConfig";
 import { ROW_LIMIT, TIMEOUT_MS } from "@/lib/askLimits";
 import { deploymentInfo } from "@/lib/deployment";
@@ -91,6 +92,13 @@ export default function GovernancePage() {
           </a>
         </Row>
         <p className="m-0 pt-2 text-[13px] text-foreground/65">{G.changeControl.note}</p>
+      </Figure>
+
+      <Figure className="px-5 py-4">
+        <FigureLabel>{G.tiers.title}</FigureLabel>
+        <p className="m-0 pb-2 text-[14px] text-foreground/75">{G.tiers.lede}</p>
+        <TierTable markCurrent />
+        <p className="m-0 pt-2 text-[13px] text-foreground/65">{G.tiers.note}</p>
       </Figure>
 
       <Figure className="px-5 py-4">

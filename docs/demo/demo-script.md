@@ -61,7 +61,7 @@ placeholder until the trial exists.
 
 ## Act 1 — The Head of Fraud's app (4 min)
 
-**Beat 1.1 · Story page `/`.** KPI cards: 9.47% fraud rate, 24,080 confirmed fraud of 254,224
+**Beat 1.1 · Story page `/story`.** KPI cards: 9.47% fraud rate, 24,080 confirmed fraud of 254,224
 labeled, 0.764 AUC, 2.3× signature effect. Scroll one chapter (the 46-merchant cluster).
 
 *To Head of Fraud:* "This is what your investigators do: turn an analysis into something the

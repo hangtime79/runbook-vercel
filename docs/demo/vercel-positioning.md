@@ -37,7 +37,7 @@ Published numbers:
 
 ## 3. Features this demo can show live
 
-App routes seen in the repo: `/` (story), `/brief`, `/findings`, `/patterns`, `/model`, `/explorer`, `/ask` (+ `/api/ask`). The "where in our app" column for infra features is the deployment itself, not a route.
+App routes seen in the repo: `/story`, `/brief`, `/findings`, `/patterns`, `/model`, `/explorer`, `/ask` (+ `/api/ask`). The "where in our app" column for infra features is the deployment itself, not a route.
 
 | Feature | What Vercel says (URL) | In our app | Presenter action |
 |---|---|---|---|

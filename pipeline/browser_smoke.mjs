@@ -51,7 +51,7 @@ try {
     const failedRequests = [];
     page.on("response", (r) => r.status() >= 400 && failedRequests.push(`${r.status()} ${r.url()}`));
 
-    await page.goto(BASE + "/", { waitUntil: "networkidle" });
+    await page.goto(BASE + "/story", { waitUntil: "networkidle" });
     const opener = page.getByRole("button", { name: "Open the Ask the data panel" });
     if (await opener.count()) await opener.click();
     const input = page.getByRole("textbox", { name: "Question" });
@@ -84,7 +84,7 @@ try {
     const res = await page.goto(BASE + "/governance", { waitUntil: "networkidle" });
     check(res?.status() === 200, "/governance answers 200");
     const text = (await page.locator("main").innerText()).toLowerCase();
-    for (const s of ["Deployment", "Function region", "Allowed models", "Data retention", "Change control", "APRA mapping", "Gaps, stated plainly"]) {
+    for (const s of ["Deployment", "Function region", "Allowed models", "Data retention", "Change control", "Plan tiers", "APRA mapping", "Gaps, stated plainly"]) {
       check(text.includes(s.toLowerCase()), `/governance shows: ${s}`);
     }
     check(errors.length === 0, `no console errors on /governance ${errors.slice(0, 2).join(" | ")}`);
@@ -123,6 +123,37 @@ try {
     check(cols.includes("Subsector") && cols.includes("Hour"), `all columns return at 1920 (${cols.length} shown)`);
     check(over <= 0, `no table-wrapper overflow at 1920 (${over}px)`);
     await wide.close();
+  }
+
+  // ---- 3. The intro: front door, no shell, keyboard deck, tiers ------------------------------
+  for (const width of [1440, 390]) {
+    const page = await browser.newPage({ viewport: { width, height: width === 390 ? 800 : 900 } });
+    const errors = [];
+    page.on("console", (m) => m.type() === "error" && errors.push(m.text()));
+    await page.goto(BASE + "/", { waitUntil: "networkidle" });
+    check(new URL(page.url()).pathname === "/intro", `/ redirects to /intro (${new URL(page.url()).pathname})`);
+    check((await page.locator('nav[aria-label="Main"]').count()) === 0, `/intro has no sidebar at ${width}`);
+    check((await page.locator('aside[aria-label="Ask the data"]').count()) === 0, `/intro has no Ask panel at ${width}`);
+    const o = await page.evaluate(() => {
+      const d = document.getElementById("intro-deck");
+      return { page: document.documentElement.scrollWidth - window.innerWidth, deck: d.scrollWidth - d.clientWidth };
+    });
+    check(o.page <= 0 && o.deck <= 0, `no horizontal overflow on /intro at ${width} (page ${o.page}px, deck ${o.deck}px)`);
+    if (width === 1440) {
+      const deckTop = () => page.evaluate(() => document.getElementById("intro-deck").scrollTop);
+      const progress = async () => (await page.getByTestId("intro-progress").innerText()).trim();
+      check((await progress()) === "1/6", `progress starts at 1/6 (${await progress()})`);
+      await page.keyboard.press("ArrowDown");
+      await page.waitForFunction(() => document.querySelector('[data-testid="intro-progress"]').textContent.trim() === "2/6", null, { timeout: 5000 }).catch(() => {});
+      check((await progress()) === "2/6" && (await deckTop()) > 100, `ArrowDown moves one section (${await progress()})`);
+      const tierText = (await page.locator("#intro-deck").innerText()).toLowerCase();
+      check(tierText.includes("live today on hobby") && tierText.includes("passport"), "/intro shows the three-tier table");
+      await page.getByRole("link", { name: /Start the demo/ }).click();
+      await page.waitForURL("**/story", { timeout: 15_000 });
+      check(new URL(page.url()).pathname === "/story", "Start the demo reaches /story");
+    }
+    check(errors.length === 0, `no console errors on /intro at ${width} ${errors.slice(0, 2).join(" | ")}`);
+    await page.close();
   }
 } finally {
   await browser.close();

@@ -16,7 +16,7 @@ export const SIDEBAR = {
 } as const;
 
 export const NAV = [
-  { href: "/", label: "Story" },
+  { href: "/story", label: "Story" },
   { href: "/findings", label: "Key findings" },
   { href: "/patterns", label: "Patterns" },
   { href: "/model", label: "Model" },
@@ -253,4 +253,10 @@ export const ASK = {
     "How does fraud differ between transactions with and without a signature?",
   ],
   steps: ["Writing SQL", "Running on fraud.duckdb (read-only)", "Summarising the result"],
+} as const;
+
+// /intro figures that are quoted from the analysis (the live ones, fraud count and rate, are read from data).
+export const INTRO_FIGS = {
+  clusterValue: "46",
+  clusterLabel: "merchants hold 11% of all fraud",
 } as const;

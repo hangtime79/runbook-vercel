@@ -203,11 +203,11 @@ npm run dev                            # development, http://localhost:3000
 npm run build && npm run start         # production build, http://localhost:3000
 ```
 
-Routes: `/` (Narrative, with "Ask the data"), `/findings`, `/patterns`, `/model`, `/explorer`, `/governance`, `/api/stats`, `/api/ask`, `/api/deployment`.
+Routes: `/` (redirects to `/intro`), `/intro` (full-screen demo opening, no shell), `/story` (Narrative, with "Ask the data"), `/findings`, `/patterns`, `/model`, `/explorer`, `/governance`, `/api/stats`, `/api/ask`, `/api/deployment`.
 
 ### Ask the data (`/api/ask`)
 
-`app/api/ask/route.ts` streams an AI SDK (`ai` 7, `@ai-sdk/react` 4) response with one tool, `query(sql)`. The UI is `components/AskData.tsx`, on the Narrative page. Every answer shows the SQL it ran (SPEC invariant 4).
+`app/api/ask/route.ts` streams an AI SDK (`ai` 7, `@ai-sdk/react` 4) response with one tool, `query(sql)`. The UI is `components/AskData.tsx`, on the Story page (`/story`) and `/ask`. Every answer shows the SQL it ran (SPEC invariant 4).
 
 - **Read-only guard (`lib/askdb.ts`), two independent layers.** (1) `data/fraud.duckdb` is opened `access_mode = READ_ONLY`, then `enable_external_access = false` and `lock_configuration = true`, so a query cannot write, read other files or change settings. (2) The SQL must parse as exactly one statement through DuckDB's `json_serialize_sql` (SELECT only, including `WITH`). Then it is wrapped as `SELECT * FROM (...) LIMIT 201`, capped at 200 rows, with a 10 s interrupt timeout. `json_serialize_sql` needs a constant string, so the text is embedded as an escaped literal; a bound parameter is rejected.
 - **`data/fraud.duckdb` is built by `pipeline/export_web_data.py`** (tables `golden_record`, `features`), alongside the parquet copies. The Python-written file opens under `@duckdb/node-api` without a version pin. `/api/ask` needs `fraud.duckdb`, the docs and `libduckdb.so` in `outputFileTracingIncludes`.
