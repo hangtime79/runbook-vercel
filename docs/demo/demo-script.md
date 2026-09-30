@@ -15,7 +15,7 @@ Sources for every Vercel claim: `docs/demo/vercel-positioning.md` and
 | Shared worry | **APRA.** AI in *development* (agents and investigators writing code) and in *usage* (AI inside the tool). |
 
 **The thesis, said early and repeated at the close:** "You don't have to choose between the
-fraud team's speed and IT's control. The CIO owns the platform; the fraud team owns the apps.
+fraud team's speed and IT's control. The CIO owns the platform. The fraud team owns the problem. Both are responsible for the apps.
 Every app, however it was built, lands on the same rails: identity, review, logging, rollback."
 
 **Three tiers, stated once in Act 2 and again at the close.** Everything they see live runs on
@@ -322,4 +322,4 @@ approval (GitHub branch protection does).
 | 1:45–3:00 | Act 2 | Login wall; `/governance` (Sydney, approved models, no training, no key); gateway logs |
 | 3:00–3:50 | Act 3 | APRA change-control quote; the PR's checks and protected preview |
 | 3:50–4:35 | Act 4 | One line of the red-team story; one blocked question (SCOPE CHECK card); "a second model checks every question, and every app inherits it" |
-| 4:35–5:00 | Close | "CIO owns the rails, fraud owns the apps"; Connect as next |
+| 4:35–5:00 | Close | "CIO owns the platform, fraud owns the problem, both own the apps"; Connect as next |

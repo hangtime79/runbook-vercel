@@ -64,7 +64,7 @@ export default async function IntroPage() {
 
       <section data-slide className={SLIDE} aria-labelledby="s3">
         <span className={KICKER}>{C.thesis.kicker}</span>
-        <h2 id="s3" className="mb-6 mt-3 max-w-[1100px] text-[38px] font-semibold leading-[1.05] tracking-tightest text-pretty sm:text-[72px]">
+        <h2 id="s3" className="mb-6 mt-3 max-w-[1200px] text-[36px] font-semibold leading-[1.05] tracking-tightest text-pretty sm:text-[60px]">
           {C.thesis.title}
         </h2>
         <p className="m-0 max-w-[820px] text-[18px] text-foreground/80 text-pretty sm:text-[24px]">{C.thesis.sub}</p>
