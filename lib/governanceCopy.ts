@@ -41,6 +41,13 @@ export const GOVERNANCE = {
       "Branch protection on main (required checks plus one review) is a GitHub setting; Vercel does not enforce " +
       "human approval. Vercel Deployment Checks can hold a production promotion until the same checks pass.",
   },
+  tiers: {
+    title: "Plan tiers",
+    lede:
+      "This deployment runs on the free Hobby plan: the left column is live here. Pro adds the controls a pilot " +
+      "needs; Enterprise adds what a regulated bank needs to run it in production.",
+    note: "Only the Hobby column is running in this deployment. The Pro and Enterprise columns are what each plan adds.",
+  },
   apra: {
     title: "APRA mapping",
     note: "Quotes to be verified against APRA PDFs.",

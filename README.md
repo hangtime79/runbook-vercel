@@ -107,7 +107,7 @@ The five dashboard views need no API keys.
 
 ### Ask the data (local)
 
-The Narrative page (`/`) has an "Ask the data" box: type a question, and the app writes a read-only SQL query, runs it on the fraud data and shows the SQL it ran. Model calls go through the Vercel AI Gateway using the AI SDK, so it needs gateway credentials:
+The Story page (`/story`; `/` opens the demo intro at `/intro`) has an "Ask the data" box: type a question, and the app writes a read-only SQL query, runs it on the fraud data and shows the SQL it ran. Model calls go through the Vercel AI Gateway using the AI SDK, so it needs gateway credentials:
 
 ```bash
 cp .env.example .env.local        # then set AI_GATEWAY_API_KEY (or run `vercel link` + `vercel env pull` for OIDC)

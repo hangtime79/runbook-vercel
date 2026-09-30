@@ -15,6 +15,10 @@ const DOC_FILES = ["./data/docs/**/*", "./data/*.json"];
 const DUCKDB_AND_DOCS = [...DUCKDB_FILES, ...DOC_FILES];
 
 const nextConfig: NextConfig = {
+  // The app opens on the demo intro; the Story lives at /story.
+  async redirects() {
+    return [{ source: "/", destination: "/intro", permanent: true }];
+  },
   // DuckDB ships a native binary; keep it out of the bundle and load it from node_modules.
   serverExternalPackages: ["@duckdb/node-api", "@duckdb/node-bindings"],
   // File tracing misses two runtime reads: the parquet (opened by DuckDB, not by JS) and
@@ -27,7 +31,8 @@ const nextConfig: NextConfig = {
     "/api/patterns": DUCKDB_FILES,
     "/patterns": DUCKDB_FILES,
     "/explorer": DUCKDB_FILES,
-    "/": DUCKDB_AND_DOCS,
+    "/story": DUCKDB_AND_DOCS,
+    "/intro": DUCKDB_FILES,
     "/findings": DUCKDB_AND_DOCS,
     "/model": DOC_FILES,
     "/brief": DOC_FILES,

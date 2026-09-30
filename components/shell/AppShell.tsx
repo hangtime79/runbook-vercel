@@ -9,7 +9,7 @@ import { useAsk } from "@/components/ask/AskProvider";
 import { DeploymentBadge } from "@/components/shell/DeploymentBadge";
 import { NAV, SIDEBAR } from "@/lib/copy";
 
-const isActive = (pathname: string, href: string) => (href === "/" ? pathname === "/" : pathname.startsWith(href));
+const isActive = (pathname: string, href: string) => pathname.startsWith(href);
 
 function NavLinks({ pathname, layout }: { pathname: string; layout: "column" | "row" }) {
   return (
@@ -151,6 +151,9 @@ export function AppShell({ children }: { children: ReactNode }) {
   useEffect(() => {
     main.current?.scrollTo({ top: 0 });
   }, [pathname]);
+
+  // /intro is the full-screen opening: no sidebar, no Ask panel. The shared Ask provider stays above.
+  if (pathname === "/intro") return <>{children}</>;
 
   return (
     <div className="flex h-dvh flex-col overflow-hidden bg-background text-foreground sm:flex-row">

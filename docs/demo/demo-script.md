@@ -33,7 +33,6 @@ present each tier as the next step.
 
 Check on the day which gateway controls (provider allowlist, routing rules, budgets) your plan
 shows before demoing them live; their plan requirements weren't stated in the docs we read.
-| Required checks + Deployment Checks on production | **99.99% SLA**, and the contract conversation CPS 230 needs (APRA access rights, offshoring) |
 
 **This app is the prop.** It *is* an investigator-style app: an analysis turned into a tool,
 built by coding agents from a written runbook. Tell them that; it's the whole point.
@@ -59,9 +58,21 @@ placeholder until the trial exists.
 
 ---
 
+## Act 0 — Open inside the app (2 min) · `/intro`
+
+Start on the app's root URL; it opens `/intro` full-screen. Move with the arrow keys.
+1. **The situation.** Tell the story in two sentences: a fraud wave, investigators built their
+   own tools, one cracked a ring. "This app is one of those tools."
+2. **The tension.** Look at each of them in turn: Head of Fraud, "keep the speed"; CIO, "I keep
+   inheriting apps I didn't build." Read the APRA line aloud.
+3. **The thesis.** Pause on it. Say it once, slowly.
+4. **What you'll see.** Name the four acts; don't click yet.
+5. **Three tiers.** One sentence: "Everything you'll see runs on Vercel's free tier."
+6. **Start the demo →** takes you to the Story.
+
 ## Act 1 — The Head of Fraud's app (4 min)
 
-**Beat 1.1 · Story page `/`.** KPI cards: 9.47% fraud rate, 24,080 confirmed fraud of 254,224
+**Beat 1.1 · Story page `/story`.** KPI cards: 9.47% fraud rate, 24,080 confirmed fraud of 254,224
 labeled, 0.764 AUC, 2.3× signature effect. Scroll one chapter (the 46-merchant cluster).
 
 *To Head of Fraud:* "This is what your investigators do: turn an analysis into something the
@@ -73,9 +84,12 @@ headline stat, and the **Evidence** card: the SQL it ran, the rows, "opened read
 *To Head of Fraud:* "An investigator who doesn't write SQL gets an answer with its evidence
 attached. They can trust it, or hand it to an analyst to check."
 
-*To CIO:* "And it can only read. Watch." Type *"Delete all the fraud rows."* Refused.
-"Two locks that don't depend on the AI behaving: the database file is opened read-only, and every
-statement must parse as a single SELECT before it runs. A prompt is not a permission."
+*To CIO:* "And it can only read. Watch." Type *"Delete all the fraud rows."* The model declines
+("I can't delete or modify data."). "That's the AI behaving. You shouldn't have to rely on that,
+so there are two locks that don't: the database file is opened read-only, and every statement
+must parse as a single SELECT before it runs. A prompt is not a permission. You'll see those
+locks tested on every change in a minute." (Act 3's check list includes **Read-only guard
+rejects writes**: point back to this moment there.)
 
 **Vercel underneath (one line each, don't lecture):** Next.js server components; a Vercel
 Function on Fluid compute running a native analytics engine; AI SDK tool loop; AI Gateway.
@@ -220,7 +234,7 @@ approval (GitHub branch protection does).
 
 | Time | Beat | Keep |
 |---|---|---|
-| 0:00–0:30 | Setup | The ring, the shadow apps, the thesis line |
+| 0:00–0:30 | `/intro` | Sections 1, 3 and 6 only: the ring, the thesis, Start |
 | 0:30–1:45 | Act 1 | One Ask with evidence; the delete refusal |
 | 1:45–3:00 | Act 2 | Login wall; `/governance` (Sydney, approved models, no training, no key); gateway logs |
 | 3:00–4:30 | Act 3 | APRA change-control quote; the PR's checks and protected preview |
