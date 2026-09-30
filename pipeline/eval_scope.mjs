@@ -18,15 +18,19 @@ const BASE = args.base ?? "http://localhost:3000";
 const OUT = path.resolve(ROOT, args.out ?? "docs/ask-scope-eval.md");
 const allow = JSON.parse(fs.readFileSync(path.join(ROOT, "lib/askModels.json"), "utf8"));
 const MODELS = (args.models ?? allow.models.map((m) => m.id).join(",")).split(",");
-const cases = JSON.parse(fs.readFileSync(path.join(ROOT, "pipeline/ask_redteam.json"), "utf8")).cases;
+const redteam = JSON.parse(fs.readFileSync(path.join(ROOT, "pipeline/ask_redteam.json"), "utf8"));
+const cases = redteam.cases;
+const conversations = redteam.conversations ?? [];
 const cfg = JSON.parse(fs.readFileSync(path.join(ROOT, "lib/guardrails/config.json"), "utf8"));
 
-async function ask(model, question) {
+async function ask(model, input) {
+  // A string is a one-turn question; an array is the conversation so far, ending with the new user message.
+  const messages = typeof input === "string" ? [{ id: "q", role: "user", parts: [{ type: "text", text: input }] }] : input;
   const started = performance.now();
   const res = await fetch(`${BASE}/api/ask`, {
     method: "POST",
     headers: { "content-type": "application/json" },
-    body: JSON.stringify({ model, messages: [{ id: "q", role: "user", parts: [{ type: "text", text: question }] }] }),
+    body: JSON.stringify({ model, messages }),
     signal: AbortSignal.timeout(240_000),
   });
   const run = { text: "", meta: null, queries: 0, error: null, ms: 0 };
@@ -58,6 +62,17 @@ async function ask(model, question) {
   return run;
 }
 
+/** One of block | allow | unclear | unavailable, from the server's own verdicts in the stream metadata. */
+function classify(run) {
+  const scope = run.meta?.scope ?? null;
+  const output = run.meta?.output ?? null;
+  if (scope?.outcome === "unclear") return { outcome: "unclear", blockedBy: null };
+  if (scope?.outcome === "unavailable") return { outcome: "unavailable", blockedBy: null };
+  if (scope && !scope.allowed) return { outcome: "block", blockedBy: "gate" };
+  if (output && !output.allowed) return { outcome: "block", blockedBy: "output check" };
+  return { outcome: "allow", blockedBy: null };
+}
+
 // Preflight: a server not in override mode ignores the model field, so every "model" would be the same one.
 {
   const probe = await ask("nonexistent/not-a-model", "What is the fraud rate?");
@@ -79,14 +94,35 @@ async function worker() {
     if (run.error) run = await ask(model, c.question).catch((e) => ({ text: "", meta: null, queries: 0, error: String(e), ms: 0 }));
     const scope = run.meta?.scope ?? null;
     const output = run.meta?.output ?? null;
-    const blockedBy = scope && !scope.allowed ? "gate" : output && !output.allowed ? "output check" : null;
-    const outcome = blockedBy ? "block" : "allow";
+    const { outcome, blockedBy } = classify(run);
     const cost = (scope?.costUsd ?? 0) + (output?.costUsd ?? 0);
     rows.push({ model, id: c.id, question: c.question, expect: c.expect, outcome, blockedBy, pass: !run.error && outcome === c.expect, scope, output, cost, run });
     process.stderr.write(`${model}  ${c.id}  expect ${c.expect}  got ${outcome}${blockedBy ? ` (${blockedBy})` : ""}  ${run.error ? "ERROR " + run.error : ""}\n`);
   }
 }
 await Promise.all(Array.from({ length: 4 }, worker));
+
+// ---- conversations ------------------------------------------------------------------------------------
+// Turn by turn against the local server, carrying the real history: each earlier answer goes back as an
+// assistant message with the text and metadata the server actually sent. Run on the first model only.
+const convRows = [];
+const convModel = MODELS[0];
+for (const conv of conversations) {
+  const history = [];
+  for (const [i, t] of conv.turns.entries()) {
+    history.push({ id: `u${i}`, role: "user", parts: [{ type: "text", text: t.question }] });
+    let run = await ask(convModel, history).catch((e) => ({ text: "", meta: null, queries: 0, error: String(e), ms: 0 }));
+    if (run.error) run = await ask(convModel, history).catch((e) => ({ text: "", meta: null, queries: 0, error: String(e), ms: 0 }));
+    const { outcome, blockedBy } = classify(run);
+    const scope = run.meta?.scope ?? null;
+    const category = scope?.category ?? null;
+    const catOk = !t.category || category === t.category;
+    const pass = !run.error && outcome === t.expect && (outcome !== "block" || catOk);
+    convRows.push({ conv: conv.id, turn: i + 1, question: t.question, expect: t.expect, expectCategory: t.category ?? "", outcome, blockedBy, category, followUpOf: scope?.followUpOf ?? null, p: scope?.probability ?? null, ms: scope?.ms ?? null, pass, error: run.error });
+    process.stderr.write(`conv ${conv.id} turn ${i + 1}  expect ${t.expect}${t.category ? " " + t.category : ""}  got ${outcome}${category ? " " + category : ""}${scope?.followUpOf ? " (follow-up)" : ""}  ${pass ? "PASS" : "FAIL"}\n`);
+    history.push({ id: `a${i}`, role: "assistant", metadata: run.meta ?? undefined, parts: [{ type: "text", text: run.text || " " }] });
+  }
+}
 
 // ---- threshold sweep on the gate's own numbers (independent of the answering model) ---------------
 // The gate does not see the answering model, so its verdict is the same across models; use the first model's rows.
@@ -140,9 +176,16 @@ for (const r of rows.filter((x) => x.model === MODELS[0])) {
   md += `| ${r.id} | ${r.expect} | ${r.outcome}${r.pass ? "" : " ✗"} | ${r.blockedBy ?? ""} | ${r.scope?.category ?? "n/a"} | ${p2(r.scope?.probability)} | ${r.scope?.ms ?? ""} | ${p2(r.output?.probability)} | ${esc(r.question)} |\n`;
 }
 
+md += `\n## Conversations (first model: \`${convModel}\`, real history and metadata carried between turns)\n\n`;
+if (!convRows.length) md += `No conversation cases.\n`;
+else {
+  md += `Turns as expected: ${convRows.filter((r) => r.pass).length}/${convRows.length}.\n\n| Conversation | Turn | Expected | Got | Category | Follow-up of | Gate p | Gate ms | Result | Question |\n|---|---|---|---|---|---|---|---|---|---|\n`;
+  for (const r of convRows) md += `| ${r.conv} | ${r.turn} | ${r.expect}${r.expectCategory ? " " + r.expectCategory : ""} | ${r.outcome}${r.blockedBy ? " (" + r.blockedBy + ")" : ""} | ${r.category ?? "n/a"} | ${r.followUpOf ?? ""} | ${p2(r.p)} | ${r.ms ?? ""} | ${r.pass ? "pass" : "FAIL" + (r.error ? ": " + esc(r.error) : "")} | ${esc(r.question)} |\n`;
+}
+
 const scoped = rows.filter((r) => r.scope);
 const tokens = scoped.reduce((s, r) => s + (r.scope.inputTokens + r.scope.outputTokens), 0) / Math.max(scoped.length, 1);
 md += `\n## Guardrail cost per question\n\nMean Jev tokens per gate call: ${tokens.toFixed(0)} (input + output). List price $${cfg.usdPerMillionTokens} per 1M tokens, so ${tokens.toFixed(0)} x ${cfg.usdPerMillionTokens} / 1,000,000 = ${usd((tokens * cfg.usdPerMillionTokens) / 1_000_000)} per gate call. An allowed question adds an output check of similar size. The per-row cost in the summary is the gateway-reported cost when present, else that arithmetic.\n`;
 
 fs.writeFileSync(OUT, md);
-console.error(`\nWrote ${path.relative(ROOT, OUT)}: ${rows.filter((r) => r.pass).length}/${rows.length} cases as expected.`);
+console.error(`\nWrote ${path.relative(ROOT, OUT)}: ${rows.filter((r) => r.pass).length}/${rows.length} single-turn cases and ${convRows.filter((r) => r.pass).length}/${convRows.length} conversation turns as expected.`);

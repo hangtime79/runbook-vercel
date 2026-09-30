@@ -170,7 +170,8 @@ export const scopeGate: Guardrail = (ctx, opts) => {
           }
           done.push({ turn: turns[i], rec: await p });
         }
-        const rec = done[last].rec;
+        // `done` holds only the window (the last contextTurns + 1 turns), so the newest is the final entry.
+        const rec = done.at(-1)!.rec;
         v = {
           model: modelId,
           ms: Math.round(performance.now() - t0),

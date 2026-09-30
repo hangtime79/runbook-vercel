@@ -288,3 +288,16 @@ const a = (text: string): ModelMessage => ({ role: "assistant", content: text })
   assert.equal(r.ctx.scope?.outcome, "unavailable");
   console.log("PASS 13 conversation gate error: fails closed");
 }
+
+// 14. A long conversation (more turns than the context window) still gets a verdict for the newest turn.
+{
+  const j = jev((s) => (s.message.startsWith("Who is") ? { inScope: 0.04, category: "person_lookup" } : { inScope: 0.9 }));
+  const msgs: ModelMessage[] = [];
+  for (let i = 1; i <= 7; i++) msgs.push(u(`What is the fraud rate on day ${i}?`), a(`Day ${i}: 9%.`));
+  msgs.push(u("Who is Jeff Drda?"));
+  const r = await run(answering(answer), j.model, msgs);
+  assert.equal(r.ctx.scope?.outcome, "blocked", "case 14: verdict for turn 8 of 8");
+  assert.equal(j.gateStates.length, 5, "case 14: the window is the last contextTurns + 1 turns");
+  assert.equal(j.gateStates.at(-1)!.conversation.length, 4, "case 14: context is capped at 4 turns");
+  console.log("PASS 14 long conversation: window capped, newest turn judged");
+}
