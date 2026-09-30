@@ -5,9 +5,12 @@ import {
   streamText,
   tool,
   toUIMessageStream,
+  wrapLanguageModel,
+  gateway,
   type UIMessage,
 } from "ai";
 import { z } from "zod";
+import { buildGuardrails, createGuardContext } from "@/lib/guardrails";
 import { source } from "@/lib/source";
 import { headlineTool, offerHeadlineAfterQuery } from "@/lib/askSteps";
 import { systemPrompt } from "@/lib/askPrompt";
@@ -18,6 +21,7 @@ import {
   modelSwitchEnabled,
   pickModel,
   type AnswerMeta,
+  type AskMetadata,
 } from "@/lib/askConfig";
 
 export const maxDuration = 120;
@@ -39,7 +43,7 @@ export function GET() {
 }
 
 export async function POST(req: Request) {
-  let body: { messages?: UIMessage[]; model?: unknown; omitWriteRule?: unknown };
+  let body: { messages?: UIMessage[]; model?: unknown; omitWriteRule?: unknown; skipScopeGate?: unknown };
   try {
     body = await req.json();
   } catch {
@@ -63,8 +67,14 @@ export async function POST(req: Request) {
   const startedAt = performance.now();
   // Cost the gateway reports per step (providerMetadata.gateway.cost); summed over the answer.
   let gatewayCost: number | null = null;
+  // The guardrail stack (lib/guardrails): every check is a middleware around the answering model.
+  // Eval only: skipScopeGate lets pipeline/eval_ask.mjs prove the SQL guard holds when the gate is bypassed.
+  const guard = createGuardContext();
   const result = streamText({
-    model,
+    model: wrapLanguageModel({
+      model: gateway(model),
+      middleware: buildGuardrails(guard, { skip: evalMode && body.skipScopeGate === true ? ["scopeGate"] : [] }),
+    }),
     // Every model call asks for zero data retention and no prompt training (lib/askConfig.ts).
     providerOptions: { gateway: gatewayOptions() },
     // Stop the model call when the browser disconnects instead of streaming to nobody.
@@ -127,7 +137,9 @@ export async function POST(req: Request) {
           costUsd: gatewayCost ?? listPrice,
           costSource: gatewayCost !== null ? "gateway" : listPrice !== null ? "list price" : null,
         };
-        return evalMode ? { answer, usage: part.totalUsage } : { answer };
+        // The guardrail verdicts ride in the message metadata: a middleware cannot attach it itself.
+        const meta: AskMetadata = { answer, scope: guard.scope, output: guard.output };
+        return evalMode ? { ...meta, usage: part.totalUsage } : meta;
       },
     }),
   });

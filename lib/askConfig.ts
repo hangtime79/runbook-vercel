@@ -1,5 +1,6 @@
 import models from "./askModels.json";
 import prices from "../data/model_prices.json";
+import type { OutputVerdict, ScopeVerdict } from "./guardrails/shared";
 
 /**
  * Model policy for "Ask the data", server side. The allowlist is lib/askModels.json (also read by
@@ -40,6 +41,13 @@ export function estimateCost(model: string, inputTokens = 0, outputTokens = 0): 
   const p = (prices.usd_per_token as Record<string, { input: number; output: number }>)[model];
   return p ? inputTokens * p.input + outputTokens * p.output : null;
 }
+
+/** The UI message metadata the Ask route sends: the answer's cost plus the two guardrail verdicts. */
+export type AskMetadata = {
+  answer?: AnswerMeta;
+  scope?: ScopeVerdict;
+  output?: OutputVerdict;
+};
 
 export type AnswerMeta = {
   model: string;

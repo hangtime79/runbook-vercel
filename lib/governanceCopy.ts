@@ -19,6 +19,9 @@ export const GOVERNANCE = {
     credential: "Vercel OIDC to AI Gateway. No API key is stored in the project's environment variables.",
     credentialBasis: "configured (SPEC invariant 5)",
     can: "Reads data, shows the SQL it ran, and cannot write.",
+    scope:
+      "Every question is checked by a separate evaluation model before the answering model sees it; answers are " +
+      "checked before they are shown. If the check cannot run, the question is refused: it fails closed.",
     zdrOn:
       "Zero data retention and no prompt training are requested on every model call. A model with no ZDR-capable " +
       "provider fails the request; it is never routed around.",
@@ -36,6 +39,7 @@ export const GOVERNANCE = {
       { name: "Copy figures trace to data", what: "Every number typed into the copy is found in the analysis outputs." },
       { name: "Read-only guard rejects writes", what: "DELETE, multi-statement, ATTACH and COPY … TO are refused; a SELECT runs." },
       { name: "Ask headline step", what: "The Ask route's tool loop runs against a mock model." },
+      { name: "Scope gate blocks off-topic questions", what: "An out-of-scope question is refused without the answering model being called; a failed check refuses too." },
     ],
     note:
       "Branch protection on main (required checks plus one review) is a GitHub setting; Vercel does not enforce " +

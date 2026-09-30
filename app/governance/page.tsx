@@ -4,6 +4,7 @@ import { TierTable } from "@/components/TierTable";
 import { ALLOWED_MODELS, DEFAULT_MODEL, pickModel, zdrEnabled } from "@/lib/askConfig";
 import { ROW_LIMIT, TIMEOUT_MS } from "@/lib/askLimits";
 import { deploymentInfo } from "@/lib/deployment";
+import guardrails from "@/lib/guardrails/config.json";
 import { GOVERNANCE as G } from "@/lib/governanceCopy";
 
 export const runtime = "nodejs";
@@ -78,6 +79,9 @@ export default function GovernancePage() {
         <Row k="Data retention" basis="live">{zdr ? G.ai.zdrOn : G.ai.zdrOff}</Row>
         <Row k="Credential" basis={G.ai.credentialBasis}>{G.ai.credential}</Row>
         <Row k="What the AI can do">{G.ai.can}</Row>
+        <Row k="Scope check" basis="live">
+          <span className="font-mono">{guardrails.model}</span> · {G.ai.scope}
+        </Row>
       </Figure>
 
       <Figure className="px-5 py-4">

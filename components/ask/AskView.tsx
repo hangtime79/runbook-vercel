@@ -7,10 +7,10 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import type { AnswerMeta } from "@/lib/askConfig";
+import type { AskMetadata } from "@/lib/askConfig";
 import { ASK } from "@/lib/copy";
 import { useAsk } from "./AskProvider";
-import { Evidence, type QueryOutput } from "./Evidence";
+import { Evidence, ScopeCard, type QueryOutput } from "./Evidence";
 
 type ToolPart = {
   type: string;
@@ -56,13 +56,16 @@ function Steps({ step }: { step: number }) {
 
 function QueryCards({ answer, done }: { answer: UIMessage; done: boolean }) {
   const queries = asToolParts(answer, "query");
-  const meta = (answer.metadata as { answer?: AnswerMeta } | undefined)?.answer;
+  const md = answer.metadata as AskMetadata | undefined;
+  const last = (i: number) => done && i === queries.length - 1;
   return (
     <>
+      {done && md?.scope && !md.scope.allowed && <ScopeCard scope={md.scope} />}
       {queries.map((p, i) => (
         <Evidence
           key={i}
-          answerMeta={done && i === queries.length - 1 ? meta : undefined}
+          answerMeta={last(i) ? md?.answer : undefined}
+          guard={last(i) ? { scope: md?.scope, output: md?.output } : undefined}
           sql={(p.input as { sql?: string } | undefined)?.sql}
           output={p.output as QueryOutput | undefined}
           errorText={p.state === "output-error" ? p.errorText : undefined}
@@ -103,12 +106,13 @@ function Turn({ n, question, answer, live, streamError }: {
           </div>
         )}
         {done && text && (
-          <div className="text-[14px] leading-[1.55] text-pretty [&_li]:my-0.5 [&_p]:my-0 [&_p+p]:mt-2 [&_strong]:font-semibold [&_ul]:my-1 [&_ul]:list-disc [&_ul]:pl-5 [&_table]:my-2 [&_table]:border-collapse [&_table]:text-[13px] [&_th]:border-b [&_th]:border-foreground/15 [&_th]:px-2.5 [&_th]:py-1 [&_th]:text-left [&_th]:font-mono [&_th]:text-[10px] [&_th]:font-medium [&_th]:uppercase [&_th]:tracking-[0.08em] [&_th]:text-foreground/60 [&_td]:border-b [&_td]:border-foreground/[0.07] [&_td]:px-2.5 [&_td]:py-1 [&_td]:tabular-nums">
+          <div className="text-[14px] leading-[1.55] text-pretty [&_li]:my-0.5 [&_p]:my-0 [&_p+p]:mt-2 [&_strong]:font-semibold [&_ul]:my-1 [&_ul]:list-disc [&_ul]:pl-5 [&_table]:my-2 [&_table]:border-collapse [&_table]:text-[13px] [&_th]:border-b [&_th]:border-foreground/15 [&_th]:px-2.5 [&_th]:py-1 [&_th]:text-left [&_th]:font-mono [&_th]:text-[10px] [&_th]:font-medium [&_th]:uppercase [&_th]:tracking-[0.08em] [&_th]:text-foreground/60 [&_td]:border-b [&_td]:border-foreground/[0.07] [&_td]:px-2.5 [&_td]:py-1 [&_td]:tabular-nums [&_pre]:my-2 [&_pre]:overflow-x-auto [&_pre]:border [&_pre]:border-foreground/15 [&_pre]:p-2.5 [&_pre]:font-mono [&_pre]:text-[12px] [&_pre]:leading-[1.5] [&_code]:font-mono [&_code]:text-[12.5px]">
             {/* The model bolds figures with ** and often answers with a small table (GFM). Allow inline
-                emphasis, lists and tables; no raw HTML. */}
+                emphasis, lists, tables and code blocks; no raw HTML. Code blocks are allowed so that if
+                code ever gets past the scope gate it is visible as code, not collapsed into a paragraph. */}
             <ReactMarkdown
               remarkPlugins={[remarkGfm]}
-              allowedElements={["p", "strong", "em", "code", "ul", "ol", "li", "br", "table", "thead", "tbody", "tr", "th", "td"]}
+              allowedElements={["p", "strong", "em", "code", "pre", "ul", "ol", "li", "br", "table", "thead", "tbody", "tr", "th", "td"]}
               unwrapDisallowed
             >
               {text}

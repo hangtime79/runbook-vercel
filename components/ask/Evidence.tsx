@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import type { AnswerMeta } from "@/lib/askConfig";
+import type { OutputVerdict, ScopeVerdict } from "@/lib/guardrails";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 export type QueryOutput =
@@ -57,7 +58,45 @@ function barColumn(columns: string[], rows: unknown[][]): number {
  * The evidence for one query: always the SQL it ran (SPEC invariant 4), then the result rows,
  * or the error / refusal. The SQL stays visible in every state; "Hide SQL" is a view toggle only.
  */
-export function Evidence({ sql, output, errorText, pending, answerMeta }: {
+/** The scope check and output check verdicts as one mono line each (same style as the answer meta line). */
+function GuardLines({ scope, output }: { scope?: ScopeVerdict; output?: OutputVerdict }) {
+  const p = (v: number | null) => (v === null ? "n/a" : v.toFixed(2));
+  return (
+    <>
+      {scope?.allowed && (
+        <p className="m-0 border-t border-border px-3 py-1.5 font-mono text-[11px] text-foreground/65" data-testid="scope-line">
+          scope check passed · {scope.model} · p={p(scope.probability)} · {scope.ms} ms
+        </p>
+      )}
+      {output && !output.allowed && (
+        <p className="m-0 border-t border-border px-3 py-1.5 font-mono text-[11px] text-signal-700" data-testid="output-line">
+          answer withheld by the output check · {output.category} · p={p(output.probability)} · {output.model} · {output.ms} ms
+        </p>
+      )}
+    </>
+  );
+}
+
+/** Shown in place of the evidence when the question never reached the answering model. */
+export function ScopeCard({ scope }: { scope: ScopeVerdict }) {
+  const unavailable = scope.category === "unavailable";
+  return (
+    <Card className="gap-0 rounded-xl border border-border bg-background py-0 ring-0" aria-label="Scope check" data-testid="scope-card">
+      <div className="flex flex-wrap items-center justify-between gap-2 px-3 py-2">
+        <span className="text-[10px] font-medium uppercase tracking-kicker text-signal-700">Scope check</span>
+        <span className="font-mono text-[11px] text-foreground/65">
+          {unavailable
+            ? `unavailable · fails closed · ${scope.model} · ${scope.ms} ms`
+            : `out of scope · ${scope.category} · p=${scope.probability?.toFixed(2) ?? "n/a"} · ${scope.model} · ${scope.ms} ms`}
+        </span>
+      </div>
+    </Card>
+  );
+}
+
+export function Evidence({ sql, output, errorText, pending, answerMeta, guard }: {
+  /** Scope and output verdicts for this answer, shown as footer lines. */
+  guard?: { scope?: ScopeVerdict; output?: OutputVerdict };
   sql?: string;
   output?: QueryOutput;
   errorText?: string;
@@ -159,6 +198,7 @@ export function Evidence({ sql, output, errorText, pending, answerMeta }: {
             : `$${answerMeta.costUsd.toFixed(answerMeta.costUsd < 0.01 ? 5 : 4)} (${answerMeta.costSource})`}
         </p>
       )}
+      {guard && <GuardLines scope={guard.scope} output={guard.output} />}
       <div className="flex flex-wrap justify-between gap-2 border-t border-border px-3 py-1.5 text-[11px] text-foreground/60">
         <span>fraud.duckdb · opened read-only</span>
         <button
