@@ -183,6 +183,12 @@ If any check fails, the owning agent returns the failure in its ≤200-word summ
 - **The merchant category column is `subsector_description`.** It is the column the dashboard's category fallback resolves to on this data.
 - **Numbers must match `pipeline/parity_reference.json`.** Rates within 1e-9, counts exact (`pipeline/check_parity.py`).
 
+### Browser smoke test and the headline test
+
+- **`node pipeline/browser_smoke.mjs [base_url]`** drives the real UI in Chromium: it opens the Ask panel, asks one question through the box, and asserts the evidence card shows the SQL and a result table with no console errors or failed `/api/` requests. It also loads `/explorer` at 1440px with the panel open and at 1920px and asserts no horizontal overflow (Subsector hides below a 900px table wrapper, Hour below 720px). It calls the live model, so the server needs gateway credentials. Start a production build first (`npm run build && npm run start`).
+- **playwright-core is not in `package.json`.** It lives in `~/.cache/runbook-playwright` (override with `PLAYWRIGHT_CORE_DIR`). To set it up: `mkdir -p ~/.cache/runbook-playwright && cd ~/.cache/runbook-playwright && npm init -y && npm i playwright-core`. The browser is `CHROMIUM_PATH`, or the newest `chromium_headless_shell-*` under `~/.cache/ms-playwright`.
+- **`node --no-warnings pipeline/test_ask_headline.mts`** runs the Ask route's headline step against the SDK's mock model (no network). The route offers the `headline` tool after a successful query (`lib/askSteps.ts`) instead of forcing it: a forced `toolChoice` throws `ToolChoiceViolationError` when the model returns nothing, and the SDK never retries that error.
+
 ### AI Gateway and the Vercel CLI
 
 The app's model calls (later phases) go through Vercel AI Gateway; the coding agent's do not. Claude Code stays on its direct login: never add `ANTHROPIC_BASE_URL` or gateway keys to `~/.claude/settings.json`, and never run `vercel setup` or `vercel ai-gateway setup`, which rewrite that file. Locally the app reads `AI_GATEWAY_API_KEY` from `.env.local` (gitignored). Do not run `vercel link`, `vercel env` or any production deploy without the owner's approval.
