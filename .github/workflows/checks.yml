@@ -1,0 +1,81 @@
+# Change control for this app. These jobs need no secrets and never call the AI Gateway.
+# Require them on main with GitHub branch protection (see CLAUDE.md, "Change control").
+name: Checks
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+
+  figures:
+    name: Copy figures trace to data
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
+      - run: uv sync
+      - run: uv run python3 pipeline/check_story_figures.py
+
+  parity:
+    name: Numbers match source data
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          cache: npm
+      - uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
+      - run: npm ci
+      - run: uv sync
+      - run: npm run build
+      - name: Start the production server
+        run: |
+          nohup npm run start > server.log 2>&1 &
+          for i in $(seq 1 60); do
+            curl -fs http://localhost:3000/api/stats > /dev/null && exit 0
+            sleep 1
+          done
+          cat server.log
+          exit 1
+      - run: uv run python3 pipeline/check_parity.py
+
+  guard:
+    name: Read-only guard rejects writes
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: node --no-warnings pipeline/test_guard.mts
+
+  ask-headline:
+    name: Ask tool loop (mock model)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: node --no-warnings pipeline/test_ask_headline.mts
