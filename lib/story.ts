@@ -1,7 +1,7 @@
 import { AGE_LABELS, CHAPTERS, type ChapterSrc } from "./copy";
 import { readModelSummary } from "./docs";
 import { int, pct } from "./format";
-import { amountBands, headlineCounts, storyFigures } from "./queries";
+import { source } from "./source";
 
 export type Bar = { label: string; value: number; highlight: boolean; mono?: boolean };
 
@@ -37,9 +37,9 @@ const AXIS_MAX: Record<ChapterSrc, number> = {
 
 export async function loadStory() {
   const [counts, f, bands, model] = await Promise.all([
-    headlineCounts(),
-    storyFigures(),
-    amountBands(),
+    source.headlineCounts(),
+    source.storyFigures(),
+    source.amountBands(),
     readModelSummary(),
   ]);
   const baseline = counts.fraud / counts.labeled;

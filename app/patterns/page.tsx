@@ -5,7 +5,7 @@ import { Figure, RateBars } from "@/components/Figure";
 import { Page, PageHeader } from "@/components/PageHeader";
 import { PATTERNS } from "@/lib/copy";
 import { int, pct } from "@/lib/format";
-import { amountBands, fraudRateByHour, fraudRateBySubsector, headlineCounts, heatmap } from "@/lib/queries";
+import { source } from "@/lib/source";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -26,11 +26,11 @@ function Lead({ lead, rest }: { lead: string; rest: string }) {
 
 export default async function PatternsPage() {
   const [counts, byHour, byCategory, grid, bands] = await Promise.all([
-    headlineCounts(),
-    fraudRateByHour(),
-    fraudRateBySubsector(),
-    heatmap(),
-    amountBands(),
+    source.headlineCounts(),
+    source.fraudRateByHour(),
+    source.fraudRateBySubsector(),
+    source.heatmap(),
+    source.amountBands(),
   ]);
   const baseline = counts.fraud / counts.labeled;
   const categories = byCategory.slice(0, CATEGORY_ROWS);

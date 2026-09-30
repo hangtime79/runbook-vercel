@@ -1,6 +1,6 @@
 import { DuckDBInstance, type DuckDBConnection } from "@duckdb/node-api";
-import { dataPath } from "./duckdb";
-import { ROW_LIMIT, TIMEOUT_MS } from "./askLimits";
+import { dataPath } from "./duckdb.ts";
+import { ROW_LIMIT, TIMEOUT_MS } from "./askLimits.ts";
 
 /**
  * Read-only query path for "Ask the data" (SPEC invariant 2). Two independent layers:

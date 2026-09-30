@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { EXPLORER } from "@/lib/copy";
 import { usd } from "@/lib/format";
-import type { ExplorerRow } from "@/lib/queries";
+import type { ExplorerRow } from "@/lib/source";
 
 type FilterKey = "all" | "flagged" | "fraud" | "micro" | "hot";
 

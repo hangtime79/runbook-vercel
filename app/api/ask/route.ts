@@ -8,7 +8,7 @@ import {
   type UIMessage,
 } from "ai";
 import { z } from "zod";
-import { runReadOnlyQuery } from "@/lib/askdb";
+import { source } from "@/lib/source";
 import { headlineTool, offerHeadlineAfterQuery } from "@/lib/askSteps";
 import { systemPrompt } from "@/lib/askPrompt";
 import {
@@ -89,7 +89,7 @@ export async function POST(req: Request) {
         // The elapsed time is shown in the evidence card; the guard itself is untouched.
         execute: async ({ sql }) => {
           const t0 = performance.now();
-          const result = await runReadOnlyQuery(sql);
+          const result = await source.query(sql);
           return { ...result, ms: Math.round(performance.now() - t0) };
         },
       }),

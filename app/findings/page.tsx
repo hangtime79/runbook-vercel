@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { FINDINGS, RECOMMENDATIONS } from "@/lib/copy";
 import { merchantSpread, typologies, varianceRanking } from "@/lib/findings";
 import { pct } from "@/lib/format";
-import { storyFigures } from "@/lib/queries";
+import { source } from "@/lib/source";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -14,7 +14,7 @@ export default async function FindingsPage() {
     varianceRanking(),
     typologies(),
     merchantSpread(),
-    storyFigures(),
+    source.storyFigures(),
   ]);
   const maxRange = Math.max(...variance.map((v) => v.range));
   const { micro, velocity, both } = story.triggers;

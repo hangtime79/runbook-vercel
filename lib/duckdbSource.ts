@@ -1,4 +1,4 @@
-import { dataPath, query } from "./duckdb";
+import { dataPath, query } from "./duckdb.ts";
 
 const gr = () => `read_parquet('${dataPath("golden_record.parquet")}')`;
 const features = () => `read_parquet('${dataPath("features.parquet")}')`;
@@ -202,3 +202,5 @@ export async function storyFigures() {
     },
   };
 }
+
+export type StoryFigures = Awaited<ReturnType<typeof storyFigures>>;
