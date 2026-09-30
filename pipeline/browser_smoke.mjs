@@ -89,6 +89,36 @@ try {
     await page.close();
   }
 
+  // ---- 1b. Unclear outcome, and an allowed answer that ran no query (fresh conversation) --------------
+  {
+    const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+    await page.goto(BASE + "/story", { waitUntil: "networkidle" });
+    const opener = page.getByRole("button", { name: "Open the Ask the data panel" });
+    if (await opener.count()) await opener.click();
+    const input = page.getByRole("textbox", { name: "Question" });
+
+    // On topic but too vague: the card says "unclear", never "out of scope", and shows the fixed reply.
+    await input.fill("What about the other one?");
+    await page.getByRole("button", { name: "Ask", exact: true }).click();
+    const card = page.getByTestId("scope-card");
+    await card.waitFor({ timeout: 60_000 });
+    const cardText = (await card.innerText()).replace(/\s+/g, " ").trim();
+    check(/^SCOPE CHECK unclear · p=\d\.\d\d · typesafe-ai\/jev · \d+ ms$/i.test(cardText), `vague question shows an "unclear" SCOPE CHECK card (${cardText})`);
+    check(!/out of scope/i.test(cardText), "unclear card never says out of scope");
+    check((await page.getByText("I'm not sure that's a question about the fraud data.").count()) > 0, "unclear question shows the fixed rephrase reply");
+
+    // An allowed answer with no query says so where the evidence card would be.
+    await input.fill("How would you determine the distance between two transactions?");
+    await page.getByRole("button", { name: "Ask", exact: true }).click();
+    await page.waitForFunction(() => !document.querySelector('ol[aria-label="Progress"]'), null, { timeout: 120_000 });
+    const note = page.getByTestId("no-query-note");
+    await note.waitFor({ timeout: 60_000 });
+    const noteText = (await note.innerText()).replace(/\s+/g, " ");
+    check(noteText.includes("No query was run. This answer comes from the analysis documents, not a live query."), "no-query answer shows the \"No query was run\" line");
+    check(/scope check passed/.test(noteText), "no-query answer keeps the scope-check line");
+    await page.close();
+  }
+
   // ---- 2. Explorer with the Ask panel open ---------------------------------------------------
   {
     const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
