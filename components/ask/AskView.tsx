@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import type { AskMetadata } from "@/lib/askConfig";
 import { ASK } from "@/lib/copy";
 import { useAsk } from "./AskProvider";
-import { Evidence, ScopeCard, type QueryOutput } from "./Evidence";
+import { Evidence, NoQueryNote, ScopeCard, type QueryOutput } from "./Evidence";
 
 type ToolPart = {
   type: string;
@@ -61,6 +61,10 @@ function QueryCards({ answer, done }: { answer: UIMessage; done: boolean }) {
   return (
     <>
       {done && md?.scope && !md.scope.allowed && <ScopeCard scope={md.scope} />}
+      {/* An allowed answer that ran no query says so, in the evidence card's place. */}
+      {done && md?.scope?.allowed && queries.length === 0 && textOf(answer) && (
+        <NoQueryNote answerMeta={md.answer} guard={{ scope: md.scope, output: md.output }} />
+      )}
       {queries.map((p, i) => (
         <Evidence
           key={i}

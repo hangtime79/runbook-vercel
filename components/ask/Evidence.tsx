@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import type { AnswerMeta } from "@/lib/askConfig";
+import { ASK } from "@/lib/copy";
 import type { OutputVerdict, ScopeVerdict } from "@/lib/guardrails";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
@@ -79,17 +80,53 @@ function GuardLines({ scope, output }: { scope?: ScopeVerdict; output?: OutputVe
 
 /** Shown in place of the evidence when the question never reached the answering model. */
 export function ScopeCard({ scope }: { scope: ScopeVerdict }) {
-  const unavailable = scope.category === "unavailable";
+  const p = scope.probability?.toFixed(2) ?? "n/a";
+  const tail = `${scope.model} · ${scope.ms} ms`;
+  // Three outcomes: unclear is on topic but too vague, so it is never labelled "out of scope".
+  const label =
+    scope.outcome === "unavailable"
+      ? `unavailable · fails closed · ${tail}`
+      : scope.outcome === "unclear"
+        ? `unclear · p=${p} · ${tail}`
+        : scope.followUpOf
+          ? `out of scope · follow-up to ${scope.followUpOf} · p=${p} · ${tail}`
+          : `out of scope · ${scope.category} · p=${p} · ${tail}`;
   return (
     <Card className="gap-0 rounded-xl border border-border bg-background py-0 ring-0" aria-label="Scope check" data-testid="scope-card">
       <div className="flex flex-wrap items-center justify-between gap-2 px-3 py-2">
         <span className="text-[10px] font-medium uppercase tracking-kicker text-signal-700">Scope check</span>
-        <span className="font-mono text-[11px] text-foreground/65">
-          {unavailable
-            ? `unavailable · fails closed · ${scope.model} · ${scope.ms} ms`
-            : `out of scope · ${scope.category} · p=${scope.probability?.toFixed(2) ?? "n/a"} · ${scope.model} · ${scope.ms} ms`}
-        </span>
+        <span className="font-mono text-[11px] text-foreground/65">{label}</span>
       </div>
+    </Card>
+  );
+}
+
+/** Who answered, how long it took and what it cost (one mono line). */
+function AnswerMetaLine({ answerMeta }: { answerMeta: AnswerMeta }) {
+  return (
+    <p className="m-0 border-t border-border px-3 py-1.5 font-mono text-[11px] text-foreground/65" data-testid="answer-meta">
+      {answerMeta.model} · {(answerMeta.ms / 1000).toFixed(1)} s · {answerMeta.inputTokens.toLocaleString("en-US")} in /{" "}
+      {answerMeta.outputTokens.toLocaleString("en-US")} out ·{" "}
+      {answerMeta.costUsd === null || answerMeta.costSource === null
+        ? "cost n/a"
+        : `$${answerMeta.costUsd.toFixed(answerMeta.costUsd < 0.01 ? 5 : 4)} (${answerMeta.costSource})`}
+    </p>
+  );
+}
+
+/**
+ * Where the evidence card would be, for an allowed answer that ran no query. SPEC invariant 4: an
+ * answer either shows its SQL or says it ran none.
+ */
+export function NoQueryNote({ answerMeta, guard }: { answerMeta?: AnswerMeta; guard?: { scope?: ScopeVerdict; output?: OutputVerdict } }) {
+  return (
+    <Card className="gap-0 rounded-xl border border-border bg-background py-0 ring-0" aria-label="Evidence" data-testid="no-query-note">
+      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border px-3 py-2">
+        <span className="text-[10px] font-medium uppercase tracking-kicker text-signal-700">Evidence</span>
+      </div>
+      <p className="m-0 px-3 py-2.5 text-[12px] text-foreground/75">{ASK.noQuery}</p>
+      {answerMeta && <AnswerMetaLine answerMeta={answerMeta} />}
+      {guard && <GuardLines scope={guard.scope} output={guard.output} />}
     </Card>
   );
 }
@@ -186,18 +223,7 @@ export function Evidence({ sql, output, errorText, pending, answerMeta, guard }:
           Showing the first {PREVIEW_ROWS} of {ok.rowCount} rows{ok.truncated ? " (result capped at 200)" : ""}.
         </p>
       )}
-      {answerMeta && (
-        <p
-          className="m-0 border-t border-border px-3 py-1.5 font-mono text-[11px] text-foreground/65"
-          data-testid="answer-meta"
-        >
-          {answerMeta.model} · {(answerMeta.ms / 1000).toFixed(1)} s · {answerMeta.inputTokens.toLocaleString("en-US")} in /{" "}
-          {answerMeta.outputTokens.toLocaleString("en-US")} out ·{" "}
-          {answerMeta.costUsd === null || answerMeta.costSource === null
-            ? "cost n/a"
-            : `$${answerMeta.costUsd.toFixed(answerMeta.costUsd < 0.01 ? 5 : 4)} (${answerMeta.costSource})`}
-        </p>
-      )}
+      {answerMeta && <AnswerMetaLine answerMeta={answerMeta} />}
       {guard && <GuardLines scope={guard.scope} output={guard.output} />}
       <div className="flex flex-wrap justify-between gap-2 border-t border-border px-3 py-1.5 text-[11px] text-foreground/60">
         <span>fraud.duckdb · opened read-only</span>

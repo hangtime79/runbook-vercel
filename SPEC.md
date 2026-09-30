@@ -46,7 +46,7 @@ URL within about a week; P3 within a few weeks.
 2. **SQL is read-only.** The query tool rejects anything but a single `SELECT`, and the connection
    is opened read-only as well. Two layers, because a prompt is not a permission.
 3. **No secret reaches the client.** Model keys and data credentials live server-side only.
-4. **Every AI answer shows its SQL.** A non-developer can trust an answer they can inspect.
+4. **Every AI answer shows its SQL, or says it ran none.** A non-developer can trust an answer they can inspect. An answer that ran a query shows the SQL; one that answered from the analysis documents says "No query was run" where the evidence card would be.
 5. **The app's model calls go through AI Gateway; the coding agent's do not.** Every AI SDK call in
    the app uses the gateway. Claude Code, the tool building this, stays on its direct Anthropic
    login: never add `ANTHROPIC_BASE_URL` or gateway keys to `~/.claude/settings.json`, and never
