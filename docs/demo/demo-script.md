@@ -18,6 +18,19 @@ Sources for every Vercel claim: `docs/demo/vercel-positioning.md` and
 fraud team's speed and IT's control. The CIO owns the platform; the fraud team owns the apps.
 Every app, however it was built, lands on the same rails: identity, review, logging, rollback."
 
+**Two tiers, stated once in Act 2 and again at the close.** Everything they see live runs on a
+**Pro** plan: that's the proof point, the workflow working today. **Enterprise** is what a
+regulated bank needs to run it in production: the controls APRA will ask about. Never apologise
+for Enterprise-only features; present them as the production tier.
+
+| Proven today on Pro (live in the demo) | Enterprise adds (what APRA-grade production needs) |
+|---|---|
+| Deployment Protection with Vercel login on every deployment | **Passport**: your own IdP (Entra/Okta) in front of every app, group claims in the app |
+| Team roles; preview per change; rollback in seconds | **SAML SSO enforced, Directory Sync, Access Groups**, Enterprise Viewer role for auditors |
+| Functions pinned to Sydney (Pro: up to 5 regions) | **Function failover regions**; **Secure Compute** (dedicated VPC, peering, VPN) |
+| AI Gateway: OIDC (no key), per-request ZDR, no training, logs, budgets | **Audit logs** and **Audit Log Drains** to Splunk/Datadog/S3 for your SIEM and CPS 234 audit |
+| Required checks + Deployment Checks on production | **99.99% SLA**, and the contract conversation CPS 230 needs (APRA access rights, offshoring) |
+
 **This app is the prop.** It *is* an investigator-style app: an analysis turned into a tool,
 built by coding agents from a written runbook. Tell them that; it's the whole point.
 
@@ -159,7 +172,10 @@ lives in your environment variables." Connect is GA (2026-08-25); Snowflake is a
 real product, instead of a script on a laptop."
 *To CIO:* "You own one platform: identity, regions, approved models, change control, logs,
 rollback. Every app lands there by default."
-*To both:* "And when APRA asks how you govern AI in development and in use, you show them this."
+*To both:* "Everything you saw today ran on Pro. That's the proof it works. Enterprise is how you
+run it as a bank: your identity provider in front of every app, audit logs in your SIEM, the SLA
+and the contract terms CPS 230 needs. And when APRA asks how you govern AI in development and in
+use, you show them this."
 
 ---
 
@@ -184,7 +200,7 @@ A risk-literate CIO will find these. Raise them yourself; it builds trust.
 |---|---|
 | AI Gateway inference regions are **US and EU only**, and the gateway hop isn't region-pinned yet | "Functions and data run in Sydney. Model calls leave Australia today, with zero retention and no training. For a regulated workload you'd classify the data first. Vercel's docs say region-pinned gateway hosts are coming; no date." |
 | Data may be processed outside Australia (Vercel's compliance page) | "That's in the terms; it goes on your CPS 230 offshoring assessment, same as any cloud provider." |
-| Most governance controls are **Enterprise** (audit logs, SIEM drain, Directory Sync, Passport, Secure Compute) | "A Pro pilot proves the workflow; the controls APRA cares about come with Enterprise." |
+| Most governance controls are **Enterprise** (audit logs, SIEM drain, Directory Sync, Passport, Secure Compute) | Not a gap; it's the two-tier story. "What you saw runs on Pro: that's the proof. Enterprise is the production tier, with the controls APRA will ask you to evidence." |
 | Budgets are soft caps; Force Promote can bypass checks | "Soft cap: the crossing request finishes, new ones are refused. Force Promote exists as an override; who may use it is a question to confirm with Vercel before you rely on it." |
 | Some controls are beta (gateway routing rules, Vercel Agent) | Say so when you show them. |
 | No Australian bank reference | Don't imply one. Closest proof: Neo Financial (Canadian digital bank), Ramp, Stripe's v0-built internal app. |
