@@ -33,7 +33,6 @@ present each tier as the next step.
 
 Check on the day which gateway controls (provider allowlist, routing rules, budgets) your plan
 shows before demoing them live; their plan requirements weren't stated in the docs we read.
-| Required checks + Deployment Checks on production | **99.99% SLA**, and the contract conversation CPS 230 needs (APRA access rights, offshoring) |
 
 **This app is the prop.** It *is* an investigator-style app: an analysis turned into a tool,
 built by coding agents from a written runbook. Tell them that; it's the whole point.
@@ -58,6 +57,18 @@ placeholder until the trial exists.
 | Screenshots of each key screen | You | Fallback if anything fails live |
 
 ---
+
+## Act 0 — Open inside the app (2 min) · `/intro`
+
+Start on the app's root URL; it opens `/intro` full-screen. Move with the arrow keys.
+1. **The situation.** Tell the story in two sentences: a fraud wave, investigators built their
+   own tools, one cracked a ring. "This app is one of those tools."
+2. **The tension.** Look at each of them in turn: Head of Fraud, "keep the speed"; CIO, "I keep
+   inheriting apps I didn't build." Read the APRA line aloud.
+3. **The thesis.** Pause on it. Say it once, slowly.
+4. **What you'll see.** Name the four acts; don't click yet.
+5. **Three tiers.** One sentence: "Everything you'll see runs on Vercel's free tier."
+6. **Start the demo →** takes you to the Story.
 
 ## Act 1 — The Head of Fraud's app (4 min)
 
@@ -220,7 +231,7 @@ approval (GitHub branch protection does).
 
 | Time | Beat | Keep |
 |---|---|---|
-| 0:00–0:30 | Setup | The ring, the shadow apps, the thesis line |
+| 0:00–0:30 | `/intro` | Sections 1, 3 and 6 only: the ring, the thesis, Start |
 | 0:30–1:45 | Act 1 | One Ask with evidence; the delete refusal |
 | 1:45–3:00 | Act 2 | Login wall; `/governance` (Sydney, approved models, no training, no key); gateway logs |
 | 3:00–4:30 | Act 3 | APRA change-control quote; the PR's checks and protected preview |
