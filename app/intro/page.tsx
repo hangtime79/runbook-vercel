@@ -83,6 +83,11 @@ export default async function IntroPage() {
                 <span className="font-mono text-[12px] text-signal-700">{String(i + 1).padStart(2, "0")}</span>
                 <span className="text-[19px] font-semibold leading-[1.2]">{c.title}</span>
                 <span className="text-[14px] text-foreground/70">{c.text}</span>
+                {/* The platform value behind the screen; pinned to the card bottom so the four line up. */}
+                <span className="mt-auto flex flex-col gap-1 border-t border-border pt-3">
+                  <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-signal-700">On Vercel</span>
+                  <span className="min-h-[5.8em] text-[14px] leading-[1.45] text-foreground/90">{c.vercel}</span>
+                </span>
               </>
             );
             const cls = `${CARD} flex min-w-0 flex-col gap-2 px-5 py-5 text-foreground no-underline transition-colors hover:border-border-strong hover:text-foreground`;

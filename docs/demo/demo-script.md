@@ -66,7 +66,11 @@ Start on the app's root URL; it opens `/intro` full-screen. Move with the arrow 
 2. **The tension.** Look at each of them in turn: Head of Fraud, "keep the speed"; CIO, "I keep
    inheriting apps I didn't build." Read the APRA line aloud.
 3. **The thesis.** Pause on it. Say it once, slowly.
-4. **What you'll see.** Name the four acts; don't click yet.
+4. **What you'll see.** Name the four acts; don't click yet. Each card has an **On Vercel** line:
+   read the one that matches the person you're looking at. Cards 01 and 02 to the Head of Fraud
+   (idle costs nothing; any model, no key, checked). Cards 03 and 04 to the CIO (set once, every app
+   inherits; every change a protected URL, rollback in seconds). These are the promises the rest of
+   the demo proves.
 5. **Three tiers.** One sentence: "Everything you'll see runs on Vercel's free tier."
 6. **Start the demo →** takes you to the Story.
 

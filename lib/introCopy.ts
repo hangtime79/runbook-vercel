@@ -32,10 +32,10 @@ export const INTRO = {
     kicker: "What you'll see",
     title: "Four screens, one app.",
     cards: [
-      { key: "story", title: "The fraud team's app", text: "An analysis turned into something the team can act on.", href: "/story" },
-      { key: "ask", title: "Ask the data, with evidence", text: "Every answer shows the SQL it ran. It can only read.", href: "/ask" },
-      { key: "gov", title: "On the CIO's rails", text: "Who can see it, where it runs, what AI it calls.", href: "/governance" },
-      { key: "pr", title: "AI in development, under change control", text: "A change from a coding agent: preview, checks, review.", href: "PR" },
+      { key: "story", title: "The fraud team's app", text: "An analysis turned into something the team can act on.", vercel: "Runs next to its data, in Sydney, and bills only while it works. An idle dashboard costs nothing.", href: "/story" },
+      { key: "ask", title: "Ask the data, with evidence", text: "Every answer shows the SQL it ran. It can only read.", vercel: "One integration reaches any model, with no key to leak. A second model checks every question for a fraction of a cent.", href: "/ask" },
+      { key: "gov", title: "On the CIO's rails", text: "Who can see it, where it runs, what AI it calls.", vercel: "IT sets identity, region and approved models once, on the platform. Every app inherits them, however it was built.", href: "/governance" },
+      { key: "pr", title: "AI in development, under change control", text: "A change from a coding agent: preview, checks, review.", vercel: "Every change is a live, protected URL before it ships. A bad release rolls back in seconds, without a rebuild.", href: "PR" },
     ],
   },
   tiers: {
