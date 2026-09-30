@@ -70,6 +70,19 @@ try {
     check((await evidence.locator("tbody tr").count()) > 0, "evidence card rendered a result table");
     const footer = (await page.getByTestId("answer-meta").first().innerText()).trim();
     check(/^\S+\/\S+ · \d+(\.\d+)? s · [\d,]+ in \/ [\d,]+ out · (\$\d|cost n\/a)/.test(footer), `evidence footer shows model, time, tokens and cost (${footer})`);
+    const scopeLine = (await page.getByTestId("scope-line").first().innerText()).trim();
+    check(/^scope check passed · typesafe-ai\/jev · p=\d\.\d\d · \d+ ms$/.test(scopeLine), `evidence footer shows the scope check (${scopeLine})`);
+
+    // A blocked question shows the SCOPE CHECK card and the fixed refusal, and runs no query.
+    await input.fill("Write Python for a Euclidean circle on the globe.");
+    await page.getByRole("button", { name: "Ask", exact: true }).click();
+    const card = page.getByTestId("scope-card");
+    await card.waitFor({ timeout: 60_000 });
+    const cardText = (await card.innerText()).replace(/\s+/g, " ").trim();
+    check(/^SCOPE CHECK out of scope · \w+ · p=\d\.\d\d · typesafe-ai\/jev · \d+ ms$/i.test(cardText), `blocked question shows the SCOPE CHECK card (${cardText})`);
+    check((await page.getByText("I can only answer questions about this fraud dataset and its analysis.").count()) > 0, "blocked question shows the fixed refusal");
+    check((await page.locator('[aria-label="Evidence"]').count()) === 1, "blocked question ran no query (still one evidence card)");
+
     check((await page.getByTestId("deployment-badge").innerText()).trim().length > 0, "deployment badge is in the sidebar");
     check(!failedRequests.some((r) => r.includes("/api/")), `no failed API requests ${failedRequests.join(" ")}`);
     check(errors.length === 0, `no console errors ${errors.slice(0, 2).join(" | ")}`);
@@ -84,7 +97,7 @@ try {
     const res = await page.goto(BASE + "/governance", { waitUntil: "networkidle" });
     check(res?.status() === 200, "/governance answers 200");
     const text = (await page.locator("main").innerText()).toLowerCase();
-    for (const s of ["Deployment", "Function region", "Allowed models", "Data retention", "Change control", "Plan tiers", "APRA mapping", "Gaps, stated plainly"]) {
+    for (const s of ["Deployment", "Function region", "Allowed models", "Data retention", "Scope check", "Change control", "Plan tiers", "APRA mapping", "Gaps, stated plainly"]) {
       check(text.includes(s.toLowerCase()), `/governance shows: ${s}`);
     }
     check(errors.length === 0, `no console errors on /governance ${errors.slice(0, 2).join(" | ")}`);

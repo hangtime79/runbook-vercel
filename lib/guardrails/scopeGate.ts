@@ -14,8 +14,11 @@ import { judge, textResult, textStream, type Guardrail, type ScopeVerdict } from
 
 const TOOL = "Answers questions from fraud investigators about one card-transaction dataset and its analysis.";
 const TABLES = [
-  "golden_record: one row per transaction (card, merchant, amount, time, merchant category, authorized_flag)",
-  "features: the fraud model's feature matrix (velocity, amount, time, geography, identity features)",
+  "golden_record: one row per transaction. Columns: transaction_id, authorized_flag (0 = fraud, 1 = legitimate, NULL = unlabeled), " +
+    "purchase_date, card_id, merchant_id, merchant_category_id, item_category, purchase_amount, signature_provided, " +
+    "first_active_month, reward_program, card_lat, card_lon, age (cardholder age), subsector_description (merchant category), merch_lat, merch_lon",
+  "features: the fraud model's feature matrix for labeled transactions (velocity, amount, hour, day of week, geography/impossible travel, " +
+    "signature, age and identity features)",
 ];
 
 const QUESTIONS = {
