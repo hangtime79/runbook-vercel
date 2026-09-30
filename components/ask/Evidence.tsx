@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
+import type { AnswerMeta } from "@/lib/askConfig";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 export type QueryOutput =
@@ -48,11 +49,13 @@ function barColumn(columns: string[], rows: unknown[][]): number {
  * The evidence for one query: always the SQL it ran (SPEC invariant 4), then the result rows,
  * or the error / refusal. The SQL stays visible in every state; "Hide SQL" is a view toggle only.
  */
-export function Evidence({ sql, output, errorText, pending }: {
+export function Evidence({ sql, output, errorText, pending, answerMeta }: {
   sql?: string;
   output?: QueryOutput;
   errorText?: string;
   pending: boolean;
+  /** Who answered, how long it took and what it cost; shown once the answer has finished. */
+  answerMeta?: AnswerMeta;
 }) {
   const [showSql, setShowSql] = useState(true);
   const shownSql = output?.sql ?? sql ?? "";
@@ -134,6 +137,18 @@ export function Evidence({ sql, output, errorText, pending }: {
       {ok && ok.rowCount > PREVIEW_ROWS && (
         <p className="m-0 px-3 pb-2 text-[11px] text-foreground/60">
           Showing the first {PREVIEW_ROWS} of {ok.rowCount} rows{ok.truncated ? " (result capped at 200)" : ""}.
+        </p>
+      )}
+      {answerMeta && (
+        <p
+          className="m-0 border-t border-border px-3 py-1.5 font-mono text-[11px] text-foreground/65"
+          data-testid="answer-meta"
+        >
+          {answerMeta.model} · {(answerMeta.ms / 1000).toFixed(1)} s · {answerMeta.inputTokens.toLocaleString("en-US")} in /{" "}
+          {answerMeta.outputTokens.toLocaleString("en-US")} out ·{" "}
+          {answerMeta.costUsd === null || answerMeta.costSource === null
+            ? "cost n/a"
+            : `$${answerMeta.costUsd.toFixed(answerMeta.costUsd < 0.01 ? 5 : 4)} (${answerMeta.costSource})`}
         </p>
       )}
       <div className="flex flex-wrap justify-between gap-2 border-t border-border px-3 py-1.5 text-[11px] text-foreground/60">

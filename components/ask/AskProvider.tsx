@@ -6,6 +6,7 @@ import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useState,
   useSyncExternalStore,
@@ -19,6 +20,8 @@ type AskContextValue = {
   busy: boolean;
   /** Send a question and open the panel. Ignored while an answer is streaming. */
   ask: (text: string) => void;
+  /** Model switch: null options when the server has it off (ASK_DEMO_MODEL_SWITCH unset). */
+  modelChoice: { models: { id: string; label: string }[]; selected: string; select: (id: string) => void } | null;
   panelOpen: boolean;
   setPanelOpen: (open: boolean) => void;
 };
@@ -51,19 +54,39 @@ export function AskProvider({ children }: { children: ReactNode }) {
   const [manual, setManual] = useState<boolean | null>(null);
   const panelOpen = manual ?? wide;
 
+  // Server-owned config: whether the model switch is on, and the allowlist. The server re-checks
+  // the chosen id, so this only draws the control.
+  const [config, setConfig] = useState<{
+    switchEnabled: boolean;
+    models: { id: string; label: string }[];
+    defaultModel: string;
+  } | null>(null);
+  const [chosen, setChosen] = useState<string | null>(null);
+  useEffect(() => {
+    fetch("/api/ask")
+      .then((r) => (r.ok ? r.json() : null))
+      .then(setConfig)
+      .catch(() => setConfig(null));
+  }, []);
+  const selected = chosen ?? config?.defaultModel ?? "";
+
   const ask = useCallback(
     (text: string) => {
       const q = text.trim();
       if (!q || busy) return;
       setManual(true);
-      sendMessage({ text: q });
+      sendMessage({ text: q }, config?.switchEnabled && selected ? { body: { model: selected } } : undefined);
     },
-    [busy, sendMessage]
+    [busy, sendMessage, config, selected]
   );
 
+  const modelChoice = config?.switchEnabled
+    ? { models: config.models, selected, select: setChosen }
+    : null;
+
   const value = useMemo(
-    () => ({ messages, status, error, busy, ask, panelOpen, setPanelOpen: setManual }),
-    [messages, status, error, busy, ask, panelOpen]
+    () => ({ messages, status, error, busy, ask, modelChoice, panelOpen, setPanelOpen: setManual }),
+    [messages, status, error, busy, ask, modelChoice, panelOpen]
   );
   return <AskContext.Provider value={value}>{children}</AskContext.Provider>;
 }

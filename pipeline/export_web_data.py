@@ -7,6 +7,7 @@ Writes:
   data/shap_importance.json                            (mean |SHAP|, all features, sorted)
   data/explorer_rows.parquet                           (500 holdout rows scored by the retrained Phase 6 model)
   data/model_summary.json                              (metrics.md and shap.md figures as JSON)
+  data/model_prices.json                               (list prices of the Ask allowlist, from the AI Gateway catalogue)
   data/docs/{findings,metrics,shap,features_schema,orientation,quality}.md, data/docs/NARRATIVE.md
 
 The Next.js app reads data/ only. model.pkl is loaded here, at export time, and never by the app.
@@ -262,6 +263,22 @@ explorer = sample.merge(gold, on="transaction_id", how="left", validate="one_to_
 con.register("explorer", explorer)
 con.execute(f"COPY (SELECT * FROM explorer) TO '{OUT / 'explorer_rows.parquet'}' (FORMAT PARQUET)")
 print(f"explorer_rows.parquet: {len(explorer)} rows, {int((explorer['score'] >= threshold).sum())} at or above threshold")
+
+# List prices (USD per token) for the models in lib/askModels.json, used to estimate cost when the
+# gateway does not report it. The catalogue is public; offline, the committed file is kept.
+import urllib.request
+
+allow = json.loads((ROOT / "lib" / "askModels.json").read_text())["models"]
+try:
+    with urllib.request.urlopen("https://ai-gateway.vercel.sh/v1/models", timeout=20) as resp:
+        catalogue = {m["id"]: m for m in json.load(resp)["data"]}
+    prices = {m["id"]: {"input": float(catalogue[m["id"]]["pricing"]["input"]),
+                        "output": float(catalogue[m["id"]]["pricing"]["output"])} for m in allow}
+    (OUT / "model_prices.json").write_text(
+        json.dumps({"source": "https://ai-gateway.vercel.sh/v1/models", "usd_per_token": prices}, indent=1) + "\n")
+    print(f"model_prices.json: {len(prices)} models")
+except OSError as e:
+    print(f"model_prices.json: catalogue unreachable ({e}); keeping the committed file")
 
 for p in sorted(OUT.rglob("*")):
     if p.is_file():

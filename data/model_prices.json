@@ -1,0 +1,17 @@
+{
+ "source": "https://ai-gateway.vercel.sh/v1/models",
+ "usd_per_token": {
+  "openai/gpt-6-luna": {
+   "input": 1e-07,
+   "output": 5e-07
+  },
+  "deepseek/deepseek-v4-pro-0813": {
+   "input": 6.6e-07,
+   "output": 1.98e-06
+  },
+  "google/gemini-3.8-flash": {
+   "input": 7.5e-07,
+   "output": 3.75e-06
+  }
+ }
+}

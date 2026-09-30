@@ -6,6 +6,7 @@ import { PanelRightClose } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import type { AnswerMeta } from "@/lib/askConfig";
 import { ASK } from "@/lib/copy";
 import { useAsk } from "./AskProvider";
 import { Evidence, type QueryOutput } from "./Evidence";
@@ -52,12 +53,15 @@ function Steps({ step }: { step: number }) {
   );
 }
 
-function QueryCards({ answer }: { answer: UIMessage }) {
+function QueryCards({ answer, done }: { answer: UIMessage; done: boolean }) {
+  const queries = asToolParts(answer, "query");
+  const meta = (answer.metadata as { answer?: AnswerMeta } | undefined)?.answer;
   return (
     <>
-      {asToolParts(answer, "query").map((p, i) => (
+      {queries.map((p, i) => (
         <Evidence
           key={i}
+          answerMeta={done && i === queries.length - 1 ? meta : undefined}
           sql={(p.input as { sql?: string } | undefined)?.sql}
           output={p.output as QueryOutput | undefined}
           errorText={p.state === "output-error" ? p.errorText : undefined}
@@ -108,7 +112,7 @@ function Turn({ n, question, answer, live, streamError }: {
         {done && !text && !streamError && (
           <p className="text-[13px] text-foreground/65">No answer came back. Try asking again.</p>
         )}
-        {answer && <QueryCards answer={answer} />}
+        {answer && <QueryCards answer={answer} done={done} />}
         {done && streamError && (
           <p className="text-[13px] text-signal-700" role="alert">
             Something went wrong answering that: {streamError.message}. Try again in a moment.
@@ -121,7 +125,7 @@ function Turn({ n, question, answer, live, streamError }: {
 
 /** The conversation, empty state and composer. Rendered in the side panel and on /ask. */
 export function AskView({ variant }: { variant: "panel" | "page" }) {
-  const { messages, busy, error, ask, panelOpen, setPanelOpen } = useAsk();
+  const { messages, busy, error, ask, modelChoice, panelOpen, setPanelOpen } = useAsk();
   const [input, setInput] = useState("");
   const scroller = useRef<HTMLDivElement>(null);
   const turnCount = messages.filter((m) => m.role === "user").length;
@@ -152,6 +156,24 @@ export function AskView({ variant }: { variant: "panel" | "page" }) {
         <div className="flex flex-col">
           <h2 className="text-xl font-semibold leading-[1.1]">{ASK.title}</h2>
           <span className="text-[12px] text-foreground/60">{ASK.tagline}</span>
+          {modelChoice && (
+            <label className="mt-1.5 flex items-center gap-2 text-[11px] text-foreground/60">
+              Model
+              <select
+                value={modelChoice.selected}
+                onChange={(e) => modelChoice.select(e.currentTarget.value)}
+                disabled={busy}
+                aria-label="Model"
+                className="min-w-0 rounded-md border border-border-strong bg-background px-2 py-1 font-mono text-[11px] text-foreground"
+              >
+                {modelChoice.models.map((m) => (
+                  <option key={m.id} value={m.id}>
+                    {m.id}
+                  </option>
+                ))}
+              </select>
+            </label>
+          )}
         </div>
         {variant === "panel" && panelOpen && (
           <Button

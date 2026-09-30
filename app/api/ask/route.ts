@@ -11,22 +11,31 @@ import { z } from "zod";
 import { runReadOnlyQuery } from "@/lib/askdb";
 import { headlineTool, offerHeadlineAfterQuery } from "@/lib/askSteps";
 import { systemPrompt } from "@/lib/askPrompt";
+import {
+  ALLOWED_MODELS,
+  estimateCost,
+  gatewayOptions,
+  modelSwitchEnabled,
+  pickModel,
+  type AnswerMeta,
+} from "@/lib/askConfig";
 
 export const maxDuration = 120;
 
-const DEFAULT_MODEL = "openai/gpt-6-luna";
 const MAX_MESSAGES = 20;
 const MAX_QUESTION_CHARS = 1000;
 // query + headline + answer is three steps; the rest is room for a failed query to be retried.
 const MAX_STEPS = 8;
 
-function pickModel(requested: unknown): string {
-  // Local eval only. In the deployed app ASK_ALLOW_MODEL_OVERRIDE is unset, so the request body
-  // can never choose the model.
-  if (process.env.ASK_ALLOW_MODEL_OVERRIDE === "1" && typeof requested === "string" && requested) {
-    return requested;
-  }
-  return process.env.ASK_MODEL || DEFAULT_MODEL;
+export const dynamic = "force-dynamic";
+
+/** What the panel needs to draw the model switch. Reads env per request, so it is never baked in at build. */
+export function GET() {
+  return Response.json({
+    switchEnabled: modelSwitchEnabled(),
+    models: ALLOWED_MODELS,
+    defaultModel: pickModel(undefined),
+  });
 }
 
 export async function POST(req: Request) {
@@ -51,8 +60,13 @@ export async function POST(req: Request) {
 
   const evalMode = process.env.ASK_ALLOW_MODEL_OVERRIDE === "1";
   const model = pickModel(body.model);
+  const startedAt = performance.now();
+  // Cost the gateway reports per step (providerMetadata.gateway.cost); summed over the answer.
+  let gatewayCost: number | null = null;
   const result = streamText({
     model,
+    // Every model call asks for zero data retention and no prompt training (lib/askConfig.ts).
+    providerOptions: { gateway: gatewayOptions() },
     // Stop the model call when the browser disconnects instead of streaming to nobody.
     abortSignal: req.signal,
     // Streams that end early left no trace before these were added; log the cause server-side.
@@ -93,10 +107,28 @@ export async function POST(req: Request) {
         console.error(`[ask] UI stream error (${model}):`, error);
         return "The answer stream failed partway. Try again.";
       },
-      // Token usage is sent only in local eval mode (pipeline/eval_ask.mjs prices it).
-      messageMetadata: evalMode
-        ? ({ part }) => (part.type === "finish" ? { usage: part.totalUsage } : undefined)
-        : undefined,
+      // The evidence footer shows model, time, tokens and cost: sent once, when the answer ends.
+      // usage is kept for pipeline/eval_ask.mjs.
+      messageMetadata: ({ part }) => {
+        if (part.type === "finish-step") {
+          const c = Number((part.providerMetadata?.gateway as { cost?: unknown } | undefined)?.cost);
+          if (Number.isFinite(c)) gatewayCost = (gatewayCost ?? 0) + c;
+          return undefined;
+        }
+        if (part.type !== "finish") return undefined;
+        const inputTokens = part.totalUsage.inputTokens ?? 0;
+        const outputTokens = part.totalUsage.outputTokens ?? 0;
+        const listPrice = estimateCost(model, inputTokens, outputTokens);
+        const answer: AnswerMeta = {
+          model,
+          ms: Math.round(performance.now() - startedAt),
+          inputTokens,
+          outputTokens,
+          costUsd: gatewayCost ?? listPrice,
+          costSource: gatewayCost !== null ? "gateway" : listPrice !== null ? "list price" : null,
+        };
+        return evalMode ? { answer, usage: part.totalUsage } : { answer };
+      },
     }),
   });
 }
