@@ -8,11 +8,13 @@ const INK = "#ededed";
 const DIM = "rgba(237,237,237,0.6)";
 
 /** Fraud rate by hour. Overnight hours are full colour, the rest recede; dashed line is the baseline. */
-export function HourChart({ data, baseline, windowStart, windowEnd }: {
+export function HourChart({ data, baseline, windowStart, windowEnd, windowLabel }: {
   data: { hour: number; fraud_rate: number }[];
   baseline: number;
   windowStart: number;
   windowEnd: number;
+  /** Annotation text over the window, e.g. "OVERNIGHT WINDOW · 15.6% combined, hours 2–6". */
+  windowLabel: string;
 }) {
   const top = Math.ceil(Math.max(...data.map((d) => d.fraud_rate)) * 20) / 20; // next 5% step
   const ticks = Array.from({ length: Math.round(top / 0.05) + 1 }, (_, i) => i * 0.05);
@@ -51,7 +53,7 @@ export function HourChart({ data, baseline, windowStart, windowEnd }: {
             fill={RED}
             fillOpacity={0.09}
             ifOverflow="visible"
-            label={{ value: "OVERNIGHT WINDOW", position: "top", fill: "#ff8a8d", fontSize: 11, letterSpacing: "0.08em" }}
+            label={{ value: windowLabel, position: "top", fill: "#ff8a8d", fontSize: 11, letterSpacing: "0.08em" }}
           />
           <ReferenceLine
             y={baseline}

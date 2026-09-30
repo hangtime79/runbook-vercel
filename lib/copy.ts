@@ -203,6 +203,8 @@ export const PATTERNS = {
     title: "Fraud rate by hour",
     lead: "2–6 AM runs 12.5–18.6%",
     rest: " — about 2× baseline. Midnight itself is low (7.9%).",
+    overnightLabel: "OVERNIGHT WINDOW",
+    overnightCaption: "combined, hours 2–6",
   },
   heat: {
     title: "Hour × day of week",

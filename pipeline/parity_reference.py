@@ -103,6 +103,11 @@ story = {
     },
 }
 
+# Overnight window (hours 2-6 inclusive), the combined rate annotated on the /patterns hour chart.
+night = labeled[labeled["hour_of_day"].between(2, 6)]
+overnight = {"start": 2, "end": 6, "n": int(len(night)), "fraud": int(night["is_fraud"].sum()),
+             "fraud_rate": float(night["is_fraud"].mean())}
+
 sh = np.load(ART / "shap_values.npz", allow_pickle=True)
 mean_abs = np.abs(sh["values"]).mean(axis=0)
 order = np.argsort(mean_abs)[::-1][:15]
@@ -134,6 +139,7 @@ ref = {
     },
     "shap_top15": shap_top,
     "amount_bands": amount_bands,
+    "overnight_window": overnight,
     "story": story,
 }
 (ROOT / "pipeline" / "parity_reference.json").write_text(json.dumps(ref, indent=1))

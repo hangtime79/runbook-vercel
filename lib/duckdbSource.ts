@@ -24,6 +24,17 @@ export async function fraudRateByHour() {
   )) as { hour: number; fraud_rate: number }[];
 }
 
+/** Combined fraud rate for hours start..end inclusive (the /patterns overnight window). */
+export async function overnightWindow(start: number, end: number) {
+  const [r] = await query(
+    `SELECT count(*)::DOUBLE AS n, sum(CASE WHEN authorized_flag = 0 THEN 1 ELSE 0 END)::DOUBLE AS fraud
+     FROM ${gr()} WHERE authorized_flag IS NOT NULL AND hour(purchase_date) BETWEEN ${Math.trunc(start)} AND ${Math.trunc(end)}`
+  );
+  const n = Number(r.n);
+  const fraud = Number(r.fraud);
+  return { start, end, n, fraud, fraud_rate: fraud / n };
+}
+
 export async function fraudRateBySubsector() {
   return (await query(
     `SELECT subsector_description AS category, avg(${IS_FRAUD}) AS fraud_rate, count(*)::DOUBLE AS n
