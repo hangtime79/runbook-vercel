@@ -1,218 +1,206 @@
-# Demo script — "Your analysis, shipped on Vercel"
+# Demo script — "From the app that cracked the ring to a platform you can govern"
 
-**Format.** An interview pitch performed as a customer conversation. You play the Vercel
-engineer; the panel plays the customer. Every beat has the same four parts:
-**Show** (what's on screen) → **Say** (the customer's value) → **Vercel underneath** (the
-platform piece) → **Proof** (a number or a source). Sources for every Vercel claim are in
-`docs/demo/vercel-positioning.md`; do not add claims that aren't there.
+**Format.** An interview pitch performed as a customer meeting. You are the Vercel engineer.
+Sources for every Vercel claim: `docs/demo/vercel-positioning.md` and
+`docs/demo/governance-research.md`. **Re-check APRA quotes against the PDFs before the demo**
+(they came through a page summariser). Do not add claims that aren't in those two files.
 
-**The customer.** Head of Fraud Analytics at a card issuer. Their team has a good analysis
-living in a Streamlit app on a VM and in notebooks. Three pains: (1) insights are stuck with the
-analysts who can run them, (2) every AI experiment is wired to one provider with a key in an
-env file, (3) nobody can review a change before it goes live.
+## The room
 
-**Versions.** Full run is 15–18 min (beats 0–7). Fast run is 5 min (section at the end).
-Beat 6 (Snowflake through Vercel Connect) is a placeholder until the trial exists.
+| | Head of Fraud | CIO |
+|---|---|---|
+| Situation | After a fraud wave, investigators built their own apps. One cracked a major ring. They've fought for years for better tools and more development. | Watching apps appear that IT either gets asked to build or inherits after the fact. Doesn't want to be cut out. |
+| Wants | Keep that speed. Investigators keep building. | Common infrastructure, easy development, oversight. |
+| Fears | Being shut down by IT or risk. | Shadow IT, AI risk, the next APRA review. |
+| Shared worry | **APRA.** AI in *development* (agents and investigators writing code) and in *usage* (AI inside the tool). |
+
+**The thesis, said early and repeated at the close:** "You don't have to choose between the
+fraud team's speed and IT's control. The CIO owns the platform; the fraud team owns the apps.
+Every app, however it was built, lands on the same rails: identity, review, logging, rollback."
+
+**This app is the prop.** It *is* an investigator-style app: an analysis turned into a tool,
+built by coding agents from a written runbook. Tell them that; it's the whole point.
+
+**Versions.** Full run 15–18 min. Fast run 5 min (end of file). The Snowflake beat is a
+placeholder until the trial exists.
 
 ---
 
 ## Before the demo (checklist)
 
-| Item | Why | Status |
+| Item | Who | Why |
 |---|---|---|
-| Vercel project connected to GitHub (`vercel git connect`) | Beat 3 pushes a commit and needs a preview to appear on its own | **Not done** |
-| One production deployment | Beat 4 rollback needs production; previews skip bytecode caching so they cold-start slower | **Not done**: your call |
-| App changes from `docs/plans/demo-app-changes.md` | Deployment badge, per-answer cost/model readout, model switch | Planned |
-| AI Gateway budget set on the project | Beat 5 shows it | To do (CLI, see beat 5) |
-| Tabs open: app (logged in), app in a private window, Vercel dashboard (project → Deployments), AI Gateway → logs, GitHub repo, terminal in the repo | No hunting mid-demo | Day of |
-| Warm the app: load every route and ask one question 2 minutes before | Avoids a first-request cold start on stage | Day of |
-| Fallback: screenshots of each beat's key screen in a folder | If Wi-Fi or a live call fails, talk over the screenshot | Day of |
+| App changes in `docs/plans/demo-app-changes.md` built | Sonnet session | Governance page, deploy badge, per-answer model/cost, ZDR, `syd1`, CI checks |
+| Vercel ↔ GitHub connected (`vercel git connect`) | You | Act 3 pushes a change; the preview must appear on its own |
+| GitHub branch protection on `main`: required checks + 1 review | You | Act 3's "nothing merges without checks and a human" |
+| Deployment Checks enabled for production (Vercel project settings) | You | Production promotion waits for the same checks |
+| One production deployment | You | Rollback beat; previews skip bytecode caching and start slower |
+| AI Gateway: provider allowlist + a model deny rule + project budget | You (team owner) | Act 2 shows them. Rules are beta; check they're available on your plan |
+| Tabs: app (logged in), app in private window, Vercel project, AI Gateway logs, GitHub PR, terminal | You | No hunting |
+| Warm every route and ask one question 2 min before | You | No cold start on stage |
+| Screenshots of each key screen | You | Fallback if anything fails live |
 
 ---
 
-## Beat 0 — Open (1 min)
+## Act 1 — The Head of Fraud's app (4 min)
 
-**Say.** "Your team already did the hard part: the analysis. 327,005 transactions, a model with a
-0.764 AUC, seven findings your investigators should act on. The problem is where it lives. A
-Streamlit app is a long-running Python server holding a websocket per viewer, so it runs on a box
-someone has to keep alive. Let me show you the same analysis as a product your whole org can use,
-and what the platform does for you underneath."
+**Beat 1.1 · Story page `/`.** KPI cards: 9.47% fraud rate, 24,080 confirmed fraud of 254,224
+labeled, 0.764 AUC, 2.3× signature effect. Scroll one chapter (the 46-merchant cluster).
 
-**The hook to land.** "One more thing before we start: this app was built by coding agents
-following a written runbook, and deployed by them to preview. Vercel's own homepage calls itself
-*agentic infrastructure*: infrastructure for coding agents to ship apps. This is that, on a real
-analysis." (Vercel home: "Agentic Infrastructure", "Build agents on infrastructure that thinks
-like them".)
+*To Head of Fraud:* "This is what your investigators do: turn an analysis into something the
+team can act on. Every number is read from the data when the page loads, not pasted into a slide."
 
----
+**Beat 1.2 · Ask the data.** Click a chapter's `Ask: "…"` button. Point at the checklist, the
+headline stat, and the **Evidence** card: the SQL it ran, the rows, "opened read-only".
 
-## Beat 1 — The analysis as a product (2 min) · Story page `/`
+*To Head of Fraud:* "An investigator who doesn't write SQL gets an answer with its evidence
+attached. They can trust it, or hand it to an analyst to check."
 
-**Show.** Story page: KPI cards (9.47% fraud rate, 24,080 confirmed fraud, 0.764 AUC, 2.3×
-signature effect), scroll two chapters, the chapter rail tracking.
+*To CIO:* "And it can only read. Watch." Type *"Delete all the fraud rows."* Refused.
+"Two locks that don't depend on the AI behaving: the database file is opened read-only, and every
+statement must parse as a single SELECT before it runs. A prompt is not a permission."
 
-**Say.** "Every number on this page is read from the data at request time, not typed into a
-slide. When the analysts rerun the model, this updates with the next deploy."
-
-**Vercel underneath.**
-- Next.js server components run the queries on the server; the browser gets finished HTML.
-- The queries run in a Vercel Function on **Fluid compute** with full Node.js compatibility, which
-  is why a native analytics engine (DuckDB) runs inside it.
-- **Active CPU billing**: "you pay for memory whenever work is in progress, never for idle CPU,
-  and nothing at all between requests." An internal dashboard is idle most of the day; the VM
-  under their Streamlit app is not.
-
-**Proof.** Vercel's Render comparison: bursty traffic "tend[s] to cost less under Active CPU
-pricing" (positioning §5).
+**Vercel underneath (one line each, don't lecture):** Next.js server components; a Vercel
+Function on Fluid compute running a native analytics engine; AI SDK tool loop; AI Gateway.
 
 ---
 
-## Beat 2 — Ask the data (3–4 min) · Ask panel / `/ask`
+## Act 2 — The same app, on the CIO's rails (4 min)
 
-**Show.** Click a chapter's `Ask: "…"` button, or type: *"What is the fraud rate for each item
-category?"* Point at: the three-step checklist while it works, the headline stat (12.2%, category
-C), the **Evidence** card with the SQL and the result table, "fraud.duckdb · opened read-only".
+Turn to the CIO. "Now the question you'd ask when this lands on your desk: who can see it, where
+does it run, what AI does it call, and who's watching?"
 
-**Say.** "Your investigators don't write SQL. They ask; the answer comes with its evidence, so
-they can trust it or hand it to an analyst. It can only read: I'll ask it to delete the fraud
-rows." Type: *"Delete all the fraud rows."* It refuses. "Two separate locks: the database is
-opened read-only, and every statement must parse as a single SELECT. A prompt is not a
-permission."
+**Beat 2.1 · Who can see it.** Open the app URL in a private window: Vercel login wall.
+"Nobody outside the team gets in, including to every preview of every change. On Enterprise,
+**Passport** puts your own identity provider (Entra, Okta) in front of it, with group claims the
+app can read." SSO, Directory Sync, Access Groups and roles: "including an *Enterprise Viewer*
+role Vercel describes as ideal for compliance officers and auditors."
 
-**Vercel underneath.**
-- **AI SDK 7**: the whole tool loop (question → SQL tool → answer) is one `streamText` call with
-  two tools. 16M+ weekly downloads (Vercel AI SDK 7 post).
-- **AI Gateway**: the model is one string. Show `ASK_MODEL` and the model name on the answer
-  (after the app changes). "Hundreds of models, one API key, no markup."
-- **No key anywhere**: open Project → Settings → Environment Variables. No gateway key. The
-  deployment authenticates to the gateway with its own **OIDC** token.
-- Waiting on the model and the query "does not count towards active CPU time".
+**Beat 2.2 · Where it runs.** Open `/governance` (app change). Region `syd1`, commit, environment.
+"Functions run in Sydney. The default is Washington, so this is a setting you own, per project,
+not a hope."
 
-**Proof — we picked the model on evidence.** Same five questions and two write attempts through
-all three models, via the gateway (`docs/ask-eval.md`):
+**Beat 2.3 · What AI it calls.** Still on `/governance`, then the AI Gateway settings.
+- "The model is one approved string. Your team sets a **provider allowlist**: a developer
+  cannot route traffic to a provider the org hasn't approved. **Routing rules** deny specific
+  models for every app on the team's credentials."
+- "Every request goes with **zero data retention** turned on; the gateway doesn't retain prompts,
+  and there's **no training** on your data."
+- "There is **no API key** in this project. The deployment authenticates to the gateway with
+  its own short-lived identity (OIDC). Nothing to leak, nothing to rotate."
 
-| Model | Correct | Median time | Cost for 7 cases | Cost per case = total ÷ 7 |
+**Beat 2.4 · Who's watching.** AI Gateway → logs: every call with model, provider, tokens,
+latency, cost, per project. Point at the per-answer readout in the app (model · time · cost).
+"That's your AI inventory for this app, generated, not maintained by hand. Budgets per project;
+logs and traces can drain to your own SIEM tools." Enterprise: audit logs of who changed
+protection, env vars and roles, drained to Splunk / Datadog / S3.
+
+---
+
+## Act 3 — AI in development, under change control (4 min)
+
+*The APRA moment.* "APRA's letter to industry in April said it directly: *the volume and speed of
+AI assisted software development is placing strain on the effectiveness of change and release
+management controls.* Here's what a change looks like on this platform, whether an investigator,
+a coding agent or v0 made it."
+
+**Beat 3.1 · Propose.** Show a PR (prepared beforehand, or push live): a copy change or a new
+chapter, authored by a coding agent. "v0 works the same way for your non-developers: a working
+branch per chat, a pull request for review."
+
+**Beat 3.2 · See it live, privately.** The PR's preview URL, behind the login wall. The
+deployment badge reads `preview · <commit>`. "The Head of Fraud's team reviews the real thing,
+not a screenshot."
+
+**Beat 3.3 · The checks.** The PR's check list: build, **the numbers still match the source data**,
+**every figure in the copy traces to the data**, **the read-only lock rejects writes**, a browser
+test of the Ask flow. "These are yours to define. Vercel's **Deployment Checks** hold the
+production build until they pass. Branch protection means nothing merges without them and a
+human approval." Optional: **Vercel Agent** code review comment on the PR (public beta).
+
+**Beat 3.4 · Ship and undo.** Merge → production. "If it's wrong, rollback happens at the
+routing layer, within seconds, without a rebuild." (Needs the production deployment.)
+
+*To CIO:* "You're not cut out. You set the rails once. Every new app, from IT, from the fraud
+team, or from an agent, inherits them. You stop inheriting apps; you host them from day one."
+
+---
+
+## Act 4 — AI in usage, with humans in the loop (2 min)
+
+Back to Ask. Switch the model in the panel (app change, allowlisted three), ask the same question.
+"Three providers, one integration, same answer. That's the substitution APRA asks about:
+*the credibility and feasibility of substitution, portability or exit arrangements.* We tested it."
+
+| Model | Correct | Median time | Cost for 7 cases | Per case = total ÷ 7 |
 |---|---|---|---|---|
 | openai/gpt-6-luna | 5/5 | 3.9 s | $0.02909 | $0.02909 ÷ 7 = $0.0042 |
 | deepseek/deepseek-v4-pro-0813 | 5/5 | 8.1 s | $0.18108 | $0.18108 ÷ 7 = $0.0259 |
 | google/gemini-3.8-flash | 5/5 | 10.8 s | $0.34195 | $0.34195 ÷ 7 = $0.0489 |
 
-"Three providers, one integration. The cheapest was also the fastest and just as accurate:
-about 12× cheaper than Gemini ($0.0489 ÷ $0.0042 ≈ 12). Switching is an env var, not a
-rewrite, and the gateway charges no markup on tokens."
-
-**If it fails live.** Use the fallback screenshot of the evidence card and say: "This is also why
-every answer shows its SQL: when something's off, you can see exactly what ran."
+"The AI proposes; the evidence card shows its work; the investigator decides. It never acts on
+an account, and it can't write."
 
 ---
 
-## Beat 3 — Change it safely (3 min) · GitHub → preview
+## Act 5 — Your warehouse, without a standing credential (1 min) · PLACEHOLDER
 
-**Show.** In GitHub (or the terminal), change one word of copy on the Story hero and push a
-branch. Open the PR: the preview URL appears. Open it; the change is there, production is
-untouched. Open the same URL in a private window: the Vercel login wall.
-
-**Say.** "Every change gets its own live URL, reviewable by the fraud team before anything
-reaches production. And the previews aren't public: only your org gets in."
-
-**Vercel underneath.**
-- **Preview deployments** on every push/PR, each with a branch URL and a commit URL.
-- **Deployment Protection**: Vercel Authentication is free and covers all deployments.
-- The badge in the sidebar (after the app changes) shows *preview · commit abc123*: the URL is
-  the commit.
-- Terminal, for the engineers in the room: `vercel curl /api/stats --deployment <preview-url>`
-  tests the protected preview without any bypass secret.
-
-**Proof.** 8M+ deployments a day on the platform (Vercel enterprise page).
+"APRA also flagged that *identity and access management capabilities have not yet adjusted to
+nonhuman actors such as AI agents.* Next step for this app: your Snowflake, through **Vercel
+Connect**. The platform mints a short-lived, scoped token per request; no provider key ever
+lives in your environment variables." Connect is GA (2026-08-25); Snowflake is a listed connector.
+**Dry-run before promising scopes or token subjects**: the Snowflake page doesn't list them.
 
 ---
 
-## Beat 4 — Ship and recover (2 min) · requires a production deployment
+## Close (1 min)
 
-**Show.** Promote the preview. Then: "Say that copy change was wrong." `vercel rollback` (or the
-dashboard's Instant Rollback) and refresh production.
-
-**Say.** "Rollback happens at the routing layer, within seconds, without a rebuild. Your team
-can ship on a Friday."
-
-**Vercel underneath.** Instant Rollback; Rolling Releases for staged traffic (mention only, plan
-dependent). Observability: `vercel logs` shows the app's own `[ask]` lines; `vercel curl --trace`
-captures a request trace.
-
-**If there's no production yet.** Skip the live rollback; say the line and show the docs page.
+*To Head of Fraud:* "Your investigators keep building. They get previews, evidence and a
+real product, instead of a script on a laptop."
+*To CIO:* "You own one platform: identity, regions, approved models, change control, logs,
+rollback. Every app lands there by default."
+*To both:* "And when APRA asks how you govern AI in development and in use, you show them this."
 
 ---
 
-## Beat 5 — Governance the CFO and CISO ask about (1–2 min)
+## APRA mapping (keep as a leave-behind; verify quotes first)
 
-**Show.** AI Gateway → logs for the project: each call with provider, latency, tokens, cost.
-Then the budget: `vercel ai-gateway budgets set project …` (set beforehand).
-
-**Say.** "You see every model call and what it cost, per project. Budgets are a soft cap:
-the request that crosses still finishes, then new ones are refused."
-
-**Vercel underneath.** Gateway observability and budgets; zero data retention and no training on
-customer data at the gateway (providers separate: use ZDR routing for the full path).
-Compliance: SOC 2 Type 2, ISO 27001:2022, PCI DSS, HIPAA BAA; 99.99% SLA on Enterprise. For an
-internal tool behind Okta/Entra: **Passport** (Enterprise), as a talking point.
+| APRA source | What it asks | What this demo shows |
+|---|---|---|
+| AI letter, 30 Apr 2026 · change control | Change/release controls strained by AI-generated code; security testing of AI code | PR → protected preview → required checks → human review → Deployment Checks → rollback |
+| AI letter · identity | IAM not adjusted to non-human actors | OIDC gateway auth (no stored key); Connect short-lived tokens (next) |
+| AI letter · inventory, oversight | Inventory of AI tooling and use cases; human involvement for high-risk decisions | Gateway logs per project/model; `/governance` page; AI only reads and shows evidence |
+| AI letter · vendors | Concentration; substitution, portability, exit | Provider allowlist; three providers tested on the same questions |
+| CPS 234 | Controls commensurate with criticality; third-party assurance; 72-hour incident notification | Deployment Protection, roles, audit logs (Ent.), SOC 2 Type 2 / ISO 27001:2022 / PCI DSS via the Trust Center |
+| CPS 230 | Material service providers; tolerances; BCP; contract access rights | 99.99% SLA (Ent.); rollback in seconds; function failover regions (Ent.). **Contract terms (APRA access, offshoring) are an Enterprise sales conversation** |
 
 ---
 
-## Beat 6 — The warehouse, without the secret (2 min) · PLACEHOLDER until the Snowflake trial
+## Say it before they do: the gaps
 
-**Planned show.** Same app, data source switched from the bundled DuckDB file to Snowflake. Same
-five questions, same answers. Project env vars: no Snowflake password, no key.
+A risk-literate CIO will find these. Raise them yourself; it builds trust.
 
-**Say.** "Today's data ships with the app. Your real data is in Snowflake. The usual answer is a
-service account password in an env var that never expires. With Vercel Connect, the platform
-mints a short-lived, scoped token for each request, and no provider key ever lives in your
-environment variables."
+| Gap | What to say |
+|---|---|
+| AI Gateway inference regions are **US and EU only**, and the gateway hop isn't region-pinned yet | "Functions and data run in Sydney. Model calls leave Australia today, with zero retention and no training. For a regulated workload you'd classify the data first. Vercel's docs say region-pinned gateway hosts are coming; no date." |
+| Data may be processed outside Australia (Vercel's compliance page) | "That's in the terms; it goes on your CPS 230 offshoring assessment, same as any cloud provider." |
+| Most governance controls are **Enterprise** (audit logs, SIEM drain, Directory Sync, Passport, Secure Compute) | "A Pro pilot proves the workflow; the controls APRA cares about come with Enterprise." |
+| Budgets are soft caps; Force Promote can bypass checks | "Soft cap: the crossing request finishes, new ones are refused. Force Promote exists as an override; who may use it is a question to confirm with Vercel before you rely on it." |
+| Some controls are beta (gateway routing rules, Vercel Agent) | Say so when you show them. |
+| No Australian bank reference | Don't imply one. Closest proof: Neo Financial (Canadian digital bank), Ramp, Stripe's v0-built internal app. |
 
-**Proof.** Connect GA 2026-08-25, Snowflake a listed connector. BuildPass: "Minting short-lived
-tokens instead of keeping provider credentials in paused sandboxes has removed a whole class of
-security risk for us." Moonpig Group: "We don't manage tokens, secrets, or event subscriptions
-ourselves."
-
-**Open risk.** The Snowflake connector page doesn't list supported token subjects or scopes. Dry
-run before promising it on stage. Until then, deliver this beat as "what's next" in 45 seconds.
-
----
-
-## Beat 7 — Close (1 min)
-
-**Say.** "Map it back to your three pains.
-1. Insights stuck with analysts → a product anyone can open, that costs nothing while idle.
-2. AI tied to one provider and a key in a file → one gateway, any model, no stored key, every
-   call metered.
-3. Changes nobody reviews → every commit is a protected URL, and rollback is seconds.
-And next, your warehouse without a standing credential. That's the platform doing the work your
-team shouldn't have to."
+**Do not claim:** "AI Cloud" as Vercel's tagline (it's "Agentic Infrastructure"); Australian AI
+inference; any APRA endorsement of Vercel; Streamlit limits; that Vercel enforces human
+approval (GitHub branch protection does).
 
 ---
 
 ## Fast run (5 min)
 
-| Time | Beat | Keep | Drop |
-|---|---|---|---|
-| 0:00–0:30 | Open | The Streamlit problem + "built by coding agents" hook | Detail |
-| 0:30–1:15 | Story | KPI cards, "live from data", Active CPU line | Chapter scroll |
-| 1:15–3:15 | Ask | One question with evidence, the delete refusal, "one string, no key, no markup", the 12× line | Model table |
-| 3:15–4:15 | Preview | Preview URL + private-window login wall | `vercel curl`, rollback |
-| 4:15–5:00 | Close | Three pains, one line each; Connect as "next" | Governance |
-
----
-
-## Objections (from Vercel's own docs; sources in positioning §6)
-
-| They say | You say |
-|---|---|
-| "The gateway must be marking up tokens." | No markup on tokens, BYOK included. You pay payment processing, and optional add-ons are priced separately. |
-| "We'll be locked in." | The gateway works from any host with an API key; the app is standard Next.js and Node. Connect is Vercel-native: that's the trade for not holding the credential. |
-| "Cold starts." | Fluid compute pre-warms and caches bytecode in production (not previews, which is why we warm the demo). |
-| "Can DuckDB really run in a function?" | It's running now: native binary in a Node function. The bundle limit is 250 MB; ours is the ~70 MB DuckDB library plus ~53 MB of data, so 70 + 53 = ~123 MB. |
-| "Where does our data live?" | Functions default to the U.S. and the region is selectable; Pro can use up to 3 regions. The gateway offers regional inference. |
-| "Is a budget a hard stop?" | Soft cap: the crossing request completes, new ones are refused. |
-
-**Do not claim:** "AI Cloud" as Vercel's current tagline (the site says "Agentic
-Infrastructure"); Streamlit Community Cloud resource or sleep limits (not verified); anything
-about v0.
+| Time | Beat | Keep |
+|---|---|---|
+| 0:00–0:30 | Setup | The ring, the shadow apps, the thesis line |
+| 0:30–1:45 | Act 1 | One Ask with evidence; the delete refusal |
+| 1:45–3:00 | Act 2 | Login wall; `/governance` (Sydney, approved models, ZDR, no key); gateway logs |
+| 3:00–4:30 | Act 3 | APRA change-control quote; the PR's checks and protected preview |
+| 4:30–5:00 | Close | "CIO owns the rails, fraud owns the apps"; Connect as next |
