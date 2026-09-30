@@ -13,8 +13,9 @@ export const DEFAULT_MODEL: string = models.default;
 export function gatewayOptions() {
   // Fail closed: ZDR is on unless ASK_ZDR=0. A Hobby-plan team cannot use ZDR (the gateway answers
   // 403), so local work on such a key sets ASK_ZDR=0; the /governance page shows the real state.
+  // No-training is free on every plan (docs: disallow prompt training), so it stays on without ZDR.
   const zdr = process.env.ASK_ZDR !== "0";
-  return zdr ? { zeroDataRetention: true, disallowPromptTraining: true } : {};
+  return zdr ? { zeroDataRetention: true, disallowPromptTraining: true } : { disallowPromptTraining: true };
 }
 
 export const zdrEnabled = () => process.env.ASK_ZDR !== "0";
