@@ -34,6 +34,28 @@ way as the SQL: **a prompt is not a permission.** Two layers:
   `vercel deploy --yes` (preview) is allowed at the end. Never `vercel env`, `vercel setup`.
 - Do not weaken `lib/askdb.ts`. Keep every SPEC invariant.
 
+## Architecture: guardrails as a middleware stack, not inline route code
+
+Build every check as an **AI SDK language model middleware** and stack them on the answering
+model: `wrapLanguageModel({ model, middleware: [...] })`. The installed SDK accepts an array
+(`middleware: LanguageModelMiddleware | LanguageModelMiddleware[]`, `node_modules/ai/dist/index.d.ts`);
+read `LanguageModelMiddleware` there for the hooks (`transformParams`, `wrapGenerate`,
+`wrapStream`) and the order they run in, and confirm the order with a test.
+- `lib/guardrails/scopeGate.ts` (Step 2) and `lib/guardrails/outputCheck.ts` (Step 3), each a
+  self-contained middleware with no knowledge of the route.
+- `lib/guardrails/index.ts` exports the stack, built from a config list
+  (`lib/guardrails/config.json`: ordered guardrail ids + thresholds), so adding, removing or
+  reordering a guardrail is a config change, not route code. The route only wraps the model.
+- The input gate must be able to **short-circuit**: when blocked, `wrapStream`/`wrapGenerate` return
+  the refusal without calling the wrapped model. Verify the answering model is never called (mock
+  test, Step 5).
+- Metadata the UI needs (scope verdict, category, probability, ms) must reach the client; if the
+  middleware can't attach it directly, pass it through the route's message metadata and say how.
+- **Not used:** AI Gateway virtual model configs. A virtual model resolves to one model with provider
+  routing and failure fallback; it cannot chain a check into an answer. Do not build on the
+  undocumented `aiGatewayGuardrails` permission either; leave a comment where gateway-level
+  guardrails would replace the stack if Vercel documents them.
+
 ## Step 1 — Scope rules in the prompt
 
 Add a SCOPE block to `RULES` in `lib/askPrompt.ts`:
@@ -48,8 +70,8 @@ Add a SCOPE block to `RULES` in `lib/askPrompt.ts`:
 
 ## Step 2 — The input gate (Jev), before the answering model
 
-`lib/scopeGate.ts`, called at the top of `POST /api/ask` on the latest user message (plus, as
-state, a one-paragraph description of the tool's purpose and the list of tables; not the analysis
+`lib/guardrails/scopeGate.ts` (middleware; see Architecture), evaluating the latest user message
+(plus, as state, a one-paragraph description of the tool's purpose and the list of tables; not the analysis
 documents):
 - One boolean question: in scope = "a question that can be answered from this card-transaction
   fraud dataset or its analysis". Add typed questions if the API makes it cheap, e.g. a choice
