@@ -1,0 +1,7 @@
+{
+ "duckdb_version": "1.5.2",
+ "inputs": {
+  "golden_record.parquet": "b1f5a786834f17ec0e32c56683f47a30fe682ab702a243267f8a7ced88e922ce",
+  "features.parquet": "483dac1934ebdd8193192ec923e39c82d27859070e6027d6ece5ee87142f9772"
+ }
+}

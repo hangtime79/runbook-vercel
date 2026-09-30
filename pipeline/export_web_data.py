@@ -3,14 +3,16 @@
 Writes:
   data/golden_record.parquet, data/features.parquet   (copies)
   data/fraud.duckdb                                    (both tables; read-only query DB for /api/ask)
+  data/manifest.json                                   (what fraud.duckdb was built from; skips rebuilds)
   data/shap_importance.json                            (mean |SHAP|, all features, sorted)
-  data/explorer_rows.parquet                           (500 holdout rows scored by model.pkl)
+  data/explorer_rows.parquet                           (500 holdout rows scored by the retrained Phase 6 model)
   data/model_summary.json                              (metrics.md and shap.md figures as JSON)
   data/docs/{findings,metrics,shap,features_schema,orientation,quality}.md, data/docs/NARRATIVE.md
 
 The Next.js app reads data/ only. model.pkl is loaded here, at export time, and never by the app.
 It is our own Phase 6 artifact; nothing untrusted is ever unpickled.
 """
+import hashlib
 import json
 import pickle
 import re
@@ -53,18 +55,42 @@ for name in DOC_NAMES:
     shutil.copyfile(ART / name, DOCS / name)
 shutil.copyfile(ROOT / "NARRATIVE.md", DOCS / "NARRATIVE.md")
 
-# Read-only query database for the "Ask the data" route. Rebuilt from scratch so it never drifts
-# from the parquet copies. Opened READ_ONLY by the app; nothing in the app writes to it.
+# Read-only query database for the "Ask the data" route, opened READ_ONLY by the app; nothing in
+# the app writes to it. A DuckDB file is not byte-reproducible, so rebuilding it on every run made
+# git show a changed binary when nothing had changed. data/manifest.json records the sha256 of the
+# parquet files (and the duckdb version) it was built from; when they match and the file exists,
+# the rebuild is skipped.
 DB = OUT / "fraud.duckdb"
-DB.unlink(missing_ok=True)
-Path(str(DB) + ".wal").unlink(missing_ok=True)
-con = duckdb.connect(str(DB))
-for table in ("golden_record", "features"):
-    con.execute(f"CREATE TABLE {table} AS SELECT * FROM read_parquet('{OUT / (table + '.parquet')}')")
-    n = con.execute(f"SELECT count(*) FROM {table}").fetchone()[0]
-    print(f"fraud.duckdb: {table} {n:,} rows")
-con.execute("CHECKPOINT")
-con.close()
+MANIFEST = OUT / "manifest.json"
+TABLES = ("golden_record", "features")
+
+
+def sha256(path: Path) -> str:
+    h = hashlib.sha256()
+    with open(path, "rb") as fh:
+        for chunk in iter(lambda: fh.read(1 << 20), b""):
+            h.update(chunk)
+    return h.hexdigest()
+
+
+built_from = {
+    "duckdb_version": duckdb.__version__,
+    "inputs": {f"{t}.parquet": sha256(OUT / f"{t}.parquet") for t in TABLES},
+}
+unchanged = DB.exists() and MANIFEST.exists() and json.loads(MANIFEST.read_text()) == built_from
+if unchanged:
+    print("fraud.duckdb: unchanged")
+else:
+    DB.unlink(missing_ok=True)
+    Path(str(DB) + ".wal").unlink(missing_ok=True)
+    con = duckdb.connect(str(DB))
+    for table in TABLES:
+        con.execute(f"CREATE TABLE {table} AS SELECT * FROM read_parquet('{OUT / (table + '.parquet')}')")
+        n = con.execute(f"SELECT count(*) FROM {table}").fetchone()[0]
+        print(f"fraud.duckdb: {table} {n:,} rows")
+    con.execute("CHECKPOINT")
+    con.close()
+    MANIFEST.write_text(json.dumps(built_from, indent=1) + "\n")
 
 sh = np.load(ART / "shap_values.npz", allow_pickle=True)
 mean_abs = np.abs(sh["values"]).mean(axis=0)
