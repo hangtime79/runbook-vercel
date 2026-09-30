@@ -18,17 +18,21 @@ Sources for every Vercel claim: `docs/demo/vercel-positioning.md` and
 fraud team's speed and IT's control. The CIO owns the platform; the fraud team owns the apps.
 Every app, however it was built, lands on the same rails: identity, review, logging, rollback."
 
-**Two tiers, stated once in Act 2 and again at the close.** Everything they see live runs on a
-**Pro** plan: that's the proof point, the workflow working today. **Enterprise** is what a
-regulated bank needs to run it in production: the controls APRA will ask about. Never apologise
-for Enterprise-only features; present them as the production tier.
+**Three tiers, stated once in Act 2 and again at the close.** Everything they see live runs on
+Vercel's **free Hobby** plan: that's the proof point, the workflow working today at zero platform
+cost. **Pro** adds the controls a pilot needs. **Enterprise** is what a regulated bank needs to
+run it in production: the controls APRA will ask about. Never apologise for a paid feature;
+present each tier as the next step.
 
-| Proven today on Pro (live in the demo) | Enterprise adds (what APRA-grade production needs) |
-|---|---|
-| Deployment Protection with Vercel login on every deployment | **Passport**: your own IdP (Entra/Okta) in front of every app, group claims in the app |
-| Team roles; preview per change; rollback in seconds | **SAML SSO enforced, Directory Sync, Access Groups**, Enterprise Viewer role for auditors |
-| Functions pinned to Sydney (Pro: up to 5 regions) | **Function failover regions**; **Secure Compute** (dedicated VPC, peering, VPN) |
-| AI Gateway: OIDC (no key), per-request ZDR, no training, logs, budgets | **Audit logs** and **Audit Log Drains** to Splunk/Datadog/S3 for your SIEM and CPS 234 audit |
+| Live today on Hobby (free) | Pro adds (a pilot) | Enterprise adds (APRA-grade production) |
+|---|---|---|
+| Vercel login on every deployment | Password protection; team roles and seats | **Passport**: your own IdP (Entra/Okta) in front of every app; **SAML SSO enforced, Directory Sync, Access Groups**, Enterprise Viewer role for auditors |
+| Functions pinned to Sydney (`syd1`, verified) | Up to 5 regions | **Function failover regions**; **Secure Compute** (dedicated VPC, peering, VPN) |
+| AI Gateway: OIDC (no stored key), no training on prompts, request logs | **Per-request zero data retention**; spend management | **Audit logs** and **Audit Log Drains** to Splunk/Datadog/S3 for your SIEM and CPS 234 audit |
+| Preview per change; required GitHub checks; rollback to the previous deployment | Rollback to any deployment | **99.99% SLA**, and the contract conversation CPS 230 needs (APRA access rights, offshoring) |
+
+Check on the day which gateway controls (provider allowlist, routing rules, budgets) your plan
+shows before demoing them live; their plan requirements weren't stated in the docs we read.
 | Required checks + Deployment Checks on production | **99.99% SLA**, and the contract conversation CPS 230 needs (APRA access rights, offshoring) |
 
 **This app is the prop.** It *is* an investigator-style app: an analysis turned into a tool,
@@ -43,7 +47,7 @@ placeholder until the trial exists.
 
 | Item | Who | Why |
 |---|---|---|
-| App changes in `docs/plans/demo-app-changes.md` built | Sonnet session | Governance page, deploy badge, per-answer model/cost, ZDR, `syd1`, CI checks |
+| App changes in `docs/plans/demo-app-changes.md` built | Sonnet session | Governance page, deploy badge, per-answer model/cost, `syd1`, CI checks. **Done**; ZDR off on Hobby (`ASK_ZDR=0`) |
 | Vercel ↔ GitHub connected (`vercel git connect`) | You | Act 3 pushes a change; the preview must appear on its own |
 | GitHub branch protection on `main`: required checks + 1 review | You | Act 3's "nothing merges without checks and a human" |
 | Deployment Checks enabled for production (Vercel project settings) | You | Production promotion waits for the same checks |
@@ -97,8 +101,9 @@ not a hope."
 - "The model is one approved string. Your team sets a **provider allowlist**: a developer
   cannot route traffic to a provider the org hasn't approved. **Routing rules** deny specific
   models for every app on the team's credentials."
-- "Every request goes with **zero data retention** turned on; the gateway doesn't retain prompts,
-  and there's **no training** on your data."
+- "Every request tells the gateway **no training** on your prompts. On Pro, each request also
+  turns on **zero data retention**, so the model providers don't keep them either. The code is
+  already written that way; it's one setting."
 - "There is **no API key** in this project. The deployment authenticates to the gateway with
   its own short-lived identity (OIDC). Nothing to leak, nothing to rotate."
 
@@ -172,7 +177,7 @@ lives in your environment variables." Connect is GA (2026-08-25); Snowflake is a
 real product, instead of a script on a laptop."
 *To CIO:* "You own one platform: identity, regions, approved models, change control, logs,
 rollback. Every app lands there by default."
-*To both:* "Everything you saw today ran on Pro. That's the proof it works. Enterprise is how you
+*To both:* "Everything you saw today ran on Vercel's free tier. That's the proof it works. Pro makes it a pilot; Enterprise is how you
 run it as a bank: your identity provider in front of every app, audit logs in your SIEM, the SLA
 and the contract terms CPS 230 needs. And when APRA asks how you govern AI in development and in
 use, you show them this."
@@ -200,7 +205,7 @@ A risk-literate CIO will find these. Raise them yourself; it builds trust.
 |---|---|
 | AI Gateway inference regions are **US and EU only**, and the gateway hop isn't region-pinned yet | "Functions and data run in Sydney. Model calls leave Australia today, with zero retention and no training. For a regulated workload you'd classify the data first. Vercel's docs say region-pinned gateway hosts are coming; no date." |
 | Data may be processed outside Australia (Vercel's compliance page) | "That's in the terms; it goes on your CPS 230 offshoring assessment, same as any cloud provider." |
-| Most governance controls are **Enterprise** (audit logs, SIEM drain, Directory Sync, Passport, Secure Compute) | Not a gap; it's the two-tier story. "What you saw runs on Pro: that's the proof. Enterprise is the production tier, with the controls APRA will ask you to evidence." |
+| Most governance controls are **Enterprise** (audit logs, SIEM drain, Directory Sync, Passport, Secure Compute) | Not a gap; it's the tier story. "What you saw runs on the free tier: that's the proof. Enterprise is the production tier, with the controls APRA will ask you to evidence." |
 | Budgets are soft caps; Force Promote can bypass checks | "Soft cap: the crossing request finishes, new ones are refused. Force Promote exists as an override; who may use it is a question to confirm with Vercel before you rely on it." |
 | Some controls are beta (gateway routing rules, Vercel Agent) | Say so when you show them. |
 | No Australian bank reference | Don't imply one. Closest proof: Neo Financial (Canadian digital bank), Ramp, Stripe's v0-built internal app. |
@@ -217,6 +222,6 @@ approval (GitHub branch protection does).
 |---|---|---|
 | 0:00–0:30 | Setup | The ring, the shadow apps, the thesis line |
 | 0:30–1:45 | Act 1 | One Ask with evidence; the delete refusal |
-| 1:45–3:00 | Act 2 | Login wall; `/governance` (Sydney, approved models, ZDR, no key); gateway logs |
+| 1:45–3:00 | Act 2 | Login wall; `/governance` (Sydney, approved models, no training, no key); gateway logs |
 | 3:00–4:30 | Act 3 | APRA change-control quote; the PR's checks and protected preview |
 | 4:30–5:00 | Close | "CIO owns the rails, fraud owns the apps"; Connect as next |
