@@ -531,5 +531,289 @@
    "feature": "Month of Year",
    "mean_abs_shap": 0.0471155047416687
   }
- ]
+ ],
+ "amount_bands": [
+  {
+   "label": "$2\u2013$5",
+   "n": 1477,
+   "fraud": 708,
+   "fraud_rate": 0.47935003385240355
+  },
+  {
+   "label": "$5\u2013$10",
+   "n": 6284,
+   "fraud": 762,
+   "fraud_rate": 0.12126034373010822
+  },
+  {
+   "label": "$10\u2013$20",
+   "n": 23492,
+   "fraud": 1906,
+   "fraud_rate": 0.08113400306487314
+  },
+  {
+   "label": "$20\u2013$50",
+   "n": 54214,
+   "fraud": 4122,
+   "fraud_rate": 0.07603202124912384
+  },
+  {
+   "label": "$50\u2013$100",
+   "n": 49593,
+   "fraud": 4041,
+   "fraud_rate": 0.08148327384913194
+  },
+  {
+   "label": "$100\u2013$250",
+   "n": 52029,
+   "fraud": 4697,
+   "fraud_rate": 0.09027657652463049
+  },
+  {
+   "label": "$250\u2013$500",
+   "n": 33401,
+   "fraud": 3425,
+   "fraud_rate": 0.10254184006466872
+  },
+  {
+   "label": "$500\u2013$1k",
+   "n": 22404,
+   "fraud": 2515,
+   "fraud_rate": 0.11225673986788073
+  },
+  {
+   "label": "$1k+",
+   "n": 11060,
+   "fraud": 1874,
+   "fraud_rate": 0.1694394213381555
+  }
+ ],
+ "story": {
+  "merchants_top10": [
+   {
+    "merchant_id": "M_ID_d8ccfbe91b",
+    "n": 83,
+    "fraud": 68,
+    "fraud_rate": 0.8192771084337349
+   },
+   {
+    "merchant_id": "M_ID_318c1d6957",
+    "n": 51,
+    "fraud": 25,
+    "fraud_rate": 0.49019607843137253
+   },
+   {
+    "merchant_id": "M_ID_e93df2c7cc",
+    "n": 79,
+    "fraud": 38,
+    "fraud_rate": 0.4810126582278481
+   },
+   {
+    "merchant_id": "M_ID_629e6f07c9",
+    "n": 50,
+    "fraud": 24,
+    "fraud_rate": 0.48
+   },
+   {
+    "merchant_id": "M_ID_9e84cda3b1",
+    "n": 393,
+    "fraud": 161,
+    "fraud_rate": 0.40966921119592875
+   },
+   {
+    "merchant_id": "M_ID_3111c6df35",
+    "n": 626,
+    "fraud": 254,
+    "fraud_rate": 0.4057507987220447
+   },
+   {
+    "merchant_id": "M_ID_445742726b",
+    "n": 790,
+    "fraud": 306,
+    "fraud_rate": 0.38734177215189874
+   },
+   {
+    "merchant_id": "M_ID_52d3026407",
+    "n": 55,
+    "fraud": 21,
+    "fraud_rate": 0.38181818181818183
+   },
+   {
+    "merchant_id": "M_ID_6f274b9340",
+    "n": 824,
+    "fraud": 301,
+    "fraud_rate": 0.36529126213592233
+   },
+   {
+    "merchant_id": "M_ID_fc7d7969c3",
+    "n": 2114,
+    "fraud": 765,
+    "fraud_rate": 0.3618732261116367
+   }
+  ],
+  "velocity": [
+   {
+    "key": 0,
+    "n": 248340,
+    "fraud": 22658,
+    "fraud_rate": 0.09123781911894982
+   },
+   {
+    "key": 1,
+    "n": 5596,
+    "fraud": 1280,
+    "fraud_rate": 0.22873481057898498
+   },
+   {
+    "key": 2,
+    "n": 243,
+    "fraud": 110,
+    "fraud_rate": 0.45267489711934156
+   },
+   {
+    "key": 3,
+    "n": 28,
+    "fraud": 19,
+    "fraud_rate": 0.6785714285714286
+   },
+   {
+    "key": 4,
+    "n": 17,
+    "fraud": 13,
+    "fraud_rate": 0.7647058823529411
+   }
+  ],
+  "age_bucket": [
+   {
+    "key": 0,
+    "n": 37499,
+    "fraud": 4088,
+    "fraud_rate": 0.10901624043307821
+   },
+   {
+    "key": 1,
+    "n": 55387,
+    "fraud": 5761,
+    "fraud_rate": 0.10401357719320418
+   },
+   {
+    "key": 2,
+    "n": 67298,
+    "fraud": 6901,
+    "fraud_rate": 0.10254390918006479
+   },
+   {
+    "key": 3,
+    "n": 44598,
+    "fraud": 4452,
+    "fraud_rate": 0.09982510426476524
+   },
+   {
+    "key": 4,
+    "n": 49442,
+    "fraud": 2878,
+    "fraud_rate": 0.058209619351967966
+   }
+  ],
+  "signature": [
+   {
+    "key": 0,
+    "n": 206229,
+    "fraud": 21902,
+    "fraud_rate": 0.1062023284795058
+   },
+   {
+    "key": 1,
+    "n": 47995,
+    "fraud": 2178,
+    "fraud_rate": 0.04537972705490155
+   }
+  ],
+  "impossible_travel": [
+   {
+    "key": 0,
+    "n": 249918,
+    "fraud": 23750,
+    "fraud_rate": 0.09503117022383342
+   },
+   {
+    "key": 1,
+    "n": 4306,
+    "fraud": 330,
+    "fraud_rate": 0.07663725034835114
+   }
+  ],
+  "subsector_top5": [
+   {
+    "category": "luxury goods",
+    "n": 35946,
+    "fraud_rate": 0.14029377399432483
+   },
+   {
+    "category": "consumer electronics",
+    "n": 39851,
+    "fraud_rate": 0.12187899927228928
+   },
+   {
+    "category": "internet",
+    "n": 39198,
+    "fraud_rate": 0.1195469156589622
+   },
+   {
+    "category": "insurance",
+    "n": 37594,
+    "fraud_rate": 0.11156035537585784
+   },
+   {
+    "category": "gas",
+    "n": 41388,
+    "fraud_rate": 0.10725331013820431
+   }
+  ],
+  "subsector_bottom5": [
+   {
+    "category": "advertising services",
+    "n": 975,
+    "fraud_rate": 0.006153846153846154
+   },
+   {
+    "category": "flights",
+    "n": 655,
+    "fraud_rate": 0.007633587786259542
+   },
+   {
+    "category": "semiconductors",
+    "n": 881,
+    "fraud_rate": 0.009080590238365494
+   },
+   {
+    "category": "beauty & personal care",
+    "n": 3614,
+    "fraud_rate": 0.009131156613171001
+   },
+   {
+    "category": "restaurant/dining",
+    "n": 12024,
+    "fraud_rate": 0.010063206919494345
+   }
+  ],
+  "triggers": {
+   "is_micro_transaction": {
+    "n_flagged": 1481,
+    "rate_flagged": 0.4787305874409183,
+    "n_unflagged": 252743,
+    "rate_unflagged": 0.09246942546381107
+   },
+   "velocity_above_1_per_hour": {
+    "n_flagged": 5884,
+    "rate_flagged": 0.2416723317471108,
+    "n_unflagged": 248340,
+    "rate_unflagged": 0.09123781911894982
+   },
+   "micro_x_velocity": {
+    "n": 127,
+    "fraud_rate": 0.7795275590551181
+   }
+  }
+ }
 }

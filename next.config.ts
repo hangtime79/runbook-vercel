@@ -10,7 +10,9 @@ const ASK_FILES = [
   "./data/docs/**/*",
   "./node_modules/@duckdb/node-bindings-linux-x64/libduckdb.so",
 ];
-const DOC_FILES = ["./data/docs/**/*", "./data/shap_importance.json"];
+const DOC_FILES = ["./data/docs/**/*", "./data/*.json"];
+// Pages that read both: DuckDB over the parquet and the docs / JSON exports.
+const DUCKDB_AND_DOCS = [...DUCKDB_FILES, ...DOC_FILES];
 
 const nextConfig: NextConfig = {
   // DuckDB ships a native binary; keep it out of the bundle and load it from node_modules.
@@ -20,13 +22,15 @@ const nextConfig: NextConfig = {
   // uses DuckDB needs an entry, or Vercel fails with "libduckdb.so: cannot open shared object file".
   outputFileTracingIncludes: {
     "/api/stats": DUCKDB_FILES,
+    "/api/story": DUCKDB_FILES,
     "/api/ask": ASK_FILES,
     "/api/patterns": DUCKDB_FILES,
     "/patterns": DUCKDB_FILES,
     "/explorer": DUCKDB_FILES,
-    "/": DOC_FILES,
-    "/findings": DOC_FILES,
+    "/": DUCKDB_AND_DOCS,
+    "/findings": DUCKDB_AND_DOCS,
     "/model": DOC_FILES,
+    "/brief": DOC_FILES,
     "/api/shap": DOC_FILES,
   },
 };

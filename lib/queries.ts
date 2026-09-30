@@ -76,6 +76,129 @@ export async function heatmap() {
   return grid;
 }
 
+export type ExplorerRow = {
+  transaction_id: number;
+  authorized_flag: number;
+  purchase_amount: number;
+  subsector_description: string;
+  hour: number;
+  signature_provided: number;
+  merchant_fraud_rate: number;
+  is_micro_transaction: number;
+  velocity_above_1_per_hour: number;
+  score: number;
+};
+
+/** 500 scored holdout rows from data/explorer_rows.parquet, highest model score first. */
 export async function explorerRows() {
-  return query(`SELECT * FROM ${features()} LIMIT 500`);
+  return (await query(
+    `SELECT * FROM read_parquet('${dataPath("explorer_rows.parquet")}') ORDER BY score DESC, transaction_id ASC`
+  )) as unknown as ExplorerRow[];
+}
+
+/** Dollar bands from findings.md Finding 2. [lo, hi): hi = null means no upper bound. */
+export const AMOUNT_BANDS = [
+  { label: "$2–$5", lo: 2, hi: 5 },
+  { label: "$5–$10", lo: 5, hi: 10 },
+  { label: "$10–$20", lo: 10, hi: 20 },
+  { label: "$20–$50", lo: 20, hi: 50 },
+  { label: "$50–$100", lo: 50, hi: 100 },
+  { label: "$100–$250", lo: 100, hi: 250 },
+  { label: "$250–$500", lo: 250, hi: 500 },
+  { label: "$500–$1k", lo: 500, hi: 1000 },
+  { label: "$1k+", lo: 1000, hi: null },
+] as const;
+
+export type Bucket = { label: string; n: number; fraud: number; fraud_rate: number };
+
+/** Fraud rate per dollar band (labeled rows from $2 up; the four rows under $2 are not charted). */
+export async function amountBands(): Promise<Bucket[]> {
+  const cases = AMOUNT_BANDS.map((b, i) =>
+    b.hi === null ? `WHEN a >= ${b.lo} THEN ${i}` : `WHEN a >= ${b.lo} AND a < ${b.hi} THEN ${i}`
+  ).join(" ");
+  const rows = await query(
+    `SELECT CASE ${cases} END AS band, count(*)::DOUBLE AS n,
+            sum(CASE WHEN authorized_flag = 0 THEN 1 ELSE 0 END)::DOUBLE AS fraud
+     FROM (SELECT purchase_amount AS a, authorized_flag FROM ${gr()}
+           WHERE authorized_flag IS NOT NULL AND purchase_amount >= ${AMOUNT_BANDS[0].lo})
+     GROUP BY 1 ORDER BY 1`
+  );
+  return rows.map((r) => ({
+    label: AMOUNT_BANDS[Number(r.band)].label,
+    n: Number(r.n),
+    fraud: Number(r.fraud),
+    fraud_rate: Number(r.fraud) / Number(r.n),
+  }));
+}
+
+type KeyedBucket = { key: number; n: number; fraud: number; fraud_rate: number };
+
+async function groupedRate(sql: string): Promise<KeyedBucket[]> {
+  return (await query(sql)).map((r) => ({
+    key: Number(r.k),
+    n: Number(r.n),
+    fraud: Number(r.fraud),
+    fraud_rate: Number(r.fraud) / Number(r.n),
+  }));
+}
+
+/** The aggregates behind the seven Story chapters and the Findings triggers. */
+export async function storyFigures() {
+  const merchantRows = await query(
+    `SELECT merchant_id, count(*)::DOUBLE AS n, sum(CASE WHEN authorized_flag = 0 THEN 1 ELSE 0 END)::DOUBLE AS fraud
+     FROM ${gr()} WHERE authorized_flag IS NOT NULL
+     GROUP BY 1 HAVING count(*) >= 50
+     ORDER BY avg(${IS_FRAUD}) DESC, merchant_id ASC LIMIT 10`
+  );
+  const merchants = merchantRows.map((r) => ({
+    merchant_id: String(r.merchant_id),
+    n: Number(r.n),
+    fraud: Number(r.fraud),
+    fraud_rate: Number(r.fraud) / Number(r.n),
+  }));
+
+  const fraudSum = `sum(CASE WHEN authorized_flag = 0 THEN 1 ELSE 0 END)::DOUBLE AS fraud`;
+  const [velocity, age, signature, travel] = await Promise.all([
+    groupedRate(`SELECT least(velocity_1h_count, 4)::INTEGER AS k, count(*)::DOUBLE AS n, ${fraudSum} FROM ${features()} GROUP BY 1 ORDER BY 1`),
+    groupedRate(`SELECT age_bucket::INTEGER AS k, count(*)::DOUBLE AS n, ${fraudSum} FROM ${features()} GROUP BY 1 ORDER BY 1`),
+    groupedRate(`SELECT signature_provided::INTEGER AS k, count(*)::DOUBLE AS n, ${fraudSum} FROM ${gr()} WHERE authorized_flag IS NOT NULL GROUP BY 1 ORDER BY 1`),
+    groupedRate(`SELECT impossible_travel_flag::INTEGER AS k, count(*)::DOUBLE AS n, ${fraudSum} FROM ${features()} GROUP BY 1 ORDER BY 1`),
+  ]);
+
+  const subsectorRows = async (dir: "DESC" | "ASC") =>
+    (await query(
+      `SELECT subsector_description AS category, avg(${IS_FRAUD}) AS fraud_rate, count(*)::DOUBLE AS n
+       FROM ${gr()} WHERE authorized_flag IS NOT NULL AND subsector_description IS NOT NULL
+       GROUP BY 1 HAVING count(*) >= 500 ORDER BY fraud_rate ${dir}, category ASC LIMIT 5`
+    )) as { category: string; fraud_rate: number; n: number }[];
+  const [subsectorTop, subsectorBottom] = await Promise.all([subsectorRows("DESC"), subsectorRows("ASC")]);
+
+  const flagSplit = async (col: string) => {
+    const rows = await groupedRate(
+      `SELECT ${col}::INTEGER AS k, count(*)::DOUBLE AS n, ${fraudSum} FROM ${features()} GROUP BY 1 ORDER BY 1`
+    );
+    const off = rows.find((r) => r.key === 0)!;
+    const on = rows.find((r) => r.key === 1)!;
+    return { n_flagged: on.n, rate_flagged: on.fraud_rate, n_unflagged: off.n, rate_unflagged: off.fraud_rate };
+  };
+  const [micro, velocityFlag] = await Promise.all([flagSplit("is_micro_transaction"), flagSplit("velocity_above_1_per_hour")]);
+  const [both] = await query(
+    `SELECT count(*)::DOUBLE AS n, avg(${IS_FRAUD}) AS fraud_rate FROM ${features()}
+     WHERE is_micro_transaction = 1 AND velocity_above_1_per_hour = 1`
+  );
+
+  return {
+    merchants,
+    velocity,
+    age,
+    signature,
+    travel,
+    subsectorTop,
+    subsectorBottom,
+    triggers: {
+      micro,
+      velocity: velocityFlag,
+      both: { n: Number(both.n), fraud_rate: Number(both.fraud_rate) },
+    },
+  };
 }

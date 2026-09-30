@@ -1,0 +1,93 @@
+{
+ "holdout": {
+  "auc": 0.764,
+  "pr_auc": 0.3292,
+  "best_round": 290,
+  "rows": 50845,
+  "prevalence": 0.0947192447634969
+ },
+ "cv": {
+  "auc_mean": 0.7593,
+  "auc_std": 0.0032,
+  "pr_auc_mean": 0.3214,
+  "pr_auc_std": 0.0057,
+  "folds": [
+   {
+    "fold": 1,
+    "auc": 0.7585,
+    "pr_auc": 0.3164
+   },
+   {
+    "fold": 2,
+    "auc": 0.7582,
+    "pr_auc": 0.3151
+   },
+   {
+    "fold": 3,
+    "auc": 0.7568,
+    "pr_auc": 0.3229
+   },
+   {
+    "fold": 4,
+    "auc": 0.7655,
+    "pr_auc": 0.3311
+   },
+   {
+    "fold": 5,
+    "auc": 0.7576,
+    "pr_auc": 0.3215
+   }
+  ]
+ },
+ "operating_point": {
+  "threshold": 0.8588,
+  "precision": 0.5,
+  "recall": 0.1721
+ },
+ "confusion": {
+  "tn": 45200,
+  "fp": 829,
+  "fn": 3987,
+  "tp": 829
+ },
+ "n_features": 32,
+ "diagnostics": {
+  "leakage_ceiling": 0.85,
+  "underfit_floor": 0.62,
+  "cv_std_limit": 0.05,
+  "checks": [
+   {
+    "n": 1,
+    "label": "AUC > 0.85 leakage",
+    "status": "PASS"
+   },
+   {
+    "n": 2,
+    "label": "AUC < 0.62 underfit",
+    "status": "PASS"
+   },
+   {
+    "n": 3,
+    "label": "CV std > 0.05",
+    "status": "PASS"
+   },
+   {
+    "n": 4,
+    "label": "overfit / training gap",
+    "status": "PASS"
+   }
+  ],
+  "overall": "PASS"
+ },
+ "shap_directions": {
+  "Merchant Historical Fraud Rate": "High value \u2192 toward fraud",
+  "Merchant Subsector Fraud Frequency": "High value \u2192 toward fraud",
+  "Signature Provided": "1 (signed) \u2192 toward legit",
+  "Card-to-Merchant Distance (km)": "High distance \u2192 toward legit (weak)",
+  "Cardholder Age Bucket": "Higher age \u2192 toward legit",
+  "Card Prior Transaction Count": "Low count \u2192 toward fraud",
+  "MCC Fraud Frequency": "High value \u2192 toward legit",
+  "Item Category B/C": "Category B/C present \u2192 toward legit",
+  "Log Transaction Amount": "Non-linear"
+ }
+}

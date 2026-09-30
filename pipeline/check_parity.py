@@ -71,4 +71,39 @@ shap, sref = get("/api/shap"), ref["shap_top15"]
 names_ok = [s["feature"] for s in shap] == [s["feature"] for s in sref]
 record("SHAP top 15", max(abs(a["mean_abs_shap"] - b["mean_abs_shap"]) for a, b in zip(shap, sref)), names_ok)
 
+# amount bands (findings.md Finding 2): counts exact, rates within tol
+got, exp = patterns["amountBands"], ref["amount_bands"]
+same = [(g["label"], int(g["n"]), int(g["fraud"])) for g in got] == [(e["label"], e["n"], e["fraud"]) for e in exp]
+record("amount bands (9, counts exact)", max(abs(g["fraud_rate"] - e["fraud_rate"]) for g, e in zip(got, exp)), same)
+
+# Story chapter aggregates and Findings triggers
+story, sref = get("/api/story"), ref["story"]
+
+
+def buckets_match(name, got_rows, exp_rows, label_key="key"):
+    ok = [(g[label_key], int(g["n"]), int(g["fraud"])) for g in got_rows] == [(e[label_key], e["n"], e["fraud"]) for e in exp_rows]
+    md = max(abs(g["fraud_rate"] - e["fraud_rate"]) for g, e in zip(got_rows, exp_rows)) if ok else 1.0
+    record(name, md, ok)
+
+
+# Top-10 merchants: ids in order, counts exact
+got_m = [(m["merchant_id"], m["n"], m["fraud"]) for m in story["merchants"]]
+exp_m = [(m["merchant_id"], m["n"], m["fraud"]) for m in sref["merchants_top10"]]
+record("story: top 10 merchants", max(abs(g["fraud_rate"] - e["fraud_rate"]) for g, e in zip(story["merchants"], sref["merchants_top10"])), got_m == exp_m)
+buckets_match("story: velocity 0..4+", story["velocity"], sref["velocity"])
+buckets_match("story: age buckets", story["age"], sref["age_bucket"])
+buckets_match("story: signature", story["signature"], sref["signature"])
+buckets_match("story: impossible-travel flag", story["travel"], sref["impossible_travel"])
+for key, ref_key in (("subsectorTop", "subsector_top5"), ("subsectorBottom", "subsector_bottom5")):
+    g, e = story[key], sref[ref_key]
+    record(f"story: {key}", max(abs(a["fraud_rate"] - b["fraud_rate"]) for a, b in zip(g, e)),
+           [(a["category"], int(a["n"])) for a in g] == [(b["category"], b["n"]) for b in e])
+tg, te = story["triggers"], sref["triggers"]
+for got_key, ref_key in (("micro", "is_micro_transaction"), ("velocity", "velocity_above_1_per_hour")):
+    a, b = tg[got_key], te[ref_key]
+    counts = int(a["n_flagged"]) == b["n_flagged"] and int(a["n_unflagged"]) == b["n_unflagged"]
+    record(f"triggers: {ref_key}", max(abs(a["rate_flagged"] - b["rate_flagged"]), abs(a["rate_unflagged"] - b["rate_unflagged"])), counts)
+record("triggers: micro x velocity", abs(tg["both"]["fraud_rate"] - te["micro_x_velocity"]["fraud_rate"]),
+       int(tg["both"]["n"]) == te["micro_x_velocity"]["n"])
+
 sys.exit(0 if all(results) else 1)
