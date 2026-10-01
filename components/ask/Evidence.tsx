@@ -80,6 +80,7 @@ function GuardLines({ scope, output }: { scope?: ScopeVerdict; output?: OutputVe
 }
 
 /** Shown in place of the evidence when the question never reached the answering model. */
+/** Never collapses: a blocked question's verdict always stays in full view. */
 export function ScopeCard({ scope }: { scope: ScopeVerdict }) {
   const p = scope.probability?.toFixed(2) ?? "n/a";
   const tail = `${scope.model} · ${scope.ms} ms`;
@@ -138,17 +139,21 @@ export function NoQueryNote({ answerMeta, guard }: { answerMeta?: AnswerMeta; gu
   );
 }
 
-export function Evidence({ sql, output, errorText, pending, answerMeta, guard }: {
+export function Evidence({ sql, output, errorText, pending, done, answerMeta, guard }: {
   /** Scope and output verdicts for this answer, shown as footer lines. */
   guard?: { scope?: ScopeVerdict; output?: OutputVerdict };
   sql?: string;
   output?: QueryOutput;
   errorText?: string;
   pending: boolean;
+  /** The answer's summary is written: the SQL and rows fold away until opened. */
+  done: boolean;
   /** Who answered, how long it took and what it cost; shown once the answer has finished. */
   answerMeta?: AnswerMeta;
 }) {
-  const [showSql, setShowSql] = useState(true);
+  // Open while the answer is being written; folded once it is done, unless the reader chose.
+  const [choice, setChoice] = useState<boolean | null>(null);
+  const showSql = choice ?? !done;
   const shownSql = output?.sql ?? sql ?? "";
   const failed = errorText ?? (output && "error" in output ? output.error : undefined);
   const ok = output && !("error" in output) ? output : undefined;
@@ -189,7 +194,7 @@ export function Evidence({ sql, output, errorText, pending, answerMeta, guard }:
         </pre>
       )}
       {failed && <p className="m-0 px-3 py-2 text-[12px] text-signal-700">{failed}</p>}
-      {ok && shown.length > 0 && (
+      {showSql && ok && shown.length > 0 && (
         <div className="overflow-x-auto">
           <Table className="text-[12px]">
             <TableHeader>
@@ -225,7 +230,7 @@ export function Evidence({ sql, output, errorText, pending, answerMeta, guard }:
           </Table>
         </div>
       )}
-      {ok && ok.rowCount > PREVIEW_ROWS && (
+      {showSql && ok && ok.rowCount > PREVIEW_ROWS && (
         <p className="m-0 px-3 pb-2 text-[11px] text-foreground/60">
           Showing the first {PREVIEW_ROWS} of {ok.rowCount} rows{ok.truncated ? " (result capped at 200)" : ""}.
         </p>
@@ -236,11 +241,11 @@ export function Evidence({ sql, output, errorText, pending, answerMeta, guard }:
         <span>fraud.duckdb · opened read-only</span>
         <button
           type="button"
-          onClick={() => setShowSql((s) => !s)}
+          onClick={() => setChoice(!showSql)}
           aria-expanded={showSql}
           className="rounded-sm text-signal-700 hover:text-signal-900"
         >
-          {showSql ? "Hide SQL" : "Show SQL"}
+          {showSql ? "Hide evidence" : "Show evidence (SQL and rows)"}
         </button>
       </div>
     </Card>

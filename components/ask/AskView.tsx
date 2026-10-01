@@ -74,6 +74,7 @@ function QueryCards({ answer, done }: { answer: UIMessage; done: boolean }) {
           output={p.output as QueryOutput | undefined}
           errorText={p.state === "output-error" ? p.errorText : undefined}
           pending={p.state === "input-streaming" || p.state === "input-available"}
+          done={done}
         />
       ))}
     </>

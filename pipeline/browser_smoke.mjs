@@ -65,6 +65,9 @@ try {
     // The answer is done when the progress checklist is gone.
     await page.waitForFunction(() => !document.querySelector('ol[aria-label="Progress"]'), null, { timeout: 120_000 });
 
+    // Once the summary is written the evidence folds; one click opens the SQL and rows.
+    check((await evidence.locator("pre code").count()) === 0, "evidence folds once the answer is written");
+    await evidence.getByRole("button", { name: /Show evidence/ }).click();
     const sql = (await evidence.locator("pre code").innerText()).trim();
     check(/^(SELECT|WITH)\b/i.test(sql), `evidence card shows the SQL (${sql.slice(0, 40).replace(/\s+/g, " ")}…)`);
     check((await evidence.locator("tbody tr").count()) > 0, "evidence card rendered a result table");
@@ -82,6 +85,7 @@ try {
     check(/^SCOPE CHECK out of scope · \w+ · p=\d\.\d\d · typesafe-ai\/jev · \d+ ms$/i.test(cardText), `blocked question shows the SCOPE CHECK card (${cardText})`);
     check((await page.getByText("I can only answer questions about this fraud dataset and its analysis.").count()) > 0, "blocked question shows the fixed refusal");
     check((await page.locator('[aria-label="Evidence"]').count()) === 1, "blocked question ran no query (still one evidence card)");
+    check((await card.getByRole("button").count()) === 0 && (await card.isVisible()), "SCOPE CHECK card stays open, with nothing to collapse it");
 
     check((await page.getByTestId("deployment-badge").innerText()).trim().length > 0, "deployment badge is in the sidebar");
     check(!failedRequests.some((r) => r.includes("/api/")), `no failed API requests ${failedRequests.join(" ")}`);
