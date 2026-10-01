@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import { Fragment, type ReactNode } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
@@ -6,7 +6,7 @@ import remarkGfm from "remark-gfm";
  * Renders the owner-edited markdown in content/. `Inline` is for one-line fields (a title, a quote):
  * bold, italics, code and links work, and the text is not wrapped in a paragraph, so a plain line
  * renders exactly as the bare string would. `Block` is for sections: paragraphs, lists and the same
- * inline marks. No raw HTML in either.
+ * inline marks. No raw HTML in either, except that `Inline` turns a literal `<br>` into a line break.
  */
 const INLINE = ["strong", "em", "code", "a", "del"];
 const BLOCK = ["p", "br", "ul", "ol", "li", "blockquote", ...INLINE];
@@ -20,11 +20,21 @@ const link = ({ href, children }: { href?: string; children?: ReactNode }) => {
   );
 };
 
+const BREAK = /\s*<br\s*\/?>\s*/i;
+
 export function Inline({ children }: { children: string }) {
+  const lines = children.split(BREAK);
   return (
-    <ReactMarkdown remarkPlugins={[remarkGfm]} allowedElements={INLINE} unwrapDisallowed components={{ a: link }}>
-      {children}
-    </ReactMarkdown>
+    <>
+      {lines.map((line, i) => (
+        <Fragment key={i}>
+          {i > 0 && <br />}
+          <ReactMarkdown remarkPlugins={[remarkGfm]} allowedElements={INLINE} unwrapDisallowed components={{ a: link }}>
+            {line}
+          </ReactMarkdown>
+        </Fragment>
+      ))}
+    </>
   );
 }
 

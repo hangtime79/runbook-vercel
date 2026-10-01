@@ -161,6 +161,9 @@ also use bullet lists (`- item`), numbered lists (`1. item`) and blank lines bet
 fields are one line each, so only the inline marks apply there. Don't put a link inside an intro card:
 the whole card is already a link.
 
+To force a line break inside a one-line field (a title, a quote), type `<br>` where the break goes:
+`title: First line. <br> Second line.` It is the only HTML tag that works.
+
 ## Add, remove or reorder an x-ray stop
 
 1. Rename the files so the number prefixes run `01`, `02`, `03` … with no gaps and no repeats.
