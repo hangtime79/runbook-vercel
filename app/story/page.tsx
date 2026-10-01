@@ -1,10 +1,12 @@
 import Link from "next/link";
 import { AskButton } from "@/components/ask/AskButton";
 import { Figure, FigureLabel, RateBars } from "@/components/Figure";
+import { OnVercel } from "@/components/story/OnVercel";
 import { StoryRail } from "@/components/story/StoryRail";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { CLOSER, STORY } from "@/lib/copy";
+import { loadStoryVercel } from "@/lib/content";
+import { CLOSER, CHAPTERS, STORY } from "@/lib/copy";
 import { loadStory } from "@/lib/story";
 
 export const runtime = "nodejs";
@@ -12,6 +14,7 @@ export const dynamic = "force-dynamic";
 
 export default async function StoryPage() {
   const { baseline, kpis, chapters } = await loadStory();
+  const onVercel = loadStoryVercel();
 
   return (
     <div>
@@ -36,6 +39,7 @@ export default async function StoryPage() {
             </Figure>
           ))}
         </div>
+        <OnVercel text={onVercel.kpis} className="mt-5" />
       </section>
 
       {chapters.map((c) => (
@@ -54,6 +58,7 @@ export default async function StoryPage() {
               </Badge>
             </div>
             <h2 className="text-[28px] font-semibold leading-[1.15] tracking-tight2 text-pretty">{c.title}</h2>
+            <OnVercel text={onVercel[CHAPTERS[c.idx].src]} />
             <div className="my-1 flex items-baseline gap-3">
               <span className="text-[56px] font-semibold leading-none tracking-tightest text-signal-800">{c.stat}</span>
               <span className="max-w-[220px] text-[14px] text-foreground/70">{c.statLabel}</span>

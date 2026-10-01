@@ -87,12 +87,14 @@ export default async function IntroPage() {
             const inner = (
               <>
                 <span className="font-mono text-[12px] text-signal-700">{String(i + 1).padStart(2, "0")}</span>
-                <span className="text-[19px] font-semibold leading-[1.2]"><Inline>{c.title}</Inline></span>
-                <span className="text-[14px] text-foreground/70"><Inline>{c.text}</Inline></span>
-                {/* The platform value behind the screen; pinned to the card bottom so the four line up. */}
-                <span className="mt-auto flex flex-col gap-1 border-t border-border pt-3">
+                {/* The platform value leads: it is the point of the card. What the screen shows follows. */}
+                <span className="flex flex-col gap-1">
                   <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-signal-700"><Inline>{C.see.vercel_label}</Inline></span>
-                  <span className="min-h-[5.8em] text-[14px] leading-[1.45] text-foreground/90"><Inline>{c.vercel}</Inline></span>
+                  <span className="min-h-[5.8em] text-[15px] font-medium leading-[1.4] text-foreground"><Inline>{c.vercel}</Inline></span>
+                </span>
+                <span className="mt-auto flex flex-col gap-1 border-t border-border pt-3">
+                  <span className="text-[17px] font-semibold leading-[1.2]"><Inline>{c.title}</Inline></span>
+                  <span className="text-[13px] text-foreground/70"><Inline>{c.text}</Inline></span>
                 </span>
               </>
             );

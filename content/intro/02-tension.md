@@ -1,6 +1,6 @@
 ---
 kicker: The tension
-title: Two people in the room, one shared worry.
+title: Speed against control is a platform problem. Two people, one shared worry.
 fraud_role: Head of Fraud
 fraud_line: Keep the speed. My investigators found the ring.
 cio_role: CIO
