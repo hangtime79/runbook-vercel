@@ -62,8 +62,9 @@ placeholder until the trial exists.
 
 Start on the app's root URL; it opens `/intro` full-screen. Move with the arrow keys.
 1. **The situation.** Tell the story in two sentences: a fraud wave, investigators built their
-   own tools, one cracked a ring. "This app is one of those tools."
-2. **The tension.** Look at each of them in turn: Head of Fraud, "keep the speed"; CIO, "I keep
+   own tools, one cracked a ring. "This app is one of those tools, and tools like it are apps that
+   need a home."
+2. **The tension.** "Speed against control is a platform problem." Look at each of them in turn: Head of Fraud, "keep the speed"; CIO, "I keep
    inheriting apps I didn't build." Read the APRA line aloud.
 3. **The thesis.** Pause on it. Say it once, slowly.
 4. **What you'll see.** Name the four acts; don't click yet. Each card leads with an **On Vercel**
