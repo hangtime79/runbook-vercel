@@ -2,7 +2,7 @@
 
 Every Vercel URL cited in `vercel-positioning.md` (VP), `governance-research.md` (GR) and `objections-research.md` (OR) was fetched again on **2026-10-01** with WebFetch. Docs pages carry their own `last_updated`; it is given where it matters.
 
-**Out of scope:** APRA quotes and the CPS 230 commencement date. Those stay marked unverified until checked against the PDFs. Streamlit, Azure, AWS, Cloudflare and other non-Vercel pages are not in this table.
+**Out of scope:** APRA quotes and the CPS 230 commencement date. Grant checked those against the PDFs himself (recorded 2026-10-02). Streamlit, Azure, AWS, Cloudflare and other non-Vercel pages are not in this table.
 
 **Status key.** **confirmed**: the live page says what the file says. **changed**: the page says something different (new value given, old value kept as "was:" in the source file). **gone**: the page or claim no longer exists. **couldn't load**: the page was fetched but the specific claim did not come back, or the fetch failed.
 

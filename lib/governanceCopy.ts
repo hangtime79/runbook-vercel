@@ -57,7 +57,7 @@ export const GOVERNANCE = {
   },
   apra: {
     title: "APRA mapping",
-    note: "Quotes to be verified against APRA PDFs.",
+    note: "Quotes checked against the APRA source documents.",
     rows: [
       {
         source: "AI letter, 30 Apr 2026 · change control",

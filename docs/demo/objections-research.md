@@ -1,6 +1,6 @@
 # Objections research: why buyers push back, and why they pick someone else
 
-Last verified: 2026-10-01 (Vercel URLs re-fetched; see `verification-2026-10.md`). Non-Vercel sources keep their own accessed dates. APRA quotes and the CPS 230 date stay unverified.
+Last verified: 2026-10-01 (Vercel URLs re-fetched; see `verification-2026-10.md`). Non-Vercel sources keep their own accessed dates. APRA quotes: checked against the APRA PDFs by Grant, recorded 2026-10-02.
 
 Researched 2026-10-01 (all "accessed" dates below). Companion to `vercel-positioning.md` and `governance-research.md`; it does not repeat them. Every entry has a claim, a short quote, the URL, the publisher, the publication or page date, and the date accessed. Entries are split into **Facts** (vendor pricing pages, official docs, regulator text) and **Opinion** (blogs, analyst and forum pieces). Anything not confirmed on a page is marked **UNVERIFIED**.
 

@@ -226,7 +226,7 @@ Routes: `/` (redirects to `/intro`), `/intro` (full-screen demo opening, no shel
 
 - **Region:** `vercel.json` pins Functions to `syd1`. `VERCEL_REGION` (runtime) reports where a function ran; it is shown in the sidebar badge and on `/governance`.
 - **Badge (`lib/deployment.ts`, `/api/deployment`):** from `VERCEL`, `VERCEL_ENV`, `VERCEL_GIT_COMMIT_SHA`, `VERCEL_GIT_COMMIT_MESSAGE`, `VERCEL_GIT_PROVIDER`, `VERCEL_GIT_REPO_OWNER`, `VERCEL_GIT_REPO_SLUG`, `VERCEL_REGION`. The `VERCEL_GIT_*` ones exist only on git-triggered deployments, so a CLI deploy shows `preview` with no commit. Nothing else is exposed.
-- **`/governance`:** an inventory card for this one app. Live values (deployment, limits from `lib/askLimits.ts`, allowlist, ZDR state) are read at request time; the rest is static copy in `lib/governanceCopy.ts`, and every Vercel claim in it must come from `docs/demo/vercel-positioning.md` or `docs/demo/governance-research.md`. APRA quotes there are unverified until checked against the APRA PDFs.
+- **`/governance`:** an inventory card for this one app. Live values (deployment, limits from `lib/askLimits.ts`, allowlist, ZDR state) are read at request time; the rest is static copy in `lib/governanceCopy.ts`, and every Vercel claim in it must come from `docs/demo/vercel-positioning.md` or `docs/demo/governance-research.md`. APRA quotes there were checked against the APRA PDFs by the owner (2026-10-02); a new or reworded APRA quote needs the same check.
 - **Data-source seam:** `lib/source.ts` is the one interface pages, API routes and the Ask tool read through; `lib/duckdbSource.ts` and `lib/askdb.ts` implement it. P3 (Snowflake) adds a second implementation, see SPEC.md.
 
 ### Change control
