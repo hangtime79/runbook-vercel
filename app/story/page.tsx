@@ -19,11 +19,11 @@ export default async function StoryPage() {
 
       <section className="max-w-[1080px] px-4 pb-9 pt-11 sm:px-10">
         <span className="text-[11px] uppercase tracking-kicker text-signal-700">{STORY.kicker}</span>
-        <h1 className="mb-[18px] mt-2.5 max-w-[880px] text-[32px] font-semibold leading-[1.08] tracking-tighter2 text-pretty sm:text-[44px]">
+        <h1 data-xray="underneath" className="mb-[18px] mt-2.5 max-w-[880px] text-[32px] font-semibold leading-[1.08] tracking-tighter2 text-pretty sm:text-[44px]">
           {STORY.title}
         </h1>
         <p className="mb-8 max-w-[720px] text-[17px] text-foreground/80 text-pretty">{STORY.lede}</p>
-        <div className="grid grid-cols-[repeat(auto-fit,minmax(165px,1fr))] gap-5">
+        <div data-xray="kpis" className="grid grid-cols-[repeat(auto-fit,minmax(165px,1fr))] gap-5">
           {kpis.map((k) => (
             <Figure key={k.label} className="gap-1 px-[18px] py-4">
               <span className="text-[10px] uppercase tracking-kicker text-foreground/[0.62]">{k.label}</span>
@@ -43,6 +43,7 @@ export default async function StoryPage() {
           key={c.idx}
           id={`finding-${c.idx + 1}`}
           data-chapter={c.idx}
+          data-xray={c.idx === 0 ? "merchants" : undefined}
           className="grid max-w-[1160px] grid-cols-[repeat(auto-fit,minmax(min(320px,100%),1fr))] gap-9 border-t border-border px-4 py-11 sm:px-10"
         >
           <div className="flex min-w-0 flex-col gap-3">
@@ -64,7 +65,7 @@ export default async function StoryPage() {
               <dd className="m-0 font-medium text-pretty">{c.action}</dd>
             </dl>
             <div className="mt-1.5 flex gap-2">
-              <AskButton question={c.q} />
+              <AskButton question={c.q} xray={c.idx === 0 ? "ask-button" : undefined} />
             </div>
           </div>
           <figure className="m-0 min-w-0">

@@ -30,6 +30,7 @@
   --color-input: var(--input);
   --color-ring: var(--ring);
   --color-neutral-bar: var(--neutral-bar);
+  --color-xray: var(--xray);
 
   /* The fraud-signal ramp from the handoff README (its "accent" 100-900). Named "signal" so it
      does not collide with shadcn's neutral --accent hover surface. 600 is the base. */
@@ -83,6 +84,8 @@
   --input: #2e2e2e;
   --ring: #ededed;
   --neutral-bar: #454545;
+  /* X-ray mode (demo coaching overlay). Cyan on purpose: the signal red means fraud, and a marker must not read as an alert. */
+  --xray: #22d3ee;
   --radius: 12px;
 }
 
@@ -127,4 +130,40 @@
 /* Numeric columns everywhere line up. */
 .tnum {
   font-variant-numeric: tabular-nums;
+}
+
+/* X-ray markers: a 22px numbered circle with a pulsing glow ring. Still when the user asks for less motion. */
+.xray-badge {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 9999px;
+  border: 1px solid #a5f3fc;
+  background: #06303a;
+  color: #cffafe;
+  font: 600 11px/1 var(--font-geist-mono), ui-monospace, monospace;
+  box-shadow: 0 0 10px 1px color-mix(in srgb, var(--xray) 70%, transparent);
+  animation: xray-pulse 2s ease-out infinite;
+  padding: 0;
+}
+.xray-badge:hover,
+.xray-badge[data-state="delayed-open"],
+.xray-badge[data-state="instant-open"] {
+  background: var(--xray);
+  color: #04222a;
+}
+@keyframes xray-pulse {
+  0% {
+    box-shadow: 0 0 8px 1px color-mix(in srgb, var(--xray) 70%, transparent), 0 0 0 0 color-mix(in srgb, var(--xray) 55%, transparent);
+  }
+  70%,
+  100% {
+    box-shadow: 0 0 8px 1px color-mix(in srgb, var(--xray) 70%, transparent), 0 0 0 10px transparent;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .xray-badge {
+    animation: none;
+  }
 }

@@ -7,6 +7,7 @@ import { MessageSquare } from "lucide-react";
 import { AskView } from "@/components/ask/AskView";
 import { useAsk } from "@/components/ask/AskProvider";
 import { DeploymentBadge } from "@/components/shell/DeploymentBadge";
+import { useXray } from "@/components/xray/context";
 import { NAV, SIDEBAR } from "@/lib/copy";
 
 const isActive = (pathname: string, href: string) => pathname.startsWith(href);
@@ -53,6 +54,29 @@ function Brand() {
   );
 }
 
+/** The X-ray switch: a demo coaching overlay. Also on the X key, or ?xray=1 in the address. */
+function XraySwitch() {
+  const { on, enabled, toggle } = useXray();
+  return (
+    <button
+      type="button"
+      role="switch"
+      aria-checked={on}
+      aria-label="X-ray mode"
+      disabled={!enabled}
+      onClick={toggle}
+      data-testid="xray-switch"
+      title={enabled ? "Demo coaching markers (X)" : "X-ray needs a screen at least 768px wide"}
+      className="mt-2 flex items-center gap-2 self-start text-[11px] text-foreground/60 disabled:opacity-40"
+    >
+      <span className={`relative h-3.5 w-6 rounded-full border transition-colors ${on ? "border-xray bg-xray/30" : "border-border-strong bg-background"}`}>
+        <span className={`absolute top-px size-2.5 rounded-full transition-all ${on ? "left-[11px] bg-xray" : "left-px bg-foreground/50"}`} />
+      </span>
+      X-ray
+    </button>
+  );
+}
+
 function Sidebar({ pathname }: { pathname: string }) {
   return (
     <aside className="hidden w-[212px] shrink-0 flex-col border-r border-border pb-[18px] pt-[22px] sm:flex">
@@ -68,6 +92,7 @@ function Sidebar({ pathname }: { pathname: string }) {
         {SIDEBAR.footerLines.map((l) => (
           <span key={l}>{l}</span>
         ))}
+        <XraySwitch />
       </div>
     </aside>
   );

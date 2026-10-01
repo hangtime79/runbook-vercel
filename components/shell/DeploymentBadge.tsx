@@ -15,7 +15,7 @@ export function DeploymentBadge() {
   if (!d) return null;
 
   return (
-    <div className="flex flex-col gap-0.5 font-mono text-[11px] text-foreground/70" data-testid="deployment-badge" title={d.message ?? undefined}>
+    <div className="flex flex-col gap-0.5 font-mono text-[11px] text-foreground/70" data-testid="deployment-badge" data-xray="preview-badge" title={d.message ?? undefined}>
       <span>
         {d.environment}
         {d.shortSha && (

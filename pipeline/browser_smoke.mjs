@@ -198,6 +198,61 @@ try {
     check(errors.length === 0, `no console errors on /intro at ${width} ${errors.slice(0, 2).join(" | ")}`);
     await page.close();
   }
+
+  // ---- 4. X-ray mode (the demo coaching overlay) ---------------------------------------------------
+  // Off by default; ?xray=1 turns it on. The overlay must never cause horizontal overflow, a badge must
+  // render, and hovering it must open its card. The X key toggles, except while typing in the Ask box.
+  {
+    const off = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+    await off.goto(BASE + "/story", { waitUntil: "networkidle" });
+    check((await off.locator("[data-xray-badge]").count()) === 0, "x-ray is off by default (no badges on /story)");
+    await off.close();
+
+    for (const [route, width, height] of [["/explorer", 1440, 900], ["/explorer", 1920, 1000], ["/intro", 1440, 900]]) {
+      const page = await browser.newPage({ viewport: { width, height } });
+      const errors = [];
+      page.on("console", (m) => m.type() === "error" && errors.push(m.text()));
+      await page.goto(`${BASE}${route}?xray=1`, { waitUntil: "networkidle" });
+      await page.locator("[data-xray-badge]").first().waitFor({ timeout: 10_000 }).catch(() => {});
+      const o = await page.evaluate(() => {
+        const box = document.querySelector(".\\@container > div") || document.getElementById("intro-deck");
+        return { page: document.documentElement.scrollWidth - window.innerWidth, box: box ? box.scrollWidth - box.clientWidth : 0 };
+      });
+      check(o.page <= 0 && o.box <= 0, `no horizontal overflow on ${route} at ${width} with x-ray on (page ${o.page}px, box ${o.box}px)`);
+      const badges = await page.locator("[data-xray-badge]").count();
+      check(badges > 0, `x-ray renders badges on ${route} at ${width} (${badges})`);
+      if (width === 1440) {
+        await page.locator("[data-xray-badge]").first().hover();
+        const card = page.locator("[data-slot=tooltip-content]").first();
+        await card.waitFor({ timeout: 5000 }).catch(() => {});
+        const text = (await card.innerText().catch(() => "")) || "";
+        check(/Fast run: (keep|skip)/.test(text) && /What it is/i.test(text), `hovering a badge on ${route} shows its card (${text.slice(0, 40).replace(/\s+/g, " ")}…)`);
+        // Walk away to a neutral spot (the first badge can sit at the screen corner, so not (5, 5)).
+        await page.mouse.move(1000, 700, { steps: 12 });
+        await page.waitForTimeout(600);
+        check((await page.locator("[data-slot=tooltip-content]").count()) === 0, `moving off the badge hides the card on ${route}`);
+      }
+      check(errors.length === 0, `no console errors on ${route} at ${width} with x-ray on ${errors.slice(0, 2).join(" | ")}`);
+      await page.close();
+    }
+
+    const keys = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+    await keys.goto(BASE + "/story?xray=1", { waitUntil: "networkidle" });
+    const opener = keys.getByRole("button", { name: "Open the Ask the data panel" });
+    if (await opener.count()) await opener.click();
+    const box = keys.getByRole("textbox", { name: "Question" });
+    await box.click();
+    await keys.keyboard.type("x");
+    check((await box.inputValue()) === "x" && (await keys.locator("[data-xray-badge]").count()) > 0, 'typing "x" in the Ask box does not toggle x-ray');
+    await keys.locator("body").click({ position: { x: 700, y: 20 } });
+    await keys.keyboard.press("x");
+    await keys.waitForTimeout(300);
+    check((await keys.locator("[data-xray-badge]").count()) === 0, "the X key turns x-ray off");
+    await keys.keyboard.press("x");
+    await keys.waitForTimeout(500);
+    check((await keys.locator("[data-xray-badge]").count()) > 0, "the X key turns x-ray back on");
+    await keys.close();
+  }
 } finally {
   await browser.close();
 }

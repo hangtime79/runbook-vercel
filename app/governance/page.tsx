@@ -33,7 +33,7 @@ export default function GovernancePage() {
     <Page>
       <PageHeader kicker={G.kicker} title={G.title} lede={G.lede} />
 
-      <Figure className="px-5 py-4">
+      <Figure className="px-5 py-4" data-xray="where-runs">
         <FigureLabel>Deployment</FigureLabel>
         <Row k="Environment" basis="live">{d.environment}</Row>
         <Row k="Commit" basis="live">
@@ -57,20 +57,20 @@ export default function GovernancePage() {
         </Row>
       </Figure>
 
-      <Figure className="px-5 py-4">
+      <Figure className="px-5 py-4" data-xray="who-sees">
         <FigureLabel>{G.access.title}</FigureLabel>
         <Row k="Who can open it" basis={G.access.basis}>{G.access.value}</Row>
         <Row k="Enterprise option">{G.access.note}</Row>
       </Figure>
 
-      <Figure className="px-5 py-4">
+      <Figure className="px-5 py-4" data-xray="connect">
         <FigureLabel>Data</FigureLabel>
         <Row k="Source" basis="live">DuckDB file <span className="font-mono">fraud.duckdb</span>, opened read-only with external access off and configuration locked</Row>
         <Row k="Statement guard" basis="live">Exactly one SELECT (parsed by DuckDB) or the query is refused</Row>
         <Row k="Limits" basis="live">{ROW_LIMIT} rows per result · {TIMEOUT_MS / 1000} s timeout</Row>
       </Figure>
 
-      <Figure className="px-5 py-4">
+      <Figure className="px-5 py-4" data-xray="ai-called">
         <FigureLabel>AI usage</FigureLabel>
         <Row k="Allowed models" basis="live">
           <span className="font-mono">{ALLOWED_MODELS.map((m) => m.id).join(" · ")}</span>
@@ -84,7 +84,7 @@ export default function GovernancePage() {
         </Row>
       </Figure>
 
-      <Figure className="px-5 py-4">
+      <Figure className="px-5 py-4" data-xray="change-propose change-checks ship-undo">
         <FigureLabel>{G.changeControl.title}</FigureLabel>
         <p className="m-0 pb-2 text-[14px] text-foreground/75">{G.changeControl.lede}</p>
         {G.changeControl.checks.map((c) => (
@@ -98,7 +98,7 @@ export default function GovernancePage() {
         <p className="m-0 pt-2 text-[13px] text-foreground/65">{G.changeControl.note}</p>
       </Figure>
 
-      <Figure className="px-5 py-4">
+      <Figure className="px-5 py-4" data-xray="close-tiers">
         <FigureLabel>{G.tiers.title}</FigureLabel>
         <p className="m-0 pb-2 text-[14px] text-foreground/75">{G.tiers.lede}</p>
         <TierTable markCurrent />

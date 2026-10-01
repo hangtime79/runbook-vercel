@@ -1,10 +1,13 @@
-import type { ReactNode } from "react";
+import type { ComponentProps, ReactNode } from "react";
 import { Card } from "@/components/ui/card";
 
 /** The README's Card surface: 1px border, 12px radius, #0f0f0f. */
-export function Figure({ children, className = "" }: { children: ReactNode; className?: string }) {
+export function Figure({ children, className = "", ...rest }: { children: ReactNode; className?: string } & Omit<ComponentProps<"div">, "children" | "className">) {
+  // `rest` carries data-xray (the demo coaching marker) onto the card itself.
   return (
-    <Card className={`min-w-0 gap-2.5 rounded-xl border border-border bg-card py-0 ring-0 ${className}`}>{children}</Card>
+    <Card className={`min-w-0 gap-2.5 rounded-xl border border-border bg-card py-0 ring-0 ${className}`} {...rest}>
+      {children}
+    </Card>
   );
 }
 

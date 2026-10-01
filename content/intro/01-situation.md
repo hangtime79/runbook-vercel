@@ -1,0 +1,7 @@
+---
+kicker: An Australian bank · fraud operations
+title: After a fraud wave, the investigators built their own tools. One of them cracked a ring.
+closer: This app is one of those tools.
+label_fraud: confirmed fraud
+label_rate: fraud rate, labeled transactions
+---

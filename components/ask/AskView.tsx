@@ -166,12 +166,12 @@ export function AskView({ variant }: { variant: "panel" | "page" }) {
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
-      <div className="flex items-center justify-between gap-3 border-b border-border px-5 pb-3 pt-4">
+      <div data-xray="red-team" className="flex items-center justify-between gap-3 border-b border-border px-5 pb-3 pt-4">
         <div className="flex flex-col">
           <h2 className="text-xl font-semibold leading-[1.1]">{ASK.title}</h2>
           <span className="text-[12px] text-foreground/60">{ASK.tagline}</span>
           {modelChoice && (
-            <label className="mt-1.5 flex items-center gap-2 text-[11px] text-foreground/60">
+            <label data-xray="model-switch" className="mt-1.5 flex items-center gap-2 text-[11px] text-foreground/60">
               Model
               <select
                 value={modelChoice.selected}
@@ -234,7 +234,7 @@ export function AskView({ variant }: { variant: "panel" | "page" }) {
       </div>
 
       <form onSubmit={submit} className="flex flex-col gap-2 border-t border-border px-5 pb-4 pt-3">
-        <div className="mx-auto flex w-full max-w-[760px] gap-2">
+        <div data-xray="delete-refused" className="mx-auto flex w-full max-w-[760px] gap-2">
           <Input
             value={input}
             onChange={(e) => setInput(e.currentTarget.value)}

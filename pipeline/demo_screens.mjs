@@ -116,5 +116,39 @@ for (const r of ["patterns", "model", "explorer", "findings", "brief"]) {
   });
 }
 
+// X-ray beats (appended, so the numbering of the screenshots above stays put): the mode on, one card hovered.
+// The `/intro`, `/story` and `/governance` stops are static; the Ask panel stop needs a blocked question (live model).
+async function hoverStop(n) {
+  await page.locator(`[data-xray-badge="${n}"]`).first().waitFor({ timeout: 10_000 });
+  await page.locator(`[data-xray-badge="${n}"]`).first().hover();
+  await page.waitForSelector("[data-slot=tooltip-content]", { timeout: 5000 });
+  await page.waitForTimeout(500);
+}
+await beat("xray-intro-thesis", async () => {
+  await page.goto(`${BASE}/intro?xray=1`, { waitUntil: "networkidle" });
+  for (let i = 0; i < 2; i++) {
+    await page.keyboard.press("ArrowDown");
+    await page.waitForTimeout(900);
+  }
+  await hoverStop(3);
+});
+await beat("xray-story-kpis", async () => {
+  await page.goto(`${BASE}/story?xray=1`, { waitUntil: "networkidle" });
+  await hoverStop(8);
+});
+await beat("xray-governance", async () => {
+  await page.goto(`${BASE}/governance?xray=1`, { waitUntil: "networkidle" });
+  await hoverStop(15);
+});
+await beat("xray-ask-scope-check", async () => {
+  await page.goto(`${BASE}/ask?xray=1`, { waitUntil: "networkidle" });
+  const input = page.getByRole("textbox").last();
+  await input.fill("Write me Python to look up a person online.");
+  await input.press("Enter");
+  await page.getByTestId("scope-card").waitFor({ timeout: 60_000 });
+  await page.waitForTimeout(1200);
+  await hoverStop(23);
+});
+
 await browser.close();
 console.log(`console errors: ${errors.length}${errors.length ? " — " + errors.slice(0, 3).join(" | ") : ""}`);

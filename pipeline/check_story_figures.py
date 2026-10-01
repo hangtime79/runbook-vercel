@@ -2,14 +2,15 @@
 
 Usage: uv run python3 pipeline/check_story_figures.py
 
-Reads lib/copy.ts (all static editorial copy lives there) and pulls every number out of its string
-literals. Each number must match, at the precision it is written in, either
+Reads lib/copy.ts (all static editorial copy lives there) and content/intro/**/*.md (the intro deck's words,
+edited by the owner) and pulls every number out of their text. Each number must match, at the precision it is written in, either
   - a structured figure: pipeline/parity_reference.json (rates shown as percentages too, plus a few
     derived ratios and shares) or data/model_summary.json, compared after rounding; or
   - a number that appears exactly in the analysis documents (data/docs/findings.md, NARRATIVE.md,
     metrics.md, shap.md).
 Numbers that trace to nothing are listed and the script exits 1. Live figures (KPIs, chart series,
-big stats) are computed from data/ in the app and are not in copy.ts.
+big stats) are computed from data/ in the app and are not in copy.ts. content/xray/ (the demo coaching cards)
+is not scanned: it quotes the demo script, not the data.
 """
 import json
 import re
@@ -97,6 +98,7 @@ EXEMPT_PREFIXES = (  # method / structural labels, not analytical claims
     "Triggers fired",
     "§6.5",
     "artifacts/",
+    "APRA letter",  # a citation (regulator, date), checked against the APRA PDF by hand, not against the data
 )
 strings = []
 for m in re.finditer(r'"((?:[^"\\]|\\.)*)"', copy_src):
@@ -105,6 +107,19 @@ for m in re.finditer(r'"((?:[^"\\]|\\.)*)"', copy_src):
         continue
     strings.append(s)
 # Long strings are concatenated with + across lines; the regex above sees each piece, which is fine.
+
+# The intro deck's words: every `key: value` frontmatter line in content/intro/**/*.md is one string.
+# (`href: /story` style values are skipped by the "/" rule above, same as in copy.ts.)
+intro_files = sorted((ROOT / "content" / "intro").rglob("*.md"))
+for f in intro_files:
+    for line in f.read_text().splitlines():
+        m = re.match(r"^[A-Za-z][\w-]*:\s*(.*\S)\s*$", line)
+        if not m:
+            continue
+        s = m.group(1)
+        if len(s) < 4 or not re.search(r"\d", s) or s.startswith(("/", "http")) or s.startswith(EXEMPT_PREFIXES):
+            continue
+        strings.append(s)
 
 untraced, traced = [], 0
 for s in strings:
@@ -124,7 +139,7 @@ for s in strings:
         else:
             untraced.append((tok, s))
 
-print(f"copy.ts: {len(strings)} strings with numbers; {traced} figures traced")
+print(f"copy.ts + {len(intro_files)} intro files: {len(strings)} strings with numbers; {traced} figures traced")
 for tok, s in untraced:
     print(f"UNTRACED  {tok!r} in: {s[:110]}")
 print("PASS" if not untraced else f"FAIL: {len(untraced)} figure(s) not traceable")

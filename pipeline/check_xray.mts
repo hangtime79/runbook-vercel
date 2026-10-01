@@ -1,0 +1,87 @@
+// X-ray stops match the script: every card in content/xray/ has an anchor in the app, and every anchor has a card.
+// Usage: node --no-warnings pipeline/check_xray.mts   (from the repo root; no secrets, no network)
+// Also runs the full content check (lib/content.ts), so a bad edit to content/ fails here with file and field.
+import { readdirSync, readFileSync } from "node:fs";
+import path from "node:path";
+import { loadXrayStops, validateAllContent } from "../lib/content.ts";
+
+let failed = 0;
+const check = (ok: boolean, msg: string) => {
+  console.log(`${ok ? "PASS" : "FAIL"}  ${msg}`);
+  if (!ok) failed++;
+};
+
+// 1. Every content file passes validation (required keys, known sections, real routes, 1..N numbering).
+let stops: ReturnType<typeof loadXrayStops> = [];
+try {
+  const v = validateAllContent();
+  stops = loadXrayStops();
+  check(true, `content validates: ${v.slides} intro slides, ${v.cards} cards, ${v.stops} x-ray stops`);
+  check(stops.every((s, i) => s.n === i + 1), `stop numbers run 1..${stops.length} with no gaps or repeats`);
+} catch (e) {
+  check(false, String((e as Error).message));
+  process.exit(1);
+}
+
+// 2. Collect every data-xray anchor id written in app/ and components/.
+function* walk(dir: string): Generator<string> {
+  for (const d of readdirSync(dir, { withFileTypes: true })) {
+    const p = path.join(dir, d.name);
+    if (d.isDirectory()) yield* walk(p);
+    else if (/\.(tsx|ts)$/.test(d.name)) yield p;
+  }
+}
+
+/** The attribute value: "a b" or {expr}. Returns every string literal inside, split on spaces. */
+function idsIn(src: string, from: number): string[] {
+  let i = from;
+  const out: string[] = [];
+  if (src[i] === '"') {
+    const end = src.indexOf('"', i + 1);
+    return src.slice(i + 1, end).split(/\s+/).filter(Boolean);
+  }
+  if (src[i] === "{") {
+    let depth = 0;
+    let j = i;
+    for (; j < src.length; j++) {
+      if (src[j] === "{") depth++;
+      else if (src[j] === "}" && --depth === 0) break;
+    }
+    for (const m of src.slice(i, j).matchAll(/"([^"]*)"/g)) out.push(...m[1].split(/\s+/).filter(Boolean));
+  }
+  return out;
+}
+
+const anchors = new Map<string, string[]>(); // id -> files
+for (const root of ["app", "components"]) {
+  for (const file of walk(root)) {
+    const src = readFileSync(file, "utf8");
+    for (const m of src.matchAll(/data-xray=/g)) {
+      for (const id of idsIn(src, m.index! + m[0].length)) {
+        anchors.set(id, [...(anchors.get(id) ?? []), file]);
+      }
+    }
+  }
+}
+
+// An xray={...} prop that is forwarded to data-xray (AskButton) is covered by its call sites.
+for (const file of walk("app")) {
+  const src = readFileSync(file, "utf8");
+  for (const m of src.matchAll(/xray=/g)) {
+    if (src.slice(m.index! - 5, m.index!).endsWith("data-")) continue;
+    for (const id of idsIn(src, m.index! + m[0].length)) anchors.set(id, [...(anchors.get(id) ?? []), file]);
+  }
+}
+
+// 3. Both directions.
+const ids = new Set(stops.map((s) => s.id));
+for (const s of stops) {
+  const where = anchors.get(s.id);
+  check(!!where, `stop ${String(s.n).padStart(2, "0")} ${s.id} has an anchor${where ? ` (${[...new Set(where)].join(", ")})` : " in app/ or components/"}`);
+}
+for (const [id, files] of anchors) {
+  check(ids.has(id), `anchor "${id}" has a stop file (${[...new Set(files)].join(", ")})`);
+}
+
+console.log(failed ? `X-RAY CHECK FAILED: ${failed} problem(s)` : "X-RAY CHECK PASSED");
+process.exit(failed ? 1 : 0);

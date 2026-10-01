@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useAsk } from "./AskProvider";
 import { Card } from "@/components/ui/card";
 import type { AnswerMeta } from "@/lib/askConfig";
 import { ASK } from "@/lib/copy";
@@ -65,7 +66,7 @@ function GuardLines({ scope, output }: { scope?: ScopeVerdict; output?: OutputVe
   return (
     <>
       {scope?.allowed && (
-        <p className="m-0 border-t border-border px-3 py-1.5 font-mono text-[11px] text-foreground/65" data-testid="scope-line">
+        <p className="m-0 border-t border-border px-3 py-1.5 font-mono text-[11px] text-foreground/65" data-testid="scope-line" data-xray="why-care">
           scope check passed · {scope.model} · p={p(scope.probability)} · {scope.ms} ms
         </p>
       )}
@@ -92,7 +93,7 @@ export function ScopeCard({ scope }: { scope: ScopeVerdict }) {
           ? `out of scope · follow-up to ${scope.followUpOf} · p=${p} · ${tail}`
           : `out of scope · ${scope.category} · p=${p} · ${tail}`;
   return (
-    <Card className="gap-0 rounded-xl border border-border bg-background py-0 ring-0" aria-label="Scope check" data-testid="scope-card">
+    <Card className="gap-0 rounded-xl border border-border bg-background py-0 ring-0" aria-label="Scope check" data-testid="scope-card" data-xray="scope-card">
       <div className="flex flex-wrap items-center justify-between gap-2 px-3 py-2">
         <span className="text-[10px] font-medium uppercase tracking-kicker text-signal-700">Scope check</span>
         <span className="font-mono text-[11px] text-foreground/65">{label}</span>
@@ -103,8 +104,14 @@ export function ScopeCard({ scope }: { scope: ScopeVerdict }) {
 
 /** Who answered, how long it took and what it cost (one mono line). */
 function AnswerMetaLine({ answerMeta }: { answerMeta: AnswerMeta }) {
+  const { modelChoice } = useAsk();
   return (
-    <p className="m-0 border-t border-border px-3 py-1.5 font-mono text-[11px] text-foreground/65" data-testid="answer-meta">
+    // The readout is x-ray stop 17; with the model switch off it also stands in for stop 25 (the model select).
+    <p
+      className="m-0 border-t border-border px-3 py-1.5 font-mono text-[11px] text-foreground/65"
+      data-testid="answer-meta"
+      data-xray={modelChoice ? "watching" : "watching model-switch"}
+    >
       {answerMeta.model} · {(answerMeta.ms / 1000).toFixed(1)} s · {answerMeta.inputTokens.toLocaleString("en-US")} in /{" "}
       {answerMeta.outputTokens.toLocaleString("en-US")} out ·{" "}
       {answerMeta.costUsd === null || answerMeta.costSource === null
@@ -159,7 +166,7 @@ export function Evidence({ sql, output, errorText, pending, answerMeta, guard }:
   const shown = ok ? ok.rows.slice(0, PREVIEW_ROWS) : [];
 
   return (
-    <Card className="gap-0 rounded-xl border border-border bg-background py-0 ring-0" aria-label="Evidence">
+    <Card className="gap-0 rounded-xl border border-border bg-background py-0 ring-0" aria-label="Evidence" data-xray="evidence">
       <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border px-3 py-2">
         <span className="text-[10px] font-medium uppercase tracking-kicker text-signal-700">Evidence</span>
         <span className="whitespace-nowrap font-mono text-[11px] text-foreground/65">{meta}</span>
