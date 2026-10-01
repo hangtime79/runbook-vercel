@@ -28,7 +28,7 @@ export type XrayStop = {
 export const OBJECTION_SECTIONS = ["They say", "Why they ask", "Answer", "Show", "Don't say", "Sources"] as const;
 export type ObjectionSection = (typeof OBJECTION_SECTIONS)[number];
 export const OBJECTION_WHO = ["CIO", "Head of Fraud", "Either"] as const;
-export const OBJECTION_THEMES = ["sovereignty", "cost-lockin", "ai-risk", "shadow-it", "competitor"] as const;
+export const OBJECTION_THEMES = ["sovereignty", "cost-lockin", "ai-risk", "shadow-it", "competitor", "trust"] as const;
 
 export type XrayObjection = {
   id: string;

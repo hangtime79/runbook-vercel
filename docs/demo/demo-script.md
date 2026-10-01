@@ -32,7 +32,8 @@ present each tier as the next step.
 | Preview per change; required GitHub checks; rollback to the previous deployment | Rollback to any deployment | **99.99% SLA**, and the contract conversation CPS 230 needs (APRA access rights, offshoring) |
 
 Check on the day which gateway controls (provider allowlist, routing rules, budgets) your plan
-shows before demoing them live; their plan requirements weren't stated in the docs we read.
+shows before demoing them live. The team-wide provider allowlist is priced at $0.10 per 1,000
+successful requests on Pro and Enterprise; the docs we read state no plan for routing rules (beta).
 
 **This app is the prop.** It *is* an investigator-style app: an analysis turned into a tool,
 built by coding agents from a written runbook. Tell them that; it's the whole point.

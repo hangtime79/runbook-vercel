@@ -31,6 +31,6 @@ AI risk: only approved providers, no training on prompts, and no stored key to l
 Open the AI Gateway settings and show the provider allowlist and the model deny rule.
 
 ## Watch out
-Check on the day which gateway controls (provider allowlist, routing rules, budgets) your plan shows before demoing them live; their plan requirements weren't stated in the docs we read.
+Check on the day which gateway controls (provider allowlist, routing rules, budgets) your plan shows before demoing them live. The team-wide provider allowlist is priced at $0.10 per 1,000 successful requests on Pro and Enterprise; the docs we read state no plan for routing rules (beta).
 
 Some controls are beta (gateway routing rules, Vercel Agent). Say so when you show them.

@@ -134,7 +134,7 @@ How it sounds in the room.
 | `id` | Short name, lowercase with dashes, unique |
 | `title` | The objection in the client's words, short |
 | `who` | `CIO`, `Head of Fraud` or `Either` |
-| `theme` | `sovereignty`, `cost-lockin`, `ai-risk`, `shadow-it` or `competitor` |
+| `theme` | `sovereignty`, `cost-lockin`, `ai-risk`, `shadow-it`, `competitor` or `trust` (Vercel's own security record and analyst standing) |
 | `anchor` | The `id` of an existing x-ray stop. The marker sits on that stop's element |
 
 Sections, in the order the card shows them. **They say**, **Why they ask**, **Answer** and **Sources** are
