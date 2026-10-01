@@ -16,7 +16,7 @@ They need logs they hold themselves, a way to prove who had access, and assuranc
 Two parts. First, assurance: Vercel holds SOC 2 Type 2 (Security, Confidentiality, Availability), ISO 27001:2022 and PCI DSS, with the reports in the Trust Center, and runs third-party penetration tests. That feeds your assessment of the provider's capability. Second, evidence you keep: on Enterprise, audit logs record changes to protection, env vars and roles, and Audit Log Drains send them to your Splunk, Datadog or S3. The retention period of Vercel's own audit log isn't stated on its page, so the copy in your SIEM is the one to rely on. Vercel's standard DPA says it will notify you of a confirmed security incident "without undue delay", with no number of hours, and it meets audit requests by supplying its SOC 2 Type 2 report. It does not mention APRA, so a 72-hour commitment and APRA access rights are contract terms to negotiate with Vercel.
 
 ## Show
-The access card: Vercel login wall now, Passport and Enterprise Viewer as the next step.
+The access card: Vercel login on every preview now, Passport and Enterprise Viewer as the next step.
 
 ## Don't say
 Don't quote a Vercel breach-notification time in hours. The DPA gives none. Don't say the DPA gives APRA access.

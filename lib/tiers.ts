@@ -14,7 +14,7 @@ export const TIER_COLUMNS: readonly { id: Tier; name: string; heading: string }[
 export const TIER_ROWS: readonly { topic: string; hobby: string; pro: string; enterprise: string }[] = [
   {
     topic: "Who can open it",
-    hobby: "Vercel login on every deployment",
+    hobby: "Vercel login on every preview; one setting adds production (left open here for sharing)",
     pro: "Password protection; team roles and seats",
     enterprise:
       "Passport: your own IdP (Entra/Okta) in front of every app; SAML SSO enforced, Directory Sync, Access Groups, Enterprise Viewer role for auditors",

@@ -117,8 +117,10 @@ and pay off the checker in Act 4.)
 Turn to the CIO. "Now the question you'd ask when this lands on your desk: who can see it, where
 does it run, what AI does it call, and who's watching?"
 
-**Beat 2.1 · Who can see it.** Open the app URL in a private window: Vercel login wall.
-"Nobody outside the team gets in, including to every preview of every change. On Enterprise,
+**Beat 2.1 · Who can see it.** Open the pull request's preview URL in a private
+window: Vercel login wall. (The production URL is open for sharing and shows none.)
+"This one is open on purpose, so you can look at it. Nobody outside the team gets into any preview
+of any change, and one setting puts that same login in front of production. On Enterprise,
 **Passport** puts your own identity provider (Entra, Okta) in front of it, with group claims the
 app can read." SSO, Directory Sync, Access Groups and roles: "including an *Enterprise Viewer*
 role Vercel describes as ideal for compliance officers and auditors."

@@ -11,7 +11,10 @@ export const GOVERNANCE = {
     "project or GitHub and the app cannot detect them.",
   access: {
     title: "Access",
-    value: "Protected by Vercel Deployment Protection",
+    value:
+      "Production is open to anyone with the link, on purpose, so the demo can be shared. Every preview of every " +
+      "change sits behind Vercel Deployment Protection (Vercel login, team members only). One project setting, " +
+      "All Deployments, puts the same login in front of production.",
     basis: "configured, not detected",
     note: "Enterprise adds Passport, which puts the organisation's own identity provider (Entra, Okta) in front of the deployment.",
   },

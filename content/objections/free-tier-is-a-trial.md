@@ -13,7 +13,7 @@ anchor: tiers-intro
 Free tiers hide the price of the controls that matter. The CIO wants the true cost of governing it; the Head of Fraud wants to know the pilot won't be pulled.
 
 ## Answer
-The catch is the tier story, and I'd rather lay it out than hide it. The free tier is the proof the workflow works today: login on every deployment, Sydney pinning, gateway with OIDC and no training, a preview per change, rollback. Pro adds what a pilot needs, such as per-request zero data retention and team roles. The controls APRA will ask you to evidence are mostly Enterprise: Passport with your identity provider, SSO and Directory Sync, audit logs to your SIEM, Secure Compute, the 99.99% SLA. Enterprise pricing is on request, and I don't have a number.
+The catch is the tier story, and I'd rather lay it out than hide it. The free tier is the proof the workflow works today: login on every preview (and on production with one setting), Sydney pinning, gateway with OIDC and no training, a preview per change, rollback. Pro adds what a pilot needs, such as per-request zero data retention and team roles. The controls APRA will ask you to evidence are mostly Enterprise: Passport with your identity provider, SSO and Directory Sync, audit logs to your SIEM, Secure Compute, the 99.99% SLA. Enterprise pricing is on request, and I don't have a number.
 
 ## Show
 The three-tier slide.

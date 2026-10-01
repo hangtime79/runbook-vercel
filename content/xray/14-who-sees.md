@@ -15,12 +15,12 @@ Turn to the CIO. This is the question you'd ask when the app lands on your desk,
 
 
 ## On Vercel
-Deployment Protection: Vercel Authentication covers every deployment, previews included, on all plans. On Enterprise, Passport puts your own identity provider in front of it, with SSO, Directory Sync, Access Groups and an Enterprise Viewer role. For the bank: nobody outside the team reaches any preview of any change. *On the other side of the bridge: the project's Deployment Protection settings. Source: governance-research.md §2.*
+Deployment Protection: Vercel Authentication is on all plans. This project runs Standard Protection, so every preview sits behind a Vercel login and the production domain is open for sharing; the All Deployments setting puts production behind the same login. On Enterprise, Passport puts your own identity provider in front of it, with SSO, Directory Sync, Access Groups and an Enterprise Viewer role. For the bank: nobody outside the team reaches any preview of any change. *On the other side of the bridge: the project's Deployment Protection settings. Source: governance-research.md §2.*
 
 ## Say
 Now the question you'd ask when this lands on your desk: who can see it, where does it run, what AI does it call, and who's watching?
 
-Nobody outside the team gets in, including to every preview of every change. On Enterprise, **Passport** puts your own identity provider (Entra, Okta) in front of it, with group claims the app can read.
+This one is open on purpose, so you can look at it. Nobody outside the team gets into any preview of any change, and one setting puts that same login in front of production. On Enterprise, **Passport** puts your own identity provider (Entra, Okta) in front of it, with group claims the app can read.
 
 including an *Enterprise Viewer* role Vercel describes as ideal for compliance officers and auditors.
 
@@ -28,7 +28,7 @@ including an *Enterprise Viewer* role Vercel describes as ideal for compliance o
 Oversight of who can see each app, and each preview of each change. SSO, Directory Sync, Access Groups and roles are the Enterprise controls behind it.
 
 ## Leave the app
-Open the app URL in a private window and show the Vercel login wall.
+Open the pull request's preview URL in a private window and show the Vercel login wall. The production URL is open, so it will not show one.
 
 ## Craft
 Start the act with the CIO's own four questions, then answer them in order.
