@@ -16,3 +16,5 @@ pyproject.toml
 uv.lock
 *.md
 !data/docs/*.md
+# Editable intro and x-ray text (lib/content.ts reads these at build and run time)
+!/content/**/*.md
