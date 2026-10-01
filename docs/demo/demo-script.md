@@ -1,9 +1,9 @@
 # Demo script — "From the app that cracked the ring to a platform you can govern"
 
 **Format.** An interview pitch performed as a customer meeting. You are the Vercel engineer.
-Sources for every Vercel claim: `docs/demo/vercel-positioning.md` and
-`docs/demo/governance-research.md`. **Re-check APRA quotes against the PDFs before the demo**
-(they came through a page summariser). Do not add claims that aren't in those two files.
+Sources for every Vercel claim: `docs/demo/vercel-positioning.md`,
+`docs/demo/governance-research.md` and `docs/demo/objections-research.md`. **Re-check APRA quotes against the PDFs before the demo**
+(they came through a page summariser). Do not add claims that aren't in those three files.
 
 ## The room
 

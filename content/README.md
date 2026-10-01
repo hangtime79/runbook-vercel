@@ -10,6 +10,7 @@ the file, save, and refresh. No agent needed.
 | `intro/01-situation.md` … `intro/06-start.md` | One slide each, in order |
 | `intro/04-see/01-story.md` … `04-pr.md` | The four cards on slide 4 |
 | `xray/01-situation.md` … `xray/27-close-tiers.md` | One x-ray marker and its hover card each |
+| `objections/<slug>.md` | One amber `!` objection marker and its hover card each |
 
 The number at the front of an x-ray filename **is** the marker number. `07-start.md` is marker 7.
 
@@ -79,6 +80,50 @@ and a section you leave out does not show.
 A stop with a `## Leave the app` section is a bridge stop: the demo leaves the app there.
 Quote **Say** lines word for word from `docs/demo/demo-script.md`, and keep new Vercel or APRA claims
 out of every section unless the script already makes them.
+
+## Objections
+
+An objection is something the CIO or Head of Fraud is likely to push back with, where it comes up in the
+demo, and how to answer it. Each file in `objections/` becomes an amber **!** marker on a stop's element.
+Filenames have no number prefix (`bill-at-scale.md`): objections have no order.
+
+```
+---
+id: bill-at-scale
+title: Usage-based pricing will blow up our budget
+who: CIO
+theme: cost-lockin
+anchor: underneath
+---
+
+## They say
+How it sounds in the room.
+```
+
+| Field | Meaning |
+|---|---|
+| `id` | Short name, lowercase with dashes, unique |
+| `title` | The objection in the client's words, short |
+| `who` | `CIO`, `Head of Fraud` or `Either` |
+| `theme` | `sovereignty`, `cost-lockin`, `ai-risk`, `shadow-it` or `competitor` |
+| `anchor` | The `id` of an existing x-ray stop. The marker sits on that stop's element |
+
+Sections, in the order the card shows them. **They say**, **Why they ask**, **Answer** and **Sources** are
+required; **Show** and **Don't say** are optional. No other section names are allowed.
+
+`## They say` · `## Why they ask` · `## Answer` · `## Show` · `## Don't say` · `## Sources`
+
+**How `anchor` works.** Open the stop file in `xray/` that you want the objection to appear on and copy its
+`id` line (for example `id: ai-called`). Nothing is added to the app: the marker sits next to that stop's
+element. Several objections on one stop share one badge with a count (`!2`), and its card lists each one.
+Pick a stop whose element is always on the page (not the Evidence card, which exists only after a question).
+
+**Sources rule.** Every factual claim in an Answer traces to `docs/demo/vercel-positioning.md`,
+`governance-research.md`, `objections-research.md` or `demo-script.md`. Each `## Sources` line names a
+document and a section, or an `R-xx` entry from the research file. Keep the script's "Do not claim" list.
+
+**To add one.** Copy an existing file, change the fields, pick an `anchor`, save, and refresh. The legend pill
+shows the count for the page and a switch to hide the markers.
 
 ## Formatting that works
 

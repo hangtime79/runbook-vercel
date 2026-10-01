@@ -3,7 +3,7 @@
 // Also runs the full content check (lib/content.ts), so a bad edit to content/ fails here with file and field.
 import { readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
-import { loadXrayStops, validateAllContent } from "../lib/content.ts";
+import { loadObjections, loadXrayStops, validateAllContent } from "../lib/content.ts";
 
 let failed = 0;
 const check = (ok: boolean, msg: string) => {
@@ -13,10 +13,12 @@ const check = (ok: boolean, msg: string) => {
 
 // 1. Every content file passes validation (required keys, known sections, real routes, 1..N numbering).
 let stops: ReturnType<typeof loadXrayStops> = [];
+let objections: ReturnType<typeof loadObjections> = [];
 try {
   const v = validateAllContent();
   stops = loadXrayStops();
-  check(true, `content validates: ${v.slides} intro slides, ${v.cards} cards, ${v.stops} x-ray stops`);
+  objections = loadObjections();
+  check(true, `content validates: ${v.slides} intro slides, ${v.cards} cards, ${v.stops} x-ray stops, ${v.objections} objections`);
   check(stops.every((s, i) => s.n === i + 1), `stop numbers run 1..${stops.length} with no gaps or repeats`);
 } catch (e) {
   check(false, String((e as Error).message));
@@ -81,6 +83,11 @@ for (const s of stops) {
 }
 for (const [id, files] of anchors) {
   check(ids.has(id), `anchor "${id}" has a stop file (${[...new Set(files)].join(", ")})`);
+}
+
+// 4. Every objection's anchor resolves to a stop that has an anchor in code.
+for (const o of objections) {
+  check(ids.has(o.anchor) && anchors.has(o.anchor), `objection ${o.id} anchors to stop "${o.anchor}", which has an element in app/ or components/`);
 }
 
 console.log(failed ? `X-RAY CHECK FAILED: ${failed} problem(s)` : "X-RAY CHECK PASSED");

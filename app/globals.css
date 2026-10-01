@@ -31,6 +31,7 @@
   --color-ring: var(--ring);
   --color-neutral-bar: var(--neutral-bar);
   --color-xray: var(--xray);
+  --color-xray-objection: var(--xray-objection);
 
   /* The fraud-signal ramp from the handoff README (its "accent" 100-900). Named "signal" so it
      does not collide with shadcn's neutral --accent hover surface. 600 is the base. */
@@ -86,6 +87,8 @@
   --neutral-bar: #454545;
   /* X-ray mode (demo coaching overlay). Cyan on purpose: the signal red means fraud, and a marker must not read as an alert. */
   --xray: #22d3ee;
+  /* Objection markers: amber, so they read as "push-back here" and stay apart from the cyan numbered route. */
+  --xray-objection: #fbbf24;
   --radius: 12px;
 }
 
@@ -152,6 +155,25 @@
 .xray-badge[data-state="instant-open"] {
   background: var(--xray);
   color: #04222a;
+}
+/* Objection marker: an amber "!" on a rounded square. No glow pulse, so the numbered route stays dominant. */
+.xray-objection {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  border: 1px solid #fde68a;
+  background: #3a2a06;
+  color: #fef3c7;
+  font: 700 11px/1 var(--font-geist-mono), ui-monospace, monospace;
+  padding: 0;
+}
+.xray-objection:hover,
+.xray-objection[data-state="delayed-open"],
+.xray-objection[data-state="instant-open"] {
+  background: var(--xray-objection);
+  color: #2a1d04;
 }
 @keyframes xray-pulse {
   0% {

@@ -140,6 +140,13 @@ await beat("xray-governance", async () => {
   await page.goto(`${BASE}/governance?xray=1`, { waitUntil: "networkidle" });
   await hoverStop(15);
 });
+await beat("xray-objection-card", async () => {
+  await page.goto(`${BASE}/governance?xray=1`, { waitUntil: "networkidle" });
+  await page.locator("[data-xray-objection]").first().waitFor({ timeout: 10_000 });
+  await page.locator("[data-xray-objection]").first().hover();
+  await page.waitForSelector("[data-slot=tooltip-content]", { timeout: 5000 });
+  await page.waitForTimeout(500);
+});
 await beat("xray-ask-scope-check", async () => {
   await page.goto(`${BASE}/ask?xray=1`, { waitUntil: "networkidle" });
   const input = page.getByRole("textbox").last();

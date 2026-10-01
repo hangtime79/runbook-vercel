@@ -10,7 +10,7 @@ import {
   type ReactNode,
 } from "react";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import type { XrayStop } from "@/lib/xrayTypes";
+import type { XrayObjection, XrayStop } from "@/lib/xrayTypes";
 import { XrayContext } from "./context";
 import { XrayLayer } from "./XrayLayer";
 import { XrayLegend } from "./XrayLegend";
@@ -34,8 +34,9 @@ function inTextField(t: EventTarget | null): boolean {
  * survives client-side navigation and resets on a full reload. Toggle with the sidebar switch, the X key,
  * or ?xray=1 / ?xray=0. The stops (what each marker says) come from content/xray/*.md, loaded by the layout.
  */
-export function XrayProvider({ stops, children }: { stops: XrayStop[]; children: ReactNode }) {
+export function XrayProvider({ stops, objections, children }: { stops: XrayStop[]; objections: XrayObjection[]; children: ReactNode }) {
   const [on, setOn] = useState(false);
+  const [objectionsOn, setObjectionsOn] = useState(true);
   const enabled = useSyncExternalStore(
     subscribeDesktop,
     () => window.matchMedia(DESKTOP).matches,
@@ -61,7 +62,10 @@ export function XrayProvider({ stops, children }: { stops: XrayStop[]; children:
   }, []);
 
   const toggle = useCallback(() => setOn((v) => !v), []);
-  const value = useMemo(() => ({ stops, on, enabled, setOn, toggle }), [stops, on, enabled, toggle]);
+  const value = useMemo(
+    () => ({ stops, objections, objectionsOn, setObjectionsOn, on, enabled, setOn, toggle }),
+    [stops, objections, objectionsOn, on, enabled, toggle]
+  );
   const active = on && enabled;
 
   return (

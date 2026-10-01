@@ -3,10 +3,18 @@
 // Every error names the file and the field, so a bad edit fails `npm run build` with a clear message.
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
-import { STOP_SECTIONS, type StopSection, type XrayStop } from "./xrayTypes.ts";
+import {
+  OBJECTION_SECTIONS,
+  OBJECTION_THEMES,
+  OBJECTION_WHO,
+  STOP_SECTIONS,
+  type StopSection,
+  type XrayObjection,
+  type XrayStop,
+} from "./xrayTypes.ts";
 
-export { STOP_SECTIONS };
-export type { StopSection, XrayStop };
+export { OBJECTION_SECTIONS, STOP_SECTIONS };
+export type { StopSection, XrayObjection, XrayStop };
 
 const ROOT = process.cwd();
 const CONTENT = path.join(ROOT, "content");
@@ -218,10 +226,53 @@ function readStops(): XrayStop[] {
   return stops;
 }
 
+// ---- objections ----------------------------------------------------------------------------------
+
+const OBJECTION_FRONT = ["id", "title", "who", "theme", "anchor"];
+const OBJECTION_REQUIRED: (typeof OBJECTION_SECTIONS)[number][] = ["They say", "Why they ask", "Answer", "Sources"];
+
+function readObjections(stops: XrayStop[]): XrayObjection[] {
+  const dir = path.join(CONTENT, "objections");
+  if (!existsSync(dir)) fail(dir, null, `directory is missing`);
+  const files = readdirSync(dir).filter((f) => f.endsWith(".md")).sort();
+  if (files.length === 0) fail(dir, null, `no objection files`);
+  const stopIds = new Set(stops.map((s) => s.id));
+  const out: XrayObjection[] = [];
+  const seen = new Map<string, string>();
+  for (const f of files) {
+    const file = path.join(dir, f);
+    if (!/^[a-z0-9][a-z0-9-]*\.md$/.test(f)) fail(file, null, `filename must be lowercase words and dashes, like bill-at-scale.md (no number prefix)`);
+    const { fields, sections } = parseFile(file);
+    checkKeys(file, fields, OBJECTION_FRONT);
+    if (!/^[a-z0-9][a-z0-9-]*$/.test(fields.id)) fail(file, "id", `"${fields.id}" must be lowercase letters, digits and dashes`);
+    if (seen.has(fields.id)) fail(file, "id", `"${fields.id}" is also used by ${seen.get(fields.id)}`);
+    seen.set(fields.id, f);
+    if (!(OBJECTION_WHO as readonly string[]).includes(fields.who)) fail(file, "who", `"${fields.who}" must be one of ${OBJECTION_WHO.join(", ")}`);
+    if (!(OBJECTION_THEMES as readonly string[]).includes(fields.theme)) fail(file, "theme", `"${fields.theme}" must be one of ${OBJECTION_THEMES.join(", ")}`);
+    if (!stopIds.has(fields.anchor)) fail(file, "anchor", `"${fields.anchor}" is not the id of any x-ray stop (copy one from content/xray/*.md)`);
+    for (const name of Object.keys(sections)) {
+      if (!(OBJECTION_SECTIONS as readonly string[]).includes(name)) {
+        fail(file, name, `unknown section "## ${name}" (allowed: ${OBJECTION_SECTIONS.join(", ")})`);
+      }
+      if (!sections[name]) fail(file, name, `section "## ${name}" is empty (delete the heading or add text)`);
+    }
+    for (const name of OBJECTION_REQUIRED) if (!sections[name]) fail(file, name, `missing required section "## ${name}"`);
+    out.push({
+      id: fields.id,
+      title: fields.title,
+      who: fields.who as XrayObjection["who"],
+      theme: fields.theme as XrayObjection["theme"],
+      anchor: fields.anchor,
+      sections: sections as XrayObjection["sections"],
+    });
+  }
+  return out;
+}
+
 // ---- public API ----------------------------------------------------------------------------------
 
 // Cached per process in production; re-read on every request in dev so a saved edit shows on refresh.
-const cache: { intro?: Intro; stops?: XrayStop[] } = {};
+const cache: { intro?: Intro; stops?: XrayStop[]; objections?: XrayObjection[] } = {};
 const cached = () => process.env.NODE_ENV === "production";
 
 export function loadIntro(): Intro {
@@ -238,9 +289,17 @@ export function loadXrayStops(): XrayStop[] {
   return v;
 }
 
+export function loadObjections(): XrayObjection[] {
+  if (cached() && cache.objections) return cache.objections;
+  const v = readObjections(loadXrayStops());
+  if (cached()) cache.objections = v;
+  return v;
+}
+
 /** Everything, for the build gate and pipeline/check_xray.mts. Throws on the first bad file. */
-export function validateAllContent(): { slides: number; cards: number; stops: number } {
+export function validateAllContent(): { slides: number; cards: number; stops: number; objections: number } {
   const intro = readIntro();
   const stops = readStops();
-  return { slides: SLIDES.length, cards: intro.seeCards.length, stops: stops.length };
+  const objections = readObjections(stops);
+  return { slides: SLIDES.length, cards: intro.seeCards.length, stops: stops.length, objections: objections.length };
 }

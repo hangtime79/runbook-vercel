@@ -16,3 +16,18 @@ export type XrayStop = {
   bridge: boolean;
   sections: Partial<Record<StopSection, string>>;
 };
+
+export const OBJECTION_SECTIONS = ["They say", "Why they ask", "Answer", "Show", "Don't say", "Sources"] as const;
+export type ObjectionSection = (typeof OBJECTION_SECTIONS)[number];
+export const OBJECTION_WHO = ["CIO", "Head of Fraud", "Either"] as const;
+export const OBJECTION_THEMES = ["sovereignty", "cost-lockin", "ai-risk", "shadow-it", "competitor"] as const;
+
+export type XrayObjection = {
+  id: string;
+  title: string;
+  who: (typeof OBJECTION_WHO)[number];
+  theme: (typeof OBJECTION_THEMES)[number];
+  /** The id of the x-ray stop whose element carries this objection's marker. */
+  anchor: string;
+  sections: Partial<Record<ObjectionSection, string>>;
+};

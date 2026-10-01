@@ -236,6 +236,37 @@ try {
       await page.close();
     }
 
+    // Objection markers: on /governance, at least one renders, hovering shows "They say", no overflow.
+    {
+      const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+      const errors = [];
+      page.on("console", (m) => m.type() === "error" && errors.push(m.text()));
+      await page.goto(`${BASE}/governance?xray=1`, { waitUntil: "networkidle" });
+      await page.locator("[data-xray-objection]").first().waitFor({ timeout: 10_000 }).catch(() => {});
+      const n = await page.locator("[data-xray-objection]").count();
+      check(n > 0, `objection badges render on /governance (${n})`);
+      check((await page.getByTestId("xray-objection-count").count()) === 1, "legend shows the objection count");
+      if (n > 0) {
+        await page.locator("[data-xray-objection]").first().hover();
+        const card = page.locator("[data-slot=tooltip-content]").first();
+        await card.waitFor({ timeout: 5000 }).catch(() => {});
+        const text = (await card.innerText().catch(() => "")) || "";
+        check(/They say/i.test(text) && /Objection ·/.test(text), `hovering an objection badge shows "They say" (${text.slice(0, 40).replace(/\s+/g, " ")}…)`);
+        const box = await card.boundingBox();
+        check(!!box && box.x >= 0 && box.x + box.width <= 1440, "objection card sits inside the 1440px viewport");
+        await page.mouse.move(1000, 700, { steps: 12 });
+        await page.waitForTimeout(600);
+      }
+      const o = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
+      check(o <= 0, `no horizontal overflow on /governance with objections on (${o}px)`);
+      await page.getByRole("switch", { name: /Objections/ }).click();
+      await page.waitForTimeout(500);
+      check((await page.locator("[data-xray-objection]").count()) === 0, "the Objections toggle hides the markers");
+      check((await page.locator("[data-xray-badge]").count()) > 0, "stop badges stay when objections are off");
+      check(errors.length === 0, `no console errors on /governance with objections ${errors.slice(0, 2).join(" | ")}`);
+      await page.close();
+    }
+
     const keys = await browser.newPage({ viewport: { width: 1440, height: 900 } });
     await keys.goto(BASE + "/story?xray=1", { waitUntil: "networkidle" });
     const opener = keys.getByRole("button", { name: "Open the Ask the data panel" });
