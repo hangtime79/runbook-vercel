@@ -52,6 +52,7 @@ placeholder until the trial exists.
 | GitHub branch protection on `main`: required checks + 1 review | You | Act 3's "nothing merges without checks and a human" |
 | Deployment Checks enabled for production (Vercel project settings) | You | Production promotion waits for the same checks |
 | One production deployment | You | Rollback beat; previews skip bytecode caching and start slower |
+| Sources verified in the last 30 days: run `node pipeline/check_sources_fresh.mjs` | You | Every Vercel claim in the cards traces to three research files; one wrong fact in front of a bank CIO costs more than a missing one |
 | AI Gateway: provider allowlist + a model deny rule + project budget | You (team owner) | Act 2 shows them. Rules are beta; check they're available on your plan |
 | Tabs: app (logged in), app in private window, Vercel project, AI Gateway logs, GitHub PR, terminal | You | No hunting |
 | Warm every route and ask one question 2 min before | You | No cold start on stage |
