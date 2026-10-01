@@ -66,8 +66,8 @@ Start on the app's root URL; it opens `/intro` full-screen. Move with the arrow 
 2. **The tension.** Look at each of them in turn: Head of Fraud, "keep the speed"; CIO, "I keep
    inheriting apps I didn't build." Read the APRA line aloud.
 3. **The thesis.** Pause on it. Say it once, slowly.
-4. **What you'll see.** Name the four acts; don't click yet. Each card has an **On Vercel** line:
-   read the one that matches the person you're looking at. Cards 01 and 02 to the Head of Fraud
+4. **What you'll see.** Name the four acts; don't click yet. Each card leads with an **On Vercel**
+   line, the platform feature behind it: read the one that matches the person you're looking at. Cards 01 and 02 to the Head of Fraud
    (idle costs nothing; any model, no key, checked). Cards 03 and 04 to the CIO (set once, every app
    inherits; every change a protected URL, rollback in seconds). These are the promises the rest of
    the demo proves.
@@ -76,17 +76,28 @@ Start on the app's root URL; it opens `/intro` full-screen. Move with the arrow 
 
 ## Act 1 — The Head of Fraud's app (4 min)
 
-**Beat 1.1 · Story page `/story`.** KPI cards: 9.47% fraud rate, 24,080 confirmed fraud of 254,224
-labeled, 0.764 AUC, 2.3× signature effect. Scroll one chapter (the 46-merchant cluster).
+Each beat runs *what they see* → *what Vercel does* → *why a bank cares*. The data is the proof;
+the platform line is the point.
 
-*To Head of Fraud:* "This is what your investigators do: turn an analysis into something the
-team can act on. Every number is read from the data when the page loads, not pasted into a slide."
+**Beat 1.1 · Story page `/story`.** KPI cards: 9.47% fraud rate, 24,080 confirmed fraud of 254,224
+labeled, 0.764 AUC, 2.3× signature effect. Don't read the chapter; say one sentence on it.
+
+*To Head of Fraud:* "This is what your investigators do: turn an analysis into something the team
+can act on."
+
+*Platform line, to the CIO:* "Every number is read from the data when the page loads, by a function
+running in Sydney next to it. And when nobody is looking, it costs nothing: Vercel bills the CPU
+only while code runs, and nothing between requests."
 
 **Beat 1.2 · Ask the data.** Click a chapter's `Ask: "…"` button. Point at the checklist, the
 headline stat, and the **Evidence** card: the SQL it ran, the rows, "opened read-only".
 
 *To Head of Fraud:* "An investigator who doesn't write SQL gets an answer with its evidence
 attached. They can trust it, or hand it to an analyst to check."
+
+*Platform line, to the CIO:* "The model is one string on one AI Gateway integration: no key stored
+in this project, and any approved model behind it. While the function waits on the model, it isn't
+billed CPU for the wait."
 
 *To CIO:* "And it can only read. Watch." Type *"Delete all the fraud rows."* The model declines
 ("I can't delete or modify data."). "That's the AI behaving. You shouldn't have to rely on that,
@@ -97,9 +108,6 @@ rejects writes**: point back to this moment there.)
 *Once the scope gate is built:* the refusal comes from the checker instead (SCOPE CHECK card,
 *write_request*). Say: "Blocked before the AI even saw it. I'll show you how in a few minutes,"
 and pay it off in Act 4.
-
-**Vercel underneath (one line each, don't lecture):** Next.js server components; a Vercel
-Function on Fluid compute running a native analytics engine; AI SDK tool loop; AI Gateway.
 
 ---
 
@@ -116,7 +124,8 @@ role Vercel describes as ideal for compliance officers and auditors."
 
 **Beat 2.2 · Where it runs.** Open `/governance` (app change). Region `syd1`, commit, environment.
 "Functions run in Sydney. The default is Washington, so this is a setting you own, per project,
-not a hope."
+not a hope. For your CPS 230 file, that is where the code runs; the data-processing terms are a
+separate conversation."
 
 **Beat 2.3 · What AI it calls.** Still on `/governance`, then the AI Gateway settings.
 - "The model is one approved string. Your team sets a **provider allowlist**: a developer
