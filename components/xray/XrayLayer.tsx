@@ -1,5 +1,6 @@
 "use client";
 
+import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { Block, Inline } from "@/components/Markdown";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
@@ -7,7 +8,7 @@ import { OBJECTION_SECTIONS, STOP_SECTIONS, type ObjectionSection, type StopSect
 import { useXray } from "./context";
 
 type Placed =
-  | { kind: "stop"; key: string; stop: XrayStop; x: number; y: number }
+  | { kind: "stop" | "ghost"; key: string; stop: XrayStop; x: number; y: number }
   | { kind: "objection"; key: string; items: XrayObjection[]; x: number; y: number };
 
 const CARD_CLASS =
@@ -64,7 +65,7 @@ const idOf = (el: Element) => {
  * Find every [data-xray] element in view and place one badge per stop id on it, then one "!" badge per
  * element that carries objections (several objections on one stop share one badge with a count).
  */
-function place(stops: XrayStop[], objections: XrayObjection[]): Placed[] {
+function place(stops: XrayStop[], objections: XrayObjection[], pathname: string): Placed[] {
   const byId = new Map(stops.map((s) => [s.id, s]));
   const objByAnchor = new Map<string, XrayObjection[]>();
   for (const o of objections) objByAnchor.set(o.anchor, [...(objByAnchor.get(o.anchor) ?? []), o]);
@@ -105,6 +106,19 @@ function place(stops: XrayStop[], objections: XrayObjection[]): Placed[] {
     return { x: Math.round(x), y: Math.round(y) };
   };
   for (const f of found) placed.push({ kind: "stop", key: f.key, stop: f.stop, ...spot(f.x, f.y) });
+  // Ghost stops: a stop on this page whose own element does not exist yet sits on its stand-in until it does.
+  for (const stop of stops) {
+    if (!stop.standIn || stop.route !== pathname) continue;
+    if (document.querySelector(`[data-xray~="${stop.id}"]`)) continue;
+    const sel = `[data-xray~="${stop.standIn}"], [data-xray-standin~="${stop.standIn}"]`;
+    for (const el of document.querySelectorAll(sel)) {
+      const corner = visibleCorner(el);
+      if (corner) {
+        placed.push({ kind: "ghost", key: `ghost:${stop.id}`, stop, ...spot(corner.x, corner.y) });
+        break;
+      }
+    }
+  }
   for (const f of foundObj) placed.push({ kind: "objection", key: f.key, items: f.items, ...spot(f.x, f.y) });
   return placed;
 }
@@ -115,6 +129,7 @@ const same = (a: Placed[], b: Placed[]) =>
 const LABEL: Record<StopSection, string> = {
   What: "What it is",
   Tell: "Tell",
+  "On Vercel": "On Vercel",
   Say: "Say",
   "Head of Fraud": "Head of Fraud",
   CIO: "CIO",
@@ -175,9 +190,14 @@ function ObjectionCard({ items }: { items: XrayObjection[] }) {
   );
 }
 
-function Card({ stop }: { stop: XrayStop }) {
+function Card({ stop, ghost }: { stop: XrayStop; ghost?: boolean }) {
   return (
     <div className="flex flex-col gap-2.5">
+      {ghost && (
+        <div className="rounded border border-dashed border-xray/60 px-2 py-1 font-mono text-[11px] text-xray" data-testid="xray-ghost-line">
+          Appears after stop {stop.appearsAfter}: {stop.appearsHint ?? "click Ask first"}.
+        </div>
+      )}
       <div className="flex items-center justify-between gap-3">
         <span className="font-mono text-[11px] text-xray">
           {String(stop.n).padStart(2, "0")} · {stop.act} · {stop.beat}
@@ -200,7 +220,7 @@ function Card({ stop }: { stop: XrayStop }) {
           <div key={name} className="flex flex-col gap-0.5">
             <span
               className={`font-mono text-[10px] uppercase tracking-[0.12em] ${
-                name === "Watch out" ? "text-amber-300" : name === "Leave the app" ? "text-xray" : "text-foreground/55"
+                name === "Watch out" ? "text-amber-300" : name === "Leave the app" || name === "On Vercel" ? "text-xray" : "text-foreground/55"
               }`}
             >
               {LABEL[name]}
@@ -219,15 +239,17 @@ function Card({ stop }: { stop: XrayStop }) {
  * DOM changes (the Ask panel's cards appear later), scroll (capture, so the deck and the main scroll box count) and resize.
  */
 export function XrayLayer() {
-  const { stops, objections, objectionsOn } = useXray();
+  const { stops, objections, objectionsOn, active, setActive } = useXray();
+  const pathname = usePathname();
   const [badges, setBadges] = useState<Placed[]>([]);
+  const [hovered, setHovered] = useState<string | null>(null);
   const overlay = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     let frame = 0;
     const run = () => {
       frame = 0;
-      const next = place(stops, objectionsOn ? objections : []);
+      const next = place(stops, objectionsOn ? objections : [], pathname);
       setBadges((prev) => (same(prev, next) ? prev : next));
     };
     const schedule = () => {
@@ -251,30 +273,35 @@ export function XrayLayer() {
       window.clearInterval(poll);
       if (frame) cancelAnimationFrame(frame);
     };
-  }, [stops, objections, objectionsOn]);
+  }, [stops, objections, objectionsOn, pathname]);
 
   return (
     <div ref={overlay} data-xray-layer className="pointer-events-none fixed inset-0 z-[60] overflow-hidden">
-      {badges.map((b) =>
-        b.kind === "stop" ? (
-          <Tooltip key={b.key}>
+      {badges.map((b) => {
+        const pinnedKey = active ? badges.find((p) => p.kind !== "objection" && p.stop.n === active)?.key : undefined;
+        const open = hovered === b.key || pinnedKey === b.key;
+        const onOpenChange = (o: boolean) => setHovered((h) => (o ? b.key : h === b.key ? null : h));
+        return b.kind !== "objection" ? (
+          <Tooltip key={b.key} open={open} onOpenChange={onOpenChange}>
             <TooltipTrigger asChild>
               <button
                 type="button"
                 data-xray-badge={b.stop.n}
-                aria-label={`X-ray stop ${b.stop.n}: ${b.stop.title}`}
-                className="xray-badge pointer-events-auto absolute left-0 top-0"
+                data-ghost={b.kind === "ghost" ? "true" : undefined}
+                aria-label={`X-ray stop ${b.stop.n}${b.kind === "ghost" ? " (appears later)" : ""}: ${b.stop.title}`}
+                className={`xray-badge pointer-events-auto absolute left-0 top-0 ${b.kind === "ghost" ? "xray-ghost" : ""}`}
                 style={{ transform: `translate(${b.x}px, ${b.y}px)` }}
+                onClick={() => setActive(b.stop.n)}
               >
                 {b.stop.n}
               </button>
             </TooltipTrigger>
             <TooltipContent arrow={false} side="bottom" align="start" sideOffset={8} collisionPadding={8} className={CARD_CLASS}>
-              <Card stop={b.stop} />
+              <Card stop={b.stop} ghost={b.kind === "ghost"} />
             </TooltipContent>
           </Tooltip>
         ) : (
-          <Tooltip key={b.key}>
+          <Tooltip key={b.key} open={open} onOpenChange={onOpenChange}>
             <TooltipTrigger asChild>
               <button
                 type="button"
@@ -298,8 +325,8 @@ export function XrayLayer() {
               <ObjectionCard items={b.items} />
             </TooltipContent>
           </Tooltip>
-        )
-      )}
+        );
+      })}
     </div>
   );
 }

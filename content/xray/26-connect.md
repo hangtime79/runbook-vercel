@@ -13,6 +13,10 @@ The Data card on `/governance`: the DuckDB file today. This is the placeholder f
 ## Tell
 One minute, as the next step for this app. It is a placeholder, so keep it short.
 
+
+## On Vercel
+Vercel Connect mints a short-lived, scoped token per request through Vercel OIDC, so no provider key sits in environment variables. It is GA (2026-08-25) and Snowflake is a listed connector; scopes and token subjects need a dry run. For the bank: no standing credential for an AI agent to leak. *Source: vercel-positioning.md §3, "Vercel Connect + Snowflake".*
+
 ## Say
 APRA also flagged that *identity and access management capabilities have not yet adjusted to nonhuman actors such as AI agents.* Next step for this app: your Snowflake, through **Vercel Connect**. The platform mints a short-lived, scoped token per request; no provider key ever lives in your environment variables.
 

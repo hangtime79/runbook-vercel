@@ -13,6 +13,10 @@ Finding 01, "46 merchants hold 11% of all fraud": the top-10 merchants' fraud ra
 ## Tell
 Scroll one chapter, the 46-merchant cluster. One chapter is enough to show what the team gets.
 
+
+## On Vercel
+A Node function on Fluid compute runs a native analytics engine (DuckDB) on the data. Native libraries need an explicit file-tracing entry on Vercel, and the bundle limit is 250 MB uncompressed. For the bank: a finding is queried live, not pasted from a slide. *Source: vercel-positioning.md §3 and §6, "DuckDB in a function?".*
+
 ## Head of Fraud
 A named finding with the action to take, not a table to interpret.
 

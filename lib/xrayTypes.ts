@@ -1,6 +1,6 @@
 // Shared by lib/content.ts (server, reads the files) and the x-ray components (client). No node imports here.
 
-export const STOP_SECTIONS = ["What", "Tell", "Say", "Head of Fraud", "CIO", "Show", "Leave the app", "Craft", "Watch out"] as const;
+export const STOP_SECTIONS = ["What", "Tell", "On Vercel", "Say", "Head of Fraud", "CIO", "Show", "Leave the app", "Craft", "Watch out"] as const;
 export type StopSection = (typeof STOP_SECTIONS)[number];
 
 export type XrayStop = {
@@ -15,6 +15,14 @@ export type XrayStop = {
   /** Bridge stops: the demo leaves the app here. */
   bridge: boolean;
   sections: Partial<Record<StopSection, string>>;
+  /** The stop's element lives in the Ask panel, so goTo opens the panel (it starts closed under 1240px). */
+  panel: boolean;
+  /** Ghost stop: the element to sit on until the stop's own element exists (a stop id or a data-xray-standin id). */
+  standIn?: string;
+  /** Ghost stop: the stop number that makes the real element appear. */
+  appearsAfter?: number;
+  /** Ghost stop: what to do first, shown after "Appears after stop N:". */
+  appearsHint?: string;
 };
 
 export const OBJECTION_SECTIONS = ["They say", "Why they ask", "Answer", "Show", "Don't say", "Sources"] as const;

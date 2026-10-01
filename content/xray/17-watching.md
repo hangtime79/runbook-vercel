@@ -5,6 +5,9 @@ act: Act 2
 beat: Beat 2.4
 route: /governance
 fast: keep
+panel: yes
+stand_in: delete-refused
+appears_after: 10
 ---
 
 ## What
@@ -12,6 +15,10 @@ The per-answer readout under an Ask answer: model, time, tokens and cost. It app
 
 ## Tell
 Point at the readout in the app (model, time, cost), then go to the gateway logs.
+
+
+## On Vercel
+AI Gateway logs every call with model, provider, tokens, latency and cost, per project; routing detail is kept 30 days, and Trace Drains forward it to your own tool. For the bank: the AI inventory for this app is generated, and the copy that outlives 30 days is the one in your SIEM. *On the other side of the bridge: AI Gateway, Logs. Source: governance-research.md §4, "Request logs".*
 
 ## Say
 That's your AI inventory for this app, generated, not maintained by hand. Budgets per project; logs and traces can drain to your own SIEM tools.

@@ -13,8 +13,12 @@ Slide 1 of the opening deck: three big numbers (confirmed fraud, the 46-merchant
 ## Tell
 Tell the story in two sentences: a fraud wave, investigators built their own tools, one cracked a ring.
 
+
+## On Vercel
+Vercel describes itself as infrastructure for "coding agents to ship apps and agents automated by agents": a home for tools that people and agents build. A bank's question after a fraud wave is not whether these apps appear but where they live. *Source: vercel-positioning.md §1.*
+
 ## Say
-This app is one of those tools.
+This app is one of those tools, and tools like it are apps that need a home.
 
 ## Head of Fraud
 After a fraud wave, investigators built their own apps. One cracked a major ring. They've fought for years for better tools and more development.

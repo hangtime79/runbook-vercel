@@ -13,6 +13,10 @@ The second stop on the Change control card: the checks that run on every pull re
 ## Tell
 Show the pull request's check list, and point back to Act 1: **Read-only guard rejects writes** is the check for the delete refusal you saw earlier.
 
+
+## On Vercel
+Vercel's Deployment Checks hold the production build until the required GitHub checks pass; Force Promote exists as a bypass. Human approval is GitHub branch protection, not a Vercel feature. For the bank: the checks are yours to define, and two owners (GitHub and Vercel) must both be configured. *On the other side of the bridge: the pull request's check list and the project's Deployment Checks settings. Source: governance-research.md §2 and §5.*
+
 ## Say
 These are yours to define. Vercel's **Deployment Checks** hold the production build until they pass. Branch protection means nothing merges without them and a human approval.
 

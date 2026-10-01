@@ -1,14 +1,15 @@
 "use client";
 
-import Link from "next/link";
 import { useXray } from "./context";
 
-/** The route legend: which stops belong to this page, and where the next one is. Lets the SE walk the whole route. */
+const STEP = "rounded-full border border-xray/50 px-2 text-[13px] leading-[18px] text-xray enabled:hover:bg-xray/15 disabled:cursor-not-allowed disabled:opacity-35";
+
+/** The route legend: where you are in the route, with back and forward buttons ([ and ] keys) that take you to the stop. */
 export function XrayLegend({ pathname }: { pathname: string }) {
-  const { stops, objections, objectionsOn, setObjectionsOn } = useXray();
+  const { stops, objections, objectionsOn, setObjectionsOn, current, next: goNext, prev: goPrev } = useXray();
   const here = stops.filter((s) => s.route === pathname);
   const lastHere = here.length ? Math.max(...here.map((s) => s.n)) : 0;
-  const next = stops.find((s) => s.n > lastHere);
+  const shown = stops.find((s) => s.n === current);
   const hereIds = new Set(here.map((s) => s.id));
   const objCount = objections.filter((o) => hereIds.has(o.anchor)).length;
   const range = here.length
@@ -21,11 +22,21 @@ export function XrayLegend({ pathname }: { pathname: string }) {
     <div
       data-testid="xray-legend"
       // On shell pages the sidebar owns the bottom-left corner, so the pill sits just right of it.
-      className={`fixed bottom-3 z-[60] flex max-w-[calc(100vw-32px)] items-center gap-1.5 rounded-full border border-xray/50 bg-background/95 px-3 py-1 font-mono text-[11px] text-foreground/80 ${
+      className={`fixed bottom-3 z-[80] flex max-w-[calc(100vw-32px)] items-center gap-1.5 rounded-full border border-xray/50 bg-background/95 px-3 py-1 font-mono text-[11px] text-foreground/80 ${
         pathname === "/intro" ? "left-4" : "left-[224px]"
       }`}
     >
       <span className="text-xray">X-ray</span>
+      <button type="button" aria-label="Previous stop" data-testid="xray-prev" disabled={current <= 1} onClick={goPrev} className={STEP}>
+        ‹
+      </button>
+      <span data-testid="xray-position" className="max-w-[260px] truncate text-foreground">
+        {current ? `${current} / ${stops.length}` : `– / ${stops.length}`}
+        {shown ? ` · ${shown.title}` : ""}
+      </span>
+      <button type="button" aria-label="Next stop" data-testid="xray-next" disabled={current >= stops.length} onClick={goNext} className={STEP}>
+        ›
+      </button>
       {range ? <span>· {range} here</span> : <span>· no stops on this page</span>}
       {objCount > 0 && (
         <span className="text-xray-objection" data-testid="xray-objection-count">
@@ -43,16 +54,6 @@ export function XrayLegend({ pathname }: { pathname: string }) {
       >
         Objections {objectionsOn ? "on" : "off"}
       </button>
-      {next ? (
-        <span>
-          · next{" "}
-          <Link href={next.route} className="text-xray underline underline-offset-2 hover:text-xray">
-            {next.n} → {next.route}
-          </Link>
-        </span>
-      ) : (
-        <span>· last stop</span>
-      )}
     </div>
   );
 }

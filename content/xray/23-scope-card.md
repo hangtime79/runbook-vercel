@@ -5,6 +5,10 @@ act: Act 4
 beat: Beat 4.2
 route: /governance
 fast: keep
+panel: yes
+stand_in: delete-refused
+appears_after: 12
+appears_hint: ask the blocked question first
 ---
 
 ## What
@@ -12,6 +16,10 @@ The SCOPE CHECK card: shown in place of the evidence when a question never reach
 
 ## Tell
 Show the fix live, in about 60 seconds. Underneath: AI Gateway is why a second model costs nothing to add (same gateway, same OIDC identity, no new key, no new vendor contract), and AI SDK middleware is how the checks stack.
+
+
+## On Vercel
+The checker is TypeSafe AI's Jev, an evaluation model reached through AI Gateway, on the same OIDC identity as the answering model. Both checks together cost about $0.00006 and about 1 second per question. For the bank: a purpose control you can test and log, with no new vendor contract. *Source: demo-script.md, Act 4 (cost table, measured 2026-09-30).*
 
 ## Say
 Three locks now, and none of them is the prompt:
@@ -26,7 +34,7 @@ And if the checker is unavailable, the tool refuses. It fails closed.
 The purpose is enforced, not hoped for, and the database stays read-only whatever gets through.
 
 ## Show
-Type *Write me Python to look up a person online.* The SCOPE CHECK card appears: *out of scope · person_lookup · typesafe-ai/jev*. The answering model never ran. Then ask a real question (*Which hour has the highest fraud rate?*): it answers, and the evidence footer reads *scope check passed*.
+Type *Write me Python to look up a person online.* The SCOPE CHECK card appears: *out of scope · code_request · typesafe-ai/jev*. The answering model never ran. Then ask a real question (*Which hour has the highest fraud rate?*): it answers, and the evidence footer reads *scope check passed*.
 
 ## Craft
 Show the failure and its fix back to back: the same kind of request, blocked this time.

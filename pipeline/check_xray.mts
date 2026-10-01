@@ -75,12 +75,31 @@ for (const file of walk("app")) {
   }
 }
 
-// 3. Both directions.
+// data-xray-standin ids (an element a ghost stop sits on until its own element exists).
+const standIns = new Map<string, string[]>();
+for (const root of ["app", "components"]) {
+  for (const file of walk(root)) {
+    const src = readFileSync(file, "utf8");
+    for (const m of src.matchAll(/data-xray-standin=/g)) {
+      for (const id of idsIn(src, m.index! + m[0].length)) standIns.set(id, [...(standIns.get(id) ?? []), file]);
+    }
+  }
+}
+
+// 3. Both directions. A stop counts as anchored if its own anchor or its stand-in exists in code.
 const ids = new Set(stops.map((s) => s.id));
 for (const s of stops) {
-  const where = anchors.get(s.id);
-  check(!!where, `stop ${String(s.n).padStart(2, "0")} ${s.id} has an anchor${where ? ` (${[...new Set(where)].join(", ")})` : " in app/ or components/"}`);
+  const own = anchors.get(s.id);
+  const stand = s.standIn ? anchors.get(s.standIn) ?? standIns.get(s.standIn) : undefined;
+  const where = own ?? stand;
+  const via = own ? "" : stand ? ` via stand-in "${s.standIn}"` : "";
+  check(!!where, `stop ${String(s.n).padStart(2, "0")} ${s.id} has an anchor${where ? `${via} (${[...new Set(where)].join(", ")})` : " or stand-in in app/ or components/"}`);
 }
+for (const s of stops) {
+  if (!s.standIn) continue;
+  check(s.appearsAfter !== undefined && s.appearsAfter < s.n && !!stops[s.appearsAfter - 1], `ghost stop ${s.n} appears after stop ${s.appearsAfter}, which exists and comes earlier`);
+}
+for (const [id, files] of standIns) check(ids.has(id) || stops.some((s) => s.standIn === id), `stand-in "${id}" is used by a stop (${[...new Set(files)].join(", ")})`);
 for (const [id, files] of anchors) {
   check(ids.has(id), `anchor "${id}" has a stop file (${[...new Set(files)].join(", ")})`);
 }

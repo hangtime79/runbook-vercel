@@ -13,6 +13,10 @@ The AI usage card on `/governance`: the allowed models, the model answering now,
 ## Tell
 Stay on `/governance`, then go to the AI Gateway settings.
 
+
+## On Vercel
+AI Gateway enforces a team-wide provider allowlist, model deny rules (beta), no training on prompts, OIDC with no stored key, and per-request zero data retention on Pro. For the bank: approved models are enforced outside app code. *On the other side of the bridge: AI Gateway settings. Source: governance-research.md §4.*
+
 ## Say
 The model is one approved string. Your team sets a **provider allowlist**: a developer cannot route traffic to a provider the org hasn't approved. **Routing rules** deny specific models for every app on the team's credentials.
 

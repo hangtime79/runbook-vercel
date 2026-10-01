@@ -13,7 +13,13 @@ Slide 2: the Head of Fraud and the CIO each get one line, and the APRA quote sit
 ## Tell
 Look at each of them in turn: Head of Fraud, "keep the speed"; CIO, "I keep inheriting apps I didn't build." Read the APRA line aloud.
 
+
+## On Vercel
+Vercel puts change control around AI-written code: every change, from any author, becomes a pull request, a protected preview and required checks before production (Act 3). That is the platform's answer to the APRA line. Vercel does not enforce human approval; GitHub branch protection does. *Source: governance-research.md §5, "Agent-built change flow".*
+
 ## Say
+Speed against control is a platform problem.
+
 The volume and speed of AI assisted software development is placing strain on the effectiveness of change and release management controls.
 
 ## Head of Fraud

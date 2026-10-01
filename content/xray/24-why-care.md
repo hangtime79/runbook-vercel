@@ -5,6 +5,9 @@ act: Act 4
 beat: Beat 4.3
 route: /governance
 fast: keep
+panel: yes
+stand_in: delete-refused
+appears_after: 10
 ---
 
 ## What
@@ -12,6 +15,10 @@ The *scope check passed* line in the evidence footer: the checker model, its pro
 
 ## Tell
 This is the point of the act; land it, in about 60 seconds. In the fast run, say only: "a second model checks every question, and every app inherits it". If asked about cost: both checks together add about $0.00006 and about 1 second per question (measured on the preview, 2026-09-30).
+
+
+## On Vercel
+AI SDK middleware stacks the guardrails, and the list lives in config, so the next app imports the same stack. Gateway-level guardrails are not documented yet (an `aiGatewayGuardrails` permission exists in the API), so today the checks live in the app's package. For the bank: govern the platform, not each app. *Source: demo-script.md, Beat 4.3 and the honest edge.*
 
 ## Say
 Your investigators can hand this to anyone on the team. It won't wander into researching people, which is where an investigation tool creates real privacy and legal exposure for the bank, and every answer still comes with its evidence. A bounded tool is one you're allowed to keep.

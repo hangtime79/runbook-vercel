@@ -267,6 +267,72 @@ try {
       await page.close();
     }
 
+    // Go-to navigation: ] steps through the stops, takes you to the element, and pins its card.
+    {
+      const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+      const errors = [];
+      page.on("console", (m) => m.type() === "error" && errors.push(m.text()));
+      const position = async () => ((await page.getByTestId("xray-position").innerText().catch(() => "")) || "").trim();
+      const pinnedCard = async () => ((await page.locator("[data-slot=tooltip-content]").first().innerText().catch(() => "")) || "");
+      await page.goto(BASE + "/intro?xray=1", { waitUntil: "networkidle" });
+      await page.locator("[data-xray-badge]").first().waitFor({ timeout: 10_000 });
+      for (let i = 0; i < 7; i++) {
+        await page.keyboard.press("]");
+        await page.waitForTimeout(450);
+      }
+      await page.waitForURL("**/story", { timeout: 15_000 }).catch(() => {});
+      await page.waitForFunction(() => /^8 \//.test(document.querySelector('[data-testid="xray-position"]')?.textContent?.trim() ?? ""), null, { timeout: 15_000 }).catch(() => {});
+      await page.locator("[data-slot=tooltip-content]").first().waitFor({ timeout: 8000 }).catch(() => {});
+      check(new URL(page.url()).pathname === "/story", `] seven times from /intro lands on /story (${new URL(page.url()).pathname})`);
+      check(/^8 \//.test(await position()), `legend shows stop 8 (${await position()})`);
+      check(/The KPI cards/.test(await pinnedCard()), "stop 8's card is open and pinned");
+      const kpiBox = await page.locator('[data-xray~="kpis"]').first().boundingBox();
+      check(!!kpiBox && kpiBox.y >= 0 && kpiBox.y + kpiBox.height <= 900, `stop 8's element is in the viewport (y ${Math.round(kpiBox?.y ?? -1)})`);
+      // Pinned: the card stays open with the mouse far away.
+      await page.mouse.move(700, 600, { steps: 8 });
+      await page.waitForTimeout(500);
+      check(/The KPI cards/.test(await pinnedCard()), "the pinned card stays open when the mouse moves away");
+
+      // Forward to stop 11 (Evidence), which only exists after a question: a ghost badge on the Ask box.
+      for (let i = 0; i < 3; i++) {
+        await page.getByTestId("xray-next").click();
+        await page.waitForTimeout(500);
+      }
+      await page.waitForFunction(() => /^11 \//.test(document.querySelector('[data-testid="xray-position"]')?.textContent?.trim() ?? ""), null, { timeout: 15_000 }).catch(() => {});
+      await page.locator('[data-xray-badge="11"][data-ghost="true"]').waitFor({ timeout: 8000 }).catch(() => {});
+      check((await page.locator('[data-xray-badge="11"][data-ghost="true"]').count()) === 1, "stop 11 shows as a ghost badge before anything is asked");
+      await page.waitForTimeout(700);
+      check(/Appears after stop 10: click Ask first\./.test(await pinnedCard()), "the ghost card opens with the Appears-after line");
+
+      // Ask: the ghost turns solid on the Evidence card.
+      const box = page.getByRole("textbox", { name: "Question" });
+      await box.fill("Which hour has the highest fraud rate?");
+      await page.getByRole("button", { name: "Ask", exact: true }).click();
+      await page.locator('[aria-label="Evidence"]').first().waitFor({ timeout: 120_000 });
+      await page.waitForFunction(() => !document.querySelector('ol[aria-label="Progress"]'), null, { timeout: 120_000 });
+      await page.waitForTimeout(1200);
+      check((await page.locator('[data-xray-badge="11"]:not([data-ghost])').count()) >= 1 && (await page.locator('[data-xray-badge="11"][data-ghost]').count()) === 0, "after asking, badge 11 moves to the Evidence card and turns solid");
+
+      // [ steps back to stop 10 with its card open.
+      await page.locator("body").click({ position: { x: 700, y: 20 } });
+      await page.keyboard.press("[");
+      await page.waitForFunction(() => /^10 \//.test(document.querySelector('[data-testid="xray-position"]')?.textContent?.trim() ?? ""), null, { timeout: 15_000 }).catch(() => {});
+      await page.waitForTimeout(1000);
+      check(/^10 \//.test(await position()) && /The Ask button/.test(await pinnedCard()), `[ goes back to stop 10 with its card open (${await position()})`);
+
+      // Escape unpins; the legend fits inside the viewport with the panel open.
+      await page.keyboard.press("Escape");
+      await page.waitForTimeout(400);
+      check((await page.locator("[data-slot=tooltip-content]").count()) === 0, "Escape closes the pinned card");
+      const fit = await page.evaluate(() => {
+        const r = document.querySelector('[data-testid="xray-legend"]').getBoundingClientRect();
+        return { right: r.right, over: document.documentElement.scrollWidth - window.innerWidth };
+      });
+      check(fit.right <= 1440 - 16 && fit.over <= 0, `the legend fits at 1440px with the panel open (right edge ${Math.round(fit.right)}px, overflow ${fit.over}px)`);
+      check(errors.length === 0, `no console errors while stepping through stops ${errors.slice(0, 2).join(" | ")}`);
+      await page.close();
+    }
+
     const keys = await browser.newPage({ viewport: { width: 1440, height: 900 } });
     await keys.goto(BASE + "/story?xray=1", { waitUntil: "networkidle" });
     const opener = keys.getByRole("button", { name: "Open the Ask the data panel" });

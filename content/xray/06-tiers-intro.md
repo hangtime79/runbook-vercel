@@ -13,6 +13,10 @@ Slide 5: the Hobby / Pro / Enterprise table. Hobby (free) is what runs live toda
 ## Tell
 One sentence. The tiers are stated once here and again at the close.
 
+
+## On Vercel
+Vercel's plans gate the controls: Hobby is free and runs this demo, Pro adds what a pilot needs, Enterprise adds Passport, audit logs, Secure Compute and the 99.99% SLA. For the bank: each tier is the next step toward evidence APRA will ask for, not a rewrite. *Sources: demo-script.md, "The room" tier table; governance-research.md §2.*
+
 ## Say
 Everything you'll see runs on Vercel's free tier.
 

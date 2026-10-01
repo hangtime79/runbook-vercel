@@ -13,8 +13,12 @@ The Deployment card on `/governance`: environment, commit and function region, r
 ## Tell
 Open `/governance` (an app change). Point at the region `syd1`, the commit and the environment.
 
+
+## On Vercel
+A per-project region setting in `vercel.json` pins Functions to `syd1`; the default is Washington. For the bank: where code runs is a setting you own. Where data is processed is a separate question: Vercel may transfer data "anywhere else in the world", so it goes on your CPS 230 offshoring assessment. *Sources: governance-research.md §3; objections-research.md R-27.*
+
 ## Say
-Functions run in Sydney. The default is Washington, so this is a setting you own, per project, not a hope.
+Functions run in Sydney. The default is Washington, so this is a setting you own, per project, not a hope. For your CPS 230 file, that is where the code runs; the data-processing terms are a separate conversation.
 
 ## CIO
 Region is a per-project setting you own.

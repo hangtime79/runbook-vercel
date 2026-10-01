@@ -13,6 +13,10 @@ The deployment badge at the bottom of the sidebar: environment, commit and funct
 ## Tell
 Open the pull request's preview URL, behind the login wall, and point at the badge.
 
+
+## On Vercel
+Each change gets its own preview deployment behind Deployment Protection, and the badge reads the deployment's environment and commit. For the bank: reviewers look at the real running thing, and know which commit it is. *Sources: vercel-positioning.md §3, "Preview deployments"; demo-script.md, Beat 3.2.*
+
 ## Say
 The Head of Fraud's team reviews the real thing, not a screenshot.
 

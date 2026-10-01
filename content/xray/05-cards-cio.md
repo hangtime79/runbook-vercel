@@ -13,8 +13,12 @@ Slide 4, cards 03 and 04 ("On the CIO's rails" and "AI in development, under cha
 ## Tell
 Cards 03 and 04 go to the CIO (set once, every app inherits; every change a protected URL, rollback in seconds). Still don't click: these are the promises the rest of the demo proves.
 
+
+## On Vercel
+Identity, region and approved models are team-wide settings (Deployment Protection defaults, the provider allowlist, `syd1` pinning), so every app inherits them. Rollback happens at the routing layer, within seconds, without a rebuild. For the bank: control is set once by IT, not negotiated per app. *Sources: governance-research.md §2, §3, §4; vercel-positioning.md §2.*
+
 ## Say
-IT sets identity, region and approved models once, on the platform. Every app inherits them, however it was built.
+Identity, region and approved models are platform settings. IT sets them once and every app inherits them, however it was built.
 
 Every change is a live, protected URL before it ships. A bad release rolls back in seconds, without a rebuild.
 

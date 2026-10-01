@@ -147,6 +147,34 @@ await beat("xray-objection-card", async () => {
   await page.waitForSelector("[data-slot=tooltip-content]", { timeout: 5000 });
   await page.waitForTimeout(500);
 });
+await beat("xray-ghost-stop", async () => {
+  await page.goto(`${BASE}/story?xray=1`, { waitUntil: "networkidle" });
+  await page.locator("[data-xray-badge]").first().waitFor({ timeout: 10_000 });
+  for (let i = 0; i < 3; i++) {
+    await page.keyboard.press("]"); // 8 -> 9 -> 10 -> 11, the Evidence card that only exists after a question
+    await page.waitForTimeout(500);
+  }
+  await page.locator('[data-xray-badge="11"][data-ghost="true"]').waitFor({ timeout: 10_000 });
+  await page.waitForSelector("[data-slot=tooltip-content]", { timeout: 5000 });
+  await page.waitForTimeout(900);
+});
+await beat("xray-pinned-after-key", async () => {
+  await page.goto(`${BASE}/intro?xray=1`, { waitUntil: "networkidle" });
+  await page.locator("[data-xray-badge]").first().waitFor({ timeout: 10_000 });
+  for (let i = 0; i < 3; i++) {
+    await page.keyboard.press("]"); // 1 -> 2 -> 3 -> 4: the deck scrolls to the slide and pins the card
+    await page.waitForTimeout(500);
+  }
+  await page.waitForSelector("[data-slot=tooltip-content]", { timeout: 5000 });
+  await page.mouse.move(700, 700, { steps: 6 });
+  await page.waitForTimeout(900);
+});
+await beat("story-on-vercel-line", async () => {
+  await page.goto(`${BASE}/story`, { waitUntil: "networkidle" });
+  await page.locator("[data-chapter]").first().scrollIntoViewIfNeeded();
+  await page.getByTestId("on-vercel").nth(1).waitFor({ timeout: 5000 });
+  await page.waitForTimeout(800);
+});
 await beat("xray-ask-scope-check", async () => {
   await page.goto(`${BASE}/ask?xray=1`, { waitUntil: "networkidle" });
   const input = page.getByRole("textbox").last();

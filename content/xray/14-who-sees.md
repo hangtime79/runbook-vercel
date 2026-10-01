@@ -13,6 +13,10 @@ The Access card on `/governance`: who can open the app, with the Enterprise opti
 ## Tell
 Turn to the CIO. This is the question you'd ask when the app lands on your desk, and Act 2 answers it in four parts: who can see it, where does it run, what AI does it call, and who's watching.
 
+
+## On Vercel
+Deployment Protection: Vercel Authentication covers every deployment, previews included, on all plans. On Enterprise, Passport puts your own identity provider in front of it, with SSO, Directory Sync, Access Groups and an Enterprise Viewer role. For the bank: nobody outside the team reaches any preview of any change. *On the other side of the bridge: the project's Deployment Protection settings. Source: governance-research.md §2.*
+
 ## Say
 Now the question you'd ask when this lands on your desk: who can see it, where does it run, what AI does it call, and who's watching?
 

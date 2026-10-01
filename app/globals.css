@@ -156,6 +156,19 @@
   background: var(--xray);
   color: #04222a;
 }
+/* Ghost stop: the element appears later. Dashed ring, half opacity, no pulse. */
+.xray-badge.xray-ghost {
+  border-style: dashed;
+  opacity: 0.5;
+  animation: none;
+  box-shadow: none;
+}
+.xray-badge.xray-ghost:hover,
+.xray-badge.xray-ghost[data-state="delayed-open"],
+.xray-badge.xray-ghost[data-state="instant-open"] {
+  opacity: 0.9;
+}
+
 /* Objection marker: an amber "!" on a rounded square. No glow pulse, so the numbered route stays dominant. */
 .xray-objection {
   display: grid;

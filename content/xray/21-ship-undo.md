@@ -13,6 +13,10 @@ The third stop on the Change control card: merging to production, and rolling ba
 ## Tell
 Merge, and the change goes to production. Then show the undo. This beat needs a production deployment in place.
 
+
+## On Vercel
+Instant Rollback happens at the routing layer, within seconds and without a rebuild; on Hobby it goes to the previous deployment, on Pro and Enterprise to any. For the bank: a bad release is undone before the incident review. *On the other side of the bridge: the project's Deployments list, Instant Rollback. Source: vercel-positioning.md §2 and §3, "Instant rollback".*
+
 ## Say
 If it's wrong, rollback happens at the routing layer, within seconds, without a rebuild.
 

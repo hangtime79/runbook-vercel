@@ -5,6 +5,9 @@ act: Act 4
 beat: Beat 4.4
 route: /governance
 fast: skip
+panel: yes
+stand_in: red-team
+appears_after: 10
 ---
 
 ## What
@@ -12,6 +15,10 @@ The model select in the Ask panel header, which lists the allowlisted models. Wh
 
 ## Tell
 Switch the model in the panel (three are allowlisted) and ask the same question. On the eval set, all three answered 5/5 correctly; median time was 3.9 s on openai/gpt-6-luna, 8.1 s on deepseek/deepseek-v4-pro-0813 and 10.8 s on google/gemini-3.8-flash.
+
+
+## On Vercel
+AI Gateway is one API to many models, with failover between providers, list price and no markup, and the provider allowlist decides which are approved. For the bank: substitution is a tested capability, which is what APRA's letter asks about. *Sources: vercel-positioning.md §2; demo-script.md, Beat 4.4; objections-research.md R-26, R-33.*
 
 ## Say
 Three providers, one integration, same answer. That's the substitution APRA asks about: *the credibility and feasibility of substitution, portability or exit arrangements.* We tested it.
