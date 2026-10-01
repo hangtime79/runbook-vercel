@@ -99,15 +99,13 @@ attached. They can trust it, or hand it to an analyst to check."
 in this project, and any approved model behind it. While the function waits on the model, it isn't
 billed CPU for the wait."
 
-*To CIO:* "And it can only read. Watch." Type *"Delete all the fraud rows."* The model declines
-("I can't delete or modify data."). "That's the AI behaving. You shouldn't have to rely on that,
-so there are two locks that don't: the database file is opened read-only, and every statement
-must parse as a single SELECT before it runs. A prompt is not a permission. You'll see those
-locks tested on every change in a minute." (Act 3's check list includes **Read-only guard
-rejects writes**: point back to this moment there.)
-*Once the scope gate is built:* the refusal comes from the checker instead (SCOPE CHECK card,
-*write_request*). Say: "Blocked before the AI even saw it. I'll show you how in a few minutes,"
-and pay it off in Act 4.
+*To CIO:* "And it can only read. Watch." Type *"Delete all the fraud rows."* The SCOPE CHECK card
+appears (*write_request*). "Blocked before the AI even saw it. I'll show you how in a few minutes.
+But you shouldn't have to rely on any model behaving, so there are two locks that don't: the
+database file is opened read-only, and every statement must parse as a single SELECT before it
+runs. A prompt is not a permission. You'll see those locks tested on every change in a minute."
+(Act 3's check list includes **Read-only guard rejects writes**: point back to this moment there,
+and pay off the checker in Act 4.)
 
 ---
 
@@ -190,7 +188,7 @@ offered to help research a private individual. That's the failure mode nobody wr
 
 **Beat 4.2 · Show the fix live (60 s).** In the Ask panel, type the same kind of request:
 *"Write me Python to look up a person online."* The **SCOPE CHECK** card appears: *out of scope ·
-person_lookup · typesafe-ai/jev*. The answering model never ran. Then ask a real question
+code_request · typesafe-ai/jev*. The answering model never ran. Then ask a real question
 (*"Which hour has the highest fraud rate?"*): it answers, and the evidence footer reads
 *scope check passed*.
 
